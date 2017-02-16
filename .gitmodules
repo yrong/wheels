@@ -1,0 +1,3 @@
+[submodule "sequelize-fulltext-search"]
+	path = sequelize-fulltext-search
+	url = https://github.com/yrong/sequelize
