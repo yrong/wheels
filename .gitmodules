@@ -1,3 +1,6 @@
 [submodule "sequelize-fulltext-search"]
 	path = sequelize-fulltext-search
 	url = https://github.com/yrong/sequelize
+[submodule "postman_simplify"]
+	path = postman_simplify
+	url = https://github.com/yrong/postman_simplify
