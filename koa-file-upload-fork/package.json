@@ -1,0 +1,24 @@
+{
+  "name": "koa-file-upload-fork",
+  "version": "1.0.0",
+  "description": "koa middleware use upload file",
+  "main": "lib/index.js",
+  "author": "Ronyang <yrong1997@gmail.com>",
+  "keywords": [
+    "koa",
+    "file",
+    "upload",
+    "oss"
+  ],
+  "dependencies": {
+    "async-busboy": "^0.3.2",
+    "dateformat": "^1.0.12",
+    "koa-mount": "^2.0.0",
+    "lodash": "^4.17.4",
+    "mkdirp": "^0.5.1",
+    "request": "^2.73.0",
+    "request-promise": "^4.2.1",
+    "uuid": "^2.0.3",
+    "webdav": "^0.9.0"
+  }
+}

@@ -4,13 +4,6 @@
 [submodule "postman_simplify"]
 	path = postman_simplify
 	url = https://github.com/yrong/postman_simplify
-[submodule "koa-neo4j"]
-	path = koa-neo4j
-	url = https://github.com/yrong/koa-neo4j
-	branch = master
-[submodule "file-upload"]
-	path = file-upload
-	url = https://github.com/yrong/file-upload
 [submodule "license_check"]
 	path = license_check
 	url = https://github.com/yrong/license_check
