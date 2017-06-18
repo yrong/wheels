@@ -1,6 +1,6 @@
 {
   "name": "log4js_wrapper",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "index.js",
   "author": "Ronyang <yrong1997@gmail.com>",
   "license": "MIT",

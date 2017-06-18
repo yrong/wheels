@@ -4,16 +4,21 @@ const rp = require('request-promise')
 const config = require('config')
 const _ = require('lodash')
 
-module.exports = function checkToken() {
+module.exports = function checkToken(options) {
+    if(!options.check_token_url){
+        throw new Error('missing auth_url')
+    }
     return async function (ctx, next) {
-        const Token = config.get('auth.token_name')
-        let token = ctx.req.headers[Token]
-            || ctx.query[Token]
-            || (ctx.request.body && ctx.request.body[Token])
-            || ctx.cookies.get(Token)
-        let token_check_url = config.get('auth.base_url')+config.get('auth.token_check_path')
-        let options = {uri:token_check_url,method:'POST',json:true,body:{token:token}}
-        let result = await rp(options)
+        let token = options.token_name||'token'
+        token = ctx.req.headers[token]
+            || ctx.query[token]
+            || (ctx.request.body && ctx.request.body[token])
+            || ctx.cookies.get(token)
+        if(!token){
+            throw new Error('no token found in request')
+        }
+        let rp_options = {uri:options.check_token_url,method:'POST',json:true,body:{token:token}}
+        let result = await rp(rp_options)
         _.assign(ctx,result.data)
         await next()
     }
