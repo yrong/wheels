@@ -1,9 +1,27 @@
-[submodule "sequelize-fulltext-search"]
-	path = sequelize-fulltext-search
-	url = https://github.com/yrong/sequelize
 [submodule "postman_simplify"]
 	path = postman_simplify
 	url = https://github.com/yrong/postman_simplify
 [submodule "license_check"]
 	path = license_check
 	url = https://github.com/yrong/license_check
+[submodule "sequelize-forked"]
+	path = sequelize-forked
+	url = https://github.com/yrong/sequelize
+[submodule "koa-file-upload-fork"]
+	path = koa-file-upload-fork
+	url = https://github.com/yrong/koa-file-upload-nextcloud
+[submodule "passport-ldapauth-fork"]
+	path = passport-ldapauth-fork
+	url = https://github.com/yrong/passport-ldapauth
+[submodule "node-ldapauth-fork"]
+	path = node-ldapauth-fork
+	url = https://github.com/yrong/node-ldapauth-fork
+[submodule "log4js-wrapper"]
+	path = log4js-wrapper
+	url = https://github.com/yrong/log4js_wrapper
+[submodule "koa-token-checker"]
+	path = koa-token-checker
+	url = https://github.com/yrong/koa-token-checker
+[submodule "koa-neo4j-fork"]
+	path = koa-neo4j-fork
+	url = https://github.com/yrong/koa-neo4j
