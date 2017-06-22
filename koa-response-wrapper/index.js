@@ -2,11 +2,18 @@
 
 const Log = require('log4js_wrapper')
 const logger = Log.getLogger()
+const querystring = require('querystring')
 
 module.exports = function responseWrapper() {
     return async function (ctx, next) {
         try {
             const start = new Date()
+            let params
+            if (ctx.url.indexOf('?') >= 0) {
+                params = `${ctx.url.split('?')[1]}`
+                params = querystring.parse(params)
+                ctx.params = Object.assign({},ctx.params,params)
+            }
             await next();
             const ms = new Date() - start
             if(ctx.type === 'application/json')

@@ -1,10 +1,10 @@
 {
   "name": "koa-response-wrapper",
-  "version": "1.0.3",
+  "version": "1.0.3-beta.2",
   "main": "index.js",
   "author": "Ronyang <yrong1997@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "log4js_wrapper": "^1.0.2"
+    "log4js_wrapper": "^1.0.3-beta.1"
   }
 }
