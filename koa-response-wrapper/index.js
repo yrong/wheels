@@ -28,7 +28,7 @@ module.exports = function responseWrapper() {
                 }
             });
             ctx.status = error.status || 500
-            logger.error('%s %s - %s', ctx.method,ctx.url, String(error))
+            logger.error('%s %s - %s', ctx.method,ctx.url, error.stack || error)
         }
     }
 }
