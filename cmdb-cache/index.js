@@ -14,14 +14,13 @@ const apiGetter = async function(url,path,params){
 }
 
 const routes = {
-    Cabinet: {route: '/cabinets'},
-    Position: {route: '/positions'},
     User: {route: '/users'},
     ITService: {route: '/it_services/service'},
     ITServiceGroup: {route: '/it_services/group'},
     ServerRoom: {route: '/serverRooms'},
     WareHouse: {route: '/wareHouses'},
-    Shelf: {route: '/shelves'}
+    Shelf: {route: '/shelves'},
+    Cabinet: {route: '/cabinets'}
 }
 
 const set = (key,val)=>{
@@ -56,6 +55,10 @@ const loadAll = async (cmdb_url)=>{
             if(item&&item.uuid){
                 if(item.category === 'User')
                     cache.set(item.userid,{name:item.alias,uuid:item.userid,category:item.category})
+                else if(item.category === 'Cabinet')
+                    cache.set(item.uuid,{name:item.name,uuid:item.uuid,category:item.category,parent:item.server_room_id})
+                else if(item.category === 'Shelf')
+                    cache.set(item.uuid,{name:item.name,uuid:item.uuid,category:item.category,parent:item.warehouse_id})
                 else
                     cache.set(item.uuid,{name:item.name,uuid:item.uuid,category:item.category})
             }
