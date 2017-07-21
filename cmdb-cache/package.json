@@ -1,13 +1,11 @@
 {
   "name": "cmdb-cache",
-  "version": "1.0.0-beta.5",
+  "version": "1.0.0-beta.9",
   "main": "index.js",
   "author": "Ronyang <yrong1997@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "lodash": "^4.17.4",
     "node-cache": "^4.1.1",
-    "request": "^2.81.0",
-    "request-promise": "^4.1.1"
+    "scirichon-common": "1.0.0-beta.4"
   }
 }

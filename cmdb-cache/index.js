@@ -1,17 +1,7 @@
 const NodeCache = require( "node-cache" )
 const cache = new NodeCache()
 const _ = require('lodash')
-const rp = require('request-promise')
-const querystring = require('querystring');
-
-const apiGetter = async function(url,path,params){
-    let options = {
-        method: 'GET',
-        uri: url + path + (params?('/?' + querystring.stringify(params)):''),
-        json: true
-    }
-    return await rp(options)
-}
+const common = require('scirichon-common')
 
 const routes = {
     User: {route: '/users'},
@@ -47,7 +37,7 @@ const flushAll = ()=>{
 const loadAll = async (cmdb_url)=>{
     let promises = []
     _.forIn(routes,(val)=>{
-        promises.push(apiGetter(cmdb_url,val.route))
+        promises.push(common.apiInvoker('GET',cmdb_url,val.route))
     })
     let items = await Promise.all(promises)
     _.each(items,(item)=>{
