@@ -1,7 +1,8 @@
 const NodeCache = require( "node-cache" )
 const cache = new NodeCache()
 const _ = require('lodash')
-const common = require('scirichon-common')
+const rp = require('request-promise')
+const queryString = require('querystring')
 
 const routes = {
     User: {route: '/users'},
@@ -34,10 +35,25 @@ const flushAll = ()=>{
     }
 }
 
+const internal_token_id = 'internal_api_invoke'
+
+const apiInvoker = function(method,url,path,params,body){
+    var options = {
+        method: method,
+        uri: url + path + (params?('?' + queryString.stringify(params)):''),
+        body:body,
+        json: true,
+        headers: {
+            'token': internal_token_id
+        }
+    }
+    return rp(options)
+}
+
 const loadAll = async (cmdb_url)=>{
     let promises = []
     _.forIn(routes,(val)=>{
-        promises.push(common.apiInvoker('GET',cmdb_url,val.route))
+        promises.push(apiInvoker('GET',cmdb_url,val.route))
     })
     let items = await Promise.all(promises)
     _.each(items,(item)=>{
