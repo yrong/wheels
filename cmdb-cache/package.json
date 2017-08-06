@@ -1,6 +1,6 @@
 {
   "name": "cmdb-cache",
-  "version": "1.0.1-beta.2",
+  "version": "1.0.1-beta.3",
   "main": "index.js",
   "author": "Ronyang <yrong1997@gmail.com>",
   "license": "MIT",

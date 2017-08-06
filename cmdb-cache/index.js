@@ -4,14 +4,15 @@ const _ = require('lodash')
 const rp = require('request-promise')
 const queryString = require('querystring')
 
-const routes = {
+const cmdb_auxiliary_type_routes = {
     User: {route: '/users'},
     ITService: {route: '/it_services/service'},
     ITServiceGroup: {route: '/it_services/group'},
     ServerRoom: {route: '/serverRooms'},
     WareHouse: {route: '/wareHouses'},
     Shelf: {route: '/shelves'},
-    Cabinet: {route: '/cabinets'}
+    Cabinet: {route: '/cabinets'},
+    OperatingSystem:{route:'/operatingSystems'}
 }
 
 const set = (key,val)=>{
@@ -52,7 +53,7 @@ const apiInvoker = function(method,url,path,params,body){
 
 const loadAll = async (cmdb_url)=>{
     let promises = []
-    _.forIn(routes,(val)=>{
+    _.forIn(cmdb_auxiliary_type_routes,(val)=>{
         promises.push(apiInvoker('GET',cmdb_url,val.route))
     })
     let items = await Promise.all(promises)
@@ -98,4 +99,4 @@ const getItemByCategoryAndID = function(category,uuid){
 };
 
 
-module.exports = {loadAll,get,set,del,flushAll,getByCategory,getItemByCategoryAndName,getItemByCategoryAndID}
+module.exports = {loadAll,get,set,del,flushAll,getByCategory,getItemByCategoryAndName,getItemByCategoryAndID,cmdb_auxiliary_type_routes}
