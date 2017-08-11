@@ -4,7 +4,7 @@ const _ = require('lodash')
 const rp = require('request-promise')
 const queryString = require('querystring')
 
-const cmdb_auxiliary_type_routes = {
+const cmdb_type_routes = {
     User: {route: '/users'},
     ITService: {route: '/it_services/service'},
     ITServiceGroup: {route: '/it_services/group'},
@@ -12,7 +12,8 @@ const cmdb_auxiliary_type_routes = {
     WareHouse: {route: '/wareHouses'},
     Shelf: {route: '/shelves'},
     Cabinet: {route: '/cabinets'},
-    OperatingSystem:{route:'/operatingSystems'}
+    ConfigurationItem: {route: '/cfgItems'},
+    ProcessFlow: {route: '/processFlows'}
 }
 
 const set = (key,val)=>{
@@ -53,7 +54,7 @@ const apiInvoker = function(method,url,path,params,body){
 
 const loadAll = async (cmdb_url)=>{
     let promises = []
-    _.forIn(cmdb_auxiliary_type_routes,(val)=>{
+    _.forIn(cmdb_type_routes,(val)=>{
         promises.push(apiInvoker('GET',cmdb_url,val.route))
     })
     let items = await Promise.all(promises)
@@ -66,6 +67,8 @@ const loadAll = async (cmdb_url)=>{
                     cache.set(item.uuid,{name:item.name,uuid:item.uuid,category:item.category,parent:item.server_room_id})
                 else if(item.category === 'Shelf')
                     cache.set(item.uuid,{name:item.name,uuid:item.uuid,category:item.category,parent:item.warehouse_id})
+                else if(item.category === 'Software')
+                    cache.set(item.uuid,{name:item.name,uuid:item.uuid,category:item.category,subtype:item.subtype})
                 else
                     cache.set(item.uuid,{name:item.name,uuid:item.uuid,category:item.category})
             }
@@ -99,4 +102,4 @@ const getItemByCategoryAndID = function(category,uuid){
 };
 
 
-module.exports = {loadAll,get,set,del,flushAll,getByCategory,getItemByCategoryAndName,getItemByCategoryAndID,cmdb_auxiliary_type_routes}
+module.exports = {loadAll,get,set,del,flushAll,getByCategory,getItemByCategoryAndName,getItemByCategoryAndID,cmdb_type_routes}
