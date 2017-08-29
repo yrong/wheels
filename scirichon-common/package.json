@@ -1,0 +1,19 @@
+{
+  "name": "scirichon-common",
+  "version": "1.0.0-beta.7",
+  "main": "index.js",
+  "author": "Ronyang <yrong1997@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "async-throttle": "^1.1.0",
+    "lodash": "^4.17.4",
+    "request": "^2.81.0",
+    "request-promise": "^4.1.1",
+    "config": "^1.25.1",
+    "moment": "^2.13.0",
+    "uuid": "^3.0.0",
+    "validator": "^6.2.0",
+    "uuid-validate": "0.0.2",
+    "jsonpath": "^0.2.11"
+  }
+}
