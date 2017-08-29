@@ -37,3 +37,6 @@
 [submodule "scirichon-common"]
 	path = scirichon-common
 	url = https://github.com/yrong/scirichon-common
+[submodule "node_acl"]
+	path = node_acl
+	url = https://github.com/yrong/node_acl
