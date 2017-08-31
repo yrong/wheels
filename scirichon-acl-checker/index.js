@@ -11,7 +11,7 @@ const middleware = async (ctx, next) => {
                         if(!res){
                             acl.isAllowed(ctx.local.uuid, 'own', 'UPDATE', function(err, res){
                                 if(res) {
-                                    if(ctx.path.includes('/api/cfgItems')&&ctx.request.body.responsibility!==ctx.local.uuid){
+                                    if(ctx.path.includes('/api/cfgItems')&&ctx.request.body.data.fields.responsibility!==ctx.local.uuid){
                                         resolve(false)
                                     }else if(ctx.path.includes('/articles')&&ctx.request.body.author!==ctx.local.uuid){
                                         resolve(false)
