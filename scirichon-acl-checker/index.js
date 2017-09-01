@@ -1,7 +1,15 @@
 const acl = require('./acl')
+
+const isOwn = (userInObj,userInToken)=>{
+    let userId = userInToken.uuid,userAlias = userInToken.alias
+    if(userInObj===userId||userInObj===userId.toString()||userInToken===userAlias)
+        return true
+    return false
+}
+
 const middleware = async (ctx, next) => {
     if(ctx.local&&ctx.local.uuid&&ctx.local.roles){
-        let promise,hasRight
+        let promise,hasRight,userInObj,own
         if(ctx.method === 'PUT'||ctx.method === 'PATCH'||ctx.method === 'DELETE'){
             promise = new Promise((resolve, reject) => {
                 acl.isAllowed(ctx.local.uuid, '*', 'UPDATE', function(err, res){
@@ -11,10 +19,14 @@ const middleware = async (ctx, next) => {
                         if(!res){
                             acl.isAllowed(ctx.local.uuid, 'own', 'UPDATE', function(err, res){
                                 if(res) {
-                                    if(ctx.path.includes('/api/cfgItems')&&ctx.request.body.data.fields.responsibility!==ctx.local.uuid){
-                                        resolve(false)
-                                    }else if(ctx.path.includes('/articles')&&ctx.request.body.author!==ctx.local.uuid){
-                                        resolve(false)
+                                    if(ctx.path.includes('/api/cfgItems')){
+                                        userInObj = ctx.request.body.data.fields.responsibility
+                                        own = isOwn(userInObj,ctx.local)
+                                        resolve(own)
+                                    }else if(ctx.path.includes('/articles')){
+                                        userInObj = ctx.request.body.author
+                                        own = isOwn(userInObj,ctx.local)
+                                        resolve(own)
                                     }
                                     else{
                                         resolve(true)
