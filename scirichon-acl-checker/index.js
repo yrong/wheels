@@ -8,7 +8,7 @@ const isOwn = (userInObj,userInToken)=>{
 }
 
 const middleware = async (ctx, next) => {
-    if(ctx.local&&ctx.local.uuid&&ctx.local.roles){
+    if(ctx.local&&ctx.local.uuid&&ctx.local.roles&&ctx.local.roles.length){
         let promise,hasRight,userInObj,own
         if(ctx.method === 'PUT'||ctx.method === 'PATCH'||ctx.method === 'DELETE'){
             promise = new Promise((resolve, reject) => {
