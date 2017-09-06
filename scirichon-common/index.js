@@ -43,4 +43,12 @@ const apiInvoker = function(method,url,path,params,body){
     return rp(options)
 }
 
-module.exports = {buildQueryCondition,apiInvoker,pruneEmpty,internal_token_id}
+class ScirichonError extends Error {
+    constructor(message,status=500) {
+        super(message)
+        this.type = 'ScirichonError'
+        this.status = status
+    }
+}
+
+module.exports = {buildQueryCondition,apiInvoker,pruneEmpty,internal_token_id,ScirichonError}
