@@ -8,8 +8,8 @@ const isOwn = (userInObj,userInToken)=>{
 }
 
 const middleware = async (ctx, next) => {
-    if(ctx.local&&ctx.local.uuid&&ctx.local.roles&&ctx.local.roles.length){
-        let promise,hasRight,userInObj,own
+    let promise,hasRight,userInObj,own
+    if(ctx.local&&ctx.local.roles&&ctx.local.roles.length){
         if(ctx.method === 'PUT'||ctx.method === 'PATCH'||ctx.method === 'DELETE'){
             promise = new Promise((resolve, reject) => {
                 acl.isAllowed(ctx.local.uuid, '*', 'UPDATE', function(err, res){
@@ -53,12 +53,14 @@ const middleware = async (ctx, next) => {
                 })
             })
         }
-        hasRight = await Promise.resolve(promise)
-        if(hasRight===false){
-            ctx.throw(`user ${ctx.local.alias} with role ${ctx.local.roles} check right failed`,401)
-        }else{
-            await next()
+    }else{
+        if(ctx.method === 'PUT'||ctx.method === 'PATCH'||ctx.method === 'DELETE'||(ctx.method === 'POST'&&!ctx.path.includes('/search'))){
+            promise = Promise.resolve(false)
         }
+    }
+    hasRight = await Promise.resolve(promise)
+    if(hasRight===false){
+        ctx.throw(`user ${ctx.local.alias} with role ${ctx.local.roles} check right failed`,401)
     }else{
         await next()
     }
