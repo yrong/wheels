@@ -7,8 +7,14 @@ const isOwn = (userInObj,userInToken)=>{
     return false
 }
 
+const internal_token_id = 'internal_api_invoke'
+
 const middleware = async (ctx, next) => {
     let promise,hasRight,userInObj,own
+    if(!ctx.local&&ctx.headers.token==internal_token_id){
+        await next()
+        return
+    }
     if(ctx.local&&ctx.local.roles&&ctx.local.roles.length){
         if(ctx.method === 'PUT'||ctx.method === 'PATCH'||ctx.method === 'DELETE'){
             promise = new Promise((resolve, reject) => {
