@@ -1,6 +1,6 @@
 {
-  "name": "cmdb-cache",
-  "version": "1.0.1-beta.4",
+  "name": "scirichon-cache",
+  "version": "1.0.1-beta.5",
   "main": "index.js",
   "author": "Ronyang <yrong1997@gmail.com>",
   "license": "MIT",

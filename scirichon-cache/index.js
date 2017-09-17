@@ -55,7 +55,7 @@ const apiInvoker = function(method,url,path,params,body){
 const loadAll = async (cmdb_url)=>{
     let promises = []
     _.forIn(cmdb_type_routes,(val)=>{
-        promises.push(apiInvoker('GET',cmdb_url,val.route))
+        promises.push(apiInvoker('GET',cmdb_url,val.route,{'origional':true}))
     })
     let items = await Promise.all(promises)
     _.each(items,(item)=>{
