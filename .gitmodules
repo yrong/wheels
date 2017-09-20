@@ -37,3 +37,6 @@
 [submodule "node_acl"]
 	path = node_acl
 	url = https://github.com/yrong/node_acl
+[submodule "node-cache-redis"]
+	path = node-cache-redis
+	url = https://github.com/yrong/node-cache-redis
