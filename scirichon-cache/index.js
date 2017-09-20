@@ -22,22 +22,24 @@ const cmdb_type_routes = {
     ProcessFlow: {route: '/processFlows'}
 }
 
+const prefix = 'scirichon-cache:'
+
 const set = async (key,val)=>{
-    return await cache.set(key,val)
+    return await cache.set(prefix+key,val)
 }
 
 const get = async (key)=>{
-    return await cache.get(key)
+    return await cache.get(prefix+key)
 }
 
 const del = async (key)=>{
-    return await cache.del(key)
+    return await cache.del(prefix+key)
 }
 
 const flushAll = async ()=>{
-    let keys = await cache.keys()
+    let keys = await cache.keys(prefix+'*')
     for(let key of keys){
-        val = await get(key)
+        val = await cache.get(key)
         if(val&&(val.category !== 'User'&&val.category !== 'Role')){
             await del(val.uuid)
         }
@@ -89,7 +91,7 @@ const loadAll = async (cmdb_url)=>{
 const getByCategory = async (category)=>{
     let keys = await cache.keys(),results = []
     for(let key of keys){
-        let val = await get(key)
+        let val = await cache.get(key)
         if(val.category === category){
             results.push(val)
         }
