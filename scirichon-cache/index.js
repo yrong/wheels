@@ -40,7 +40,7 @@ const flushAll = async ()=>{
     let keys = await cache.keys(prefix+'*')
     for(let key of keys){
         val = await cache.get(key)
-        if(val&&(val.category !== 'User'&&val.category !== 'Role')){
+        if(val&&val.category&&(val.category !== 'User'&&val.category !== 'Role')){
             await del(val.uuid)
         }
     }
@@ -89,7 +89,7 @@ const loadAll = async (cmdb_url)=>{
 }
 
 const getByCategory = async (category)=>{
-    let keys = await cache.keys(),results = []
+    let keys = await cache.keys(prefix+'*'),results = []
     for(let key of keys){
         let val = await cache.get(key)
         if(val.category === category){
