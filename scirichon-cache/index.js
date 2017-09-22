@@ -41,7 +41,7 @@ const flushAll = async ()=>{
     for(let key of keys){
         val = await cache.get(key)
         if(val&&val.category&&(val.category !== 'User'&&val.category !== 'Role')){
-            await del(val.uuid)
+            await cache.del(key)
         }
     }
 }
@@ -67,21 +67,24 @@ const loadAll = async (cmdb_url)=>{
     _.forIn(cmdb_type_routes,(val)=>{
         promises.push(apiInvoker('GET',cmdb_url,val.route,{'origional':true}))
     })
-    let results = await Promise.all(promises)
+    let results = await Promise.all(promises),key_id,key_name
     for (let result of results){
         if(result.data){
             for(let item of result.data){
                 if(item&&item.uuid){
-                    if(item.category === 'User')
-                        await set(item.userid,{name:item.alias,uuid:item.userid,category:item.category})
-                    else if(item.category === 'Cabinet')
-                        await set(item.uuid,{name:item.name,uuid:item.uuid,category:item.category,parent:item.server_room_id})
-                    else if(item.category === 'Shelf')
-                        await set(item.uuid,{name:item.name,uuid:item.uuid,category:item.category,parent:item.warehouse_id})
-                    else if(item.category === 'Software')
-                        await set(item.uuid,{name:item.name,uuid:item.uuid,category:item.category,subtype:item.subtype})
-                    else
-                        await set(item.uuid,{name:item.name,uuid:item.uuid,category:item.category})
+                    if(item.category === 'User'){
+                        key_id = item.userid,key_name = item.category + '_' + item.alias
+                        await set(key_id,{name:item.alias,uuid:item.userid,category:item.category})
+                        await set(key_name,{name:item.alias,uuid:item.userid,category:item.category})
+                    }
+                    else {
+                        key_id = item.uuid,
+                            await set(key_id,{name:item.name,uuid:item.uuid,category:item.category,subtype:item.subtype})
+                        if(item.name){
+                            key_name = item.category + '_' + item.name
+                            await set(key_name,{name:item.name,uuid:item.uuid,category:item.category,subtype:item.subtype})
+                        }
+                    }
                 }
             }
         }
@@ -100,17 +103,11 @@ const getByCategory = async (category)=>{
 }
 
 const getItemByCategoryAndName = async (category,name)=>{
-    let items = await getByCategory(category)
-    return _.find(items,function(item){
-        return item.name === name;
-    })
+    return await get(category+"_"+name)
 }
 
 const getItemByCategoryAndID = async (category,uuid)=>{
-    let items = await getByCategory(category)
-    return _.find(items,function(item){
-        return item.uuid === uuid;
-    })
+    return await get(uuid)
 };
 
 
