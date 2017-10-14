@@ -29,6 +29,7 @@ const buildQueryCondition = (querys) =>{
 }
 
 const internal_token_id = 'internal_api_invoke'
+const TokenName = 'token'
 
 const apiInvoker = function(method,url,path,params,body){
     var options = {
@@ -37,9 +38,9 @@ const apiInvoker = function(method,url,path,params,body){
         body:body,
         json: true,
         headers: {
-            'token': internal_token_id
         }
     }
+    options.headers[TokenName] = internal_token_id
     return rp(options)
 }
 
@@ -51,4 +52,4 @@ class ScirichonError extends Error {
     }
 }
 
-module.exports = {buildQueryCondition,apiInvoker,pruneEmpty,internal_token_id,ScirichonError}
+module.exports = {buildQueryCondition,apiInvoker,pruneEmpty,internal_token_id,ScirichonError,TokenName}
