@@ -48,14 +48,16 @@ class ScirichonError extends Error {
     constructor(message,status=500) {
         super(message)
         this.type = 'ScirichonError'
+        this.code = 10000
         this.status = status
     }
 }
 
 class ScirichonWarning extends Error {
-    constructor(message,status=204) {
+    constructor(message,status=500) {
         super(message)
         this.type = 'ScirichonWarning'
+        this.code = 100001
         this.status = status
     }
 }

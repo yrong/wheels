@@ -3,14 +3,24 @@
 const Log = require('log4js_wrapper')
 const logger = Log.getLogger()
 
+const responseWrapped = (ctx)=>{
+    if(ctx.body&&ctx.body.status&&ctx.body.message&&ctx.body.message.displayAs){
+        return true
+    }
+    return false
+}
+
 module.exports = function responseWrapper() {
     return async function (ctx, next) {
         try {
             const start = new Date()
             await next();
             const ms = new Date() - start
-            if(ctx.type === 'application/json'&&(ctx.body&&!ctx.body.status))
-                ctx.body = {status: 'ok',data:ctx.body,message:{displayAs:'toast'}}
+            if(ctx.type === 'application/json'){
+                if(!responseWrapped(ctx)){
+                    ctx.body = {status: 'ok',data:ctx.body,message:{displayAs:'toast'},uuid:ctx.body.uuid}
+                }
+            }
             logger.info('%s %s - %s ms', ctx.method,ctx.originalUrl, ms)
         } catch (error) {
             let error_object = {
