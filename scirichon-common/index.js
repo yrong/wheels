@@ -52,4 +52,13 @@ class ScirichonError extends Error {
     }
 }
 
-module.exports = {buildQueryCondition,apiInvoker,pruneEmpty,internal_token_id,ScirichonError,TokenName}
+class ScirichonWarning extends Error {
+    constructor(message,status=204) {
+        super(message)
+        this.type = 'ScirichonWarning'
+        this.status = status
+    }
+}
+
+
+module.exports = {buildQueryCondition,apiInvoker,pruneEmpty,internal_token_id,ScirichonError,TokenName,ScirichonWarning}

@@ -63,11 +63,10 @@ const apiInvoker = function(method,url,path,params,body){
 
 const loadAll = async (cmdb_url)=>{
     await flushAll()
-    let promises = []
-    _.forIn(cmdb_type_routes,(val)=>{
-        promises.push(apiInvoker('GET',cmdb_url,val.route,{'origional':true}))
-    })
-    let results = await Promise.all(promises),key_id,key_name
+    let results = [],key_id,key_name
+    for(let val of _.values(cmdb_type_routes)){
+        results.push(await apiInvoker('GET',cmdb_url,val.route,{'origional':true}))
+    }
     for (let result of results){
         if(result.data){
             for(let item of result.data){

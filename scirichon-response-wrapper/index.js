@@ -9,8 +9,8 @@ module.exports = function responseWrapper() {
             const start = new Date()
             await next();
             const ms = new Date() - start
-            if(ctx.type === 'application/json')
-                ctx.body = {status: 'ok',data:ctx.body}
+            if(ctx.type === 'application/json'&&(ctx.body&&!ctx.body.status))
+                ctx.body = {status: 'ok',data:ctx.body,message:{displayAs:'toast'}}
             logger.info('%s %s - %s ms', ctx.method,ctx.originalUrl, ms)
         } catch (error) {
             let error_object = {
@@ -21,11 +21,16 @@ module.exports = function responseWrapper() {
                     displayAs:"modal"
                 }
             }
-            if(error&&error.type){
-                error_object.message.content = `${error.type}`
+            if(error.type){
+                error_object.message.content = String(error)
+                if(error.type==='ScirichonWarning'){
+                    error_object.status = 'warning'
+                    error_object.message.displayAs = 'console'
+                }
+                delete error_object.message.additional
             }
-            ctx.body = JSON.stringify(error_object);
-            ctx.status = error.status || 500
+            ctx.body = error_object
+            ctx.status = error.statusCode || 500
             logger.error('%s %s - %s', ctx.method,ctx.originalUrl, error.stack || error)
         }
     }
