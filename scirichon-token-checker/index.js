@@ -4,10 +4,20 @@ const config = require('config')
 const _ = require('lodash')
 const rp = require('request-promise')
 const queryString = require('querystring')
-const scirichon_common = require('scirichon-common')
-const internal_token_id = scirichon_common.internal_token_id
-const TokenName = scirichon_common.TokenName
-const apiInvoker = scirichon_common.apiInvoker
+const internal_token_id = 'internal_api_invoke'
+const TokenName = 'token'
+const apiInvoker = function(method,url,path,params,body){
+    var options = {
+        method: method,
+        uri: url + path + (params?('?' + queryString.stringify(params)):''),
+        body:body,
+        json: true,
+        headers: {
+        }
+    }
+    options.headers[TokenName] = internal_token_id
+    return rp(options)
+}
 
 module.exports = function checkToken(options) {
     if(!options.check_token_url){
@@ -27,7 +37,7 @@ module.exports = function checkToken(options) {
                 await next()
             }else{
                 result = await apiInvoker('POST',options.check_token_url,'','',{token})
-                _.assign(ctx,{token},result.data)
+                _.assign(ctx,{token},result.data||result)
                 await next()
             }
         }else{

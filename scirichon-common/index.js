@@ -45,19 +45,15 @@ const apiInvoker = function(method,url,path,params,body){
 }
 
 class ScirichonError extends Error {
-    constructor(message,status=500) {
-        super(message)
-        this.type = 'ScirichonError'
-        this.code = 10000
+    constructor(message,status=417) {
+        super('ScirichonError:'+message)
         this.status = status
     }
 }
 
 class ScirichonWarning extends Error {
-    constructor(message,status=500) {
-        super(message)
-        this.type = 'ScirichonWarning'
-        this.code = 100001
+    constructor(message,status=418) {
+        super('ScirichonWarning:'+message)
         this.status = status
     }
 }

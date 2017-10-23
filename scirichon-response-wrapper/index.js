@@ -2,6 +2,7 @@
 
 const Log = require('log4js_wrapper')
 const logger = Log.getLogger()
+const _ = require('lodash')
 
 const responseWrapped = (ctx)=>{
     if(ctx.body&&ctx.body.status&&ctx.body.message&&ctx.body.message.displayAs){
@@ -30,10 +31,10 @@ module.exports = function responseWrapper() {
                     additional:String(error),
                     displayAs:"modal"
                 }
-            }
-            if(error.type){
-                error_object.message.content = String(error)
-                if(error.type==='ScirichonWarning'){
+            },error_message = error.message||String(error)
+            if(error_message.includes('Scirichon')){
+                error_object.message.content = error_message
+                if(error_message.includes('ScirichonWarning')){
                     error_object.status = 'warning'
                     error_object.message.displayAs = 'console'
                 }
