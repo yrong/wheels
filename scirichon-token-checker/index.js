@@ -25,7 +25,12 @@ module.exports = function checkToken(options) {
     }
     return async function (ctx, next) {
         let token = options.token_name||TokenName,rp_options,result
-        if(ctx.path.match(/api/i)){
+        if (ctx.path.includes('/auth/login') || ctx.path.includes('/auth/register')
+            || ctx.path.includes('.html')||ctx.path.includes('.ico')||!ctx.path.match(/api/i))
+        {
+            await next()
+        }
+        else {
             token = ctx.req.headers[token]
                 || ctx.query[token]
                 || (ctx.request.body && ctx.request.body[token])
@@ -40,9 +45,6 @@ module.exports = function checkToken(options) {
                 _.assign(ctx,{token},result.data||result)
                 await next()
             }
-        }else{
-            await next()
         }
-
     }
 }
