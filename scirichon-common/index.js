@@ -28,8 +28,9 @@ const buildQueryCondition = (querys) =>{
     return {where:querys.filter,order:[[sortby,order]],offset:offset,limit:per_page,raw:true};
 }
 
-const internal_token_id = 'internal_api_invoke'
+const InternalTokenId = 'internal_api_invoke'
 const TokenName = 'token'
+const TokenUserName = 'token_user'
 
 const apiInvoker = function(method,url,path,params,body){
     var options = {
@@ -40,23 +41,23 @@ const apiInvoker = function(method,url,path,params,body){
         headers: {
         }
     }
-    options.headers[TokenName] = internal_token_id
+    options.headers[TokenName] = InternalTokenId
     return rp(options)
 }
 
 class ScirichonError extends Error {
-    constructor(message,status=417) {
+    constructor(message,status=500) {
         super('ScirichonError:'+message)
         this.status = status
     }
 }
 
 class ScirichonWarning extends Error {
-    constructor(message,status=418) {
+    constructor(message,status=500) {
         super('ScirichonWarning:'+message)
         this.status = status
     }
 }
 
 
-module.exports = {buildQueryCondition,apiInvoker,pruneEmpty,internal_token_id,ScirichonError,TokenName,ScirichonWarning}
+module.exports = {buildQueryCondition,apiInvoker,pruneEmpty,InternalTokenId,ScirichonError,TokenName,ScirichonWarning,TokenUserName}

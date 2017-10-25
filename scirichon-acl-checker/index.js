@@ -1,72 +1,73 @@
 const acl = require('./acl')
+const common = require('scirichon-common')
+const ScirichonError = common.ScirichonError
 
-const isOwn = (userInObj,userInToken)=>{
-    let userId = userInToken.uuid,userAlias = userInToken.alias
+const isOwn = (ctx,userInToken)=>{
+    let userId = userInToken.uuid,userAlias = userInToken.alias,userInObj
+    if(ctx.path.includes('/api/cfgItems')){
+        userInObj = ctx.request.body.data.fields.responsibility
+    }else if(ctx.path.includes('/articles')){
+        userInObj = ctx.request.body.author
+    }
     if(userInObj===userId||userInObj===userId.toString()||userInToken===userAlias)
         return true
     return false
 }
 
-const internal_token_id = 'internal_api_invoke'
-
 const middleware = async (ctx, next) => {
-    let promise,hasRight,userInObj,own
-    if(!ctx.local&&ctx.headers.token==internal_token_id){
-        await next()
-        return
-    }
-    if(ctx.local&&ctx.local.roles&&ctx.local.roles.length){
-        if(ctx.method === 'PUT'||ctx.method === 'PATCH'||ctx.method === 'DELETE'){
-            promise = new Promise((resolve, reject) => {
-                acl.isAllowed(ctx.local.uuid, '*', 'UPDATE', function(err, res){
-                    if(err){
-                        reject(err)
-                    }else{
-                        if(!res){
-                            acl.isAllowed(ctx.local.uuid, 'own', 'UPDATE', function(err, res){
+    let hasRight,own,token_user = ctx.cookies.get(common.TokenUserName)
+    let promise = new Promise((resolve,reject)=>{
+        if (ctx.path.includes('/auth/login') || ctx.path.includes('/auth/register')
+            || ctx.path.includes('.html')||ctx.path.includes('.ico')||!ctx.path.match(/api/i)||ctx.headers[common.TokenName]==common.InternalTokenId)
+        {
+            resolve(true)
+        }
+        token_user = token_user?JSON.parse(token_user):token_user
+        if(token_user&&token_user.roles&&token_user.roles.length) {
+            if (ctx.method === 'PUT' || ctx.method === 'PATCH' || ctx.method === 'DELETE') {
+                acl.isAllowed(token_user.uuid, '*', 'UPDATE', function(err, res){
+                    if(!res){
+                        if(ctx.path.includes('/api/cfgItems')||ctx.path.includes('/articles')){
+                            acl.isAllowed(token_user.uuid, 'own', 'UPDATE', function(err, res){
                                 if(res) {
-                                    if(ctx.path.includes('/api/cfgItems')){
-                                        userInObj = ctx.request.body.data.fields.responsibility
-                                        own = isOwn(userInObj,ctx.local)
-                                        resolve(own)
-                                    }else if(ctx.path.includes('/articles')){
-                                        userInObj = ctx.request.body.author
-                                        own = isOwn(userInObj,ctx.local)
-                                        resolve(own)
+                                    own = isOwn(ctx,token_user)
+                                    if(!own){
+                                        reject(new ScirichonError(`can not update/delete resource not owned by yourself with userid as ${token_user.uuid}`))
                                     }
-                                    else{
-                                        resolve(true)
-                                    }
+                                    resolve(own)
                                 }else{
-                                    resolve(false)
+                                    reject(new ScirichonError(`can not update/delete resource with role as ${token_user.roles}`))
                                 }
                             })
                         }else{
                             resolve(true)
                         }
-                    }
-                })
-            })
-        }
-        else if(ctx.method === 'POST'&&!ctx.path.includes('/search')){
-            promise = new Promise((resolve, reject) => {
-                acl.isAllowed(ctx.local.uuid, '*', 'CREATE', function(err, res){
-                    if(err){
-                        reject(err)
                     }else{
-                        resolve(res)
+                        resolve(true)
                     }
                 })
-            })
+            }
+            else if(ctx.method === 'POST'&&!ctx.path.includes('/search')){
+                acl.isAllowed(token_user.uuid, '*', 'CREATE', function(err, res){
+                    if(!res){
+                        reject(new ScirichonError(`can not create resource with role as ${token_user.roles}`))
+                    }
+                    resolve(res)
+                })
+            }else{
+                resolve(true)
+            }
+        }else{
+            if(ctx.method === 'PUT'||ctx.method === 'PATCH'||ctx.method === 'DELETE'||(ctx.method === 'POST'&&!ctx.path.includes('/search'))){
+                reject(new ScirichonError(`user with no role can not add/modify/delete`))
+            }else{
+                resolve(true)
+            }
         }
-    }else{
-        if(ctx.method === 'PUT'||ctx.method === 'PATCH'||ctx.method === 'DELETE'||(ctx.method === 'POST'&&!ctx.path.includes('/search'))){
-            promise = Promise.resolve(false)
-        }
-    }
+    })
     hasRight = await Promise.resolve(promise)
     if(hasRight===false){
-        ctx.throw(`user ${ctx.local.alias} with role ${ctx.local.roles} check right failed`,401)
+        ctx.throw(`user ${token_user.alias} with role ${token_user.roles} check right failed`,401)
     }else{
         await next()
     }
