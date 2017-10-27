@@ -28,8 +28,8 @@ module.exports = function checkToken(options) {
             result = await common.apiInvoker('POST',options.check_token_url,'','',{token})
             passport = result.data||result
             if(passport&&passport.local){
-                ctx.cookies.set(common.TokenUserName, JSON.stringify(_.pick(passport.local,['uuid','alias','userid','avatar','roles'])))
-                ctx.cookies.set(common.TokenName, token)
+                ctx[common.TokenName] = token
+                ctx[common.TokenUserName] = _.pick(passport.local,['uuid','alias','userid','avatar','roles'])
             }else{
                 throw new ScirichonError('no user for the token found')
             }

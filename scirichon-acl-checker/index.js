@@ -15,14 +15,13 @@ const isOwn = (ctx,userInToken)=>{
 }
 
 const middleware = async (ctx, next) => {
-    let hasRight,own,token_user = ctx.cookies.get(common.TokenUserName)
+    let hasRight,own,token_user = ctx[common.TokenUserName]||JSON.parse(ctx.cookies.get(common.TokenUserName)?ctx.cookies.get(common.TokenUserName):null)
     let promise = new Promise((resolve,reject)=>{
         if (ctx.path.includes('/auth/login') || ctx.path.includes('/auth/register')
             || ctx.path.includes('.html')||ctx.path.includes('.ico')||!ctx.path.match(/api/i)||ctx.headers[common.TokenName]==common.InternalTokenId)
         {
             resolve(true)
         }
-        token_user = token_user?JSON.parse(token_user):token_user
         if(token_user&&token_user.roles&&token_user.roles.length) {
             if (ctx.method === 'PUT' || ctx.method === 'PATCH' || ctx.method === 'DELETE') {
                 acl.isAllowed(token_user.uuid, '*', 'UPDATE', function(err, res){
