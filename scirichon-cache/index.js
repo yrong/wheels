@@ -68,7 +68,8 @@ const loadAll = async (cmdb_url)=>{
         results.push(await apiInvoker('GET',cmdb_url,val.route,{'origional':true}))
     }
     for (let result of results){
-        if(result.length){
+        result = result.data||result
+        if(result&&result.length){
             for(let item of result){
                 if(item&&item.uuid){
                     if(item.category === 'User'){
