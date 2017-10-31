@@ -1,11 +1,12 @@
 {
   "name": "scirichon-acl-checker",
-  "version": "1.0.1-beta.2",
+  "version": "1.0.1-beta.3",
   "main": "index.js",
   "author": "Ronyang <yrong1997@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "acl-fork":"0.4.10-beta.3",
-    "scirichon-common": "1.0.1-beta.5"
+    "config": "^1.25.1",
+    "scirichon-common": "1.0.1-beta.6"
   }
 }
