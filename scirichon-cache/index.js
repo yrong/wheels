@@ -85,7 +85,7 @@ const loadOne = async (category,uuid)=>{
         }else if(_.isString(uuid)){
             name = uuid,body = {category,name,cypher:`MATCH (n:${category}) WHERE n.name={name} RETURN n`}
         }
-        item = await common.apiInvoker('POST',load_url.cmdb_url,'/searchByCypher',{'origional':true},body)
+        item = await common.apiInvoker('POST',load_url.cmdb_url,'/searchByCypher',{'origional':true,'plain':true},body)
         item = item.data||item
         await saveItem(item)
     }
