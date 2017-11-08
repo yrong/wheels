@@ -46,21 +46,25 @@ const flushAll = async ()=>{
 const saveItem = async (item)=>{
     if(item&&item.uuid&&item.category){
         if(item.category === 'User'){
-            await set(item.userid,{name:item.alias,uuid:item.userid,category:item.category,roles:item.roles})
-            await set(item.category + '_' + item.alias,{name:item.alias,uuid:item.userid,category:item.category,roles:item.roles})
+            item = {name:item.alias,alias:item.alias,uuid:item.userid,category:item.category,roles:item.roles}
+            await set(item.uuid,item)
+            if(item.alias)
+                await set(item.category + '_' + item.alias,item)
         }
         else {
+            item = {name:item.name,uuid:item.uuid,category:item.category,subtype:item.subtype}
             await set(item.uuid,{name:item.name,uuid:item.uuid,category:item.category,subtype:item.subtype})
             if(item.name){
-                await set(item.category + '_' + item.name,{name:item.name,uuid:item.uuid,category:item.category,subtype:item.subtype})
+                await set(item.category + '_' + item.name,item)
             }
         }
     }
+    return item
 }
 
 const loadAll = async ()=>{
-    let results = [],key_id,key_name,cmdb_type_routes = await schema.getApiRoutesAll()
-    if(load_url&&load_url.cmdb_url&&!_.isEmpty(cmdb_type_routes)){
+    let results = [],key_id,key_name,cmdb_type_routes = schema.getApiRoutesAll()
+    if(!_.isEmpty(cmdb_type_routes)){
         await flushAll()
         for(let val of _.values(cmdb_type_routes)){
             results.push(await common.apiInvoker('GET',load_url.cmdb_url,val.route,{'origional':true}))
@@ -77,8 +81,8 @@ const loadAll = async ()=>{
 }
 
 const loadOne = async (category,uuid)=>{
-    let item,route,body,name,cmdb_type_routes = await schema.getApiRoutesAll()
-    if(load_url&&load_url.cmdb_url&&cmdb_type_routes[category]&&cmdb_type_routes[category].route) {
+    let item,body,name,route=schema.getRouteFromParentSchemas(category)
+    if(route) {
         console.log(`load ${uuid} from cmdb`)
         if(uuid_validator(uuid)||_.isInteger(uuid)){
             body = {category,uuid,cypher:`MATCH (n:${category}) WHERE n.uuid={uuid} RETURN n`}
@@ -87,7 +91,7 @@ const loadOne = async (category,uuid)=>{
         }
         item = await common.apiInvoker('POST',load_url.cmdb_url,'/searchByCypher',{'origional':true,'plain':true},body)
         item = item.data||item
-        await saveItem(item)
+        item = await saveItem(item)
     }
     return item
 }
