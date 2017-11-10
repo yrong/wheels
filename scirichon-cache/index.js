@@ -17,8 +17,9 @@ const prefix = 'scirichon-cache:'
 
 let load_url = {}
 
-const setLoadUrl = (url)=>{
+const initialize = async (url)=>{
     load_url = url
+    return await schema.loadSchemas()
 }
 
 const set = async (key,val)=>{
@@ -124,4 +125,4 @@ const getItemByCategoryAndID = async (category,uuid)=>{
 };
 
 
-module.exports = {loadAll,get,set,del,flushAll,getByCategory,getItemByCategoryAndName,getItemByCategoryAndID,setLoadUrl}
+module.exports = {loadAll,get,set,del,flushAll,getByCategory,getItemByCategoryAndName,getItemByCategoryAndID,initialize}
