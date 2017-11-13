@@ -1,11 +1,11 @@
 {
   "name": "scirichon-response-wrapper",
-  "version": "1.0.0-beta.5",
+  "version": "1.0.0-beta.6",
   "main": "index.js",
   "author": "Ronyang <yrong1997@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "log4js_wrapper": "1.0.3-beta.3",
+    "log4js_wrapper": "1.0.3-beta.5",
     "lodash": "^4.17.4"
   }
 }
