@@ -43,3 +43,6 @@
 [submodule "parse-neo4j"]
 	path = parse-neo4j
 	url = https://github.com/yrong/parse-neo4j
+[submodule "redis-json-schema"]
+	path = redis-json-schema
+	url = https://github.com/yrong/redis-json-schema

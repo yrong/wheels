@@ -1,25 +1,21 @@
 const _ = require('lodash')
 const rp = require('request-promise')
 const queryString = require('querystring')
-const config = require('config')
-const redis_config = config.get('redis')
 const RedisCache = require("node-cache-redis-fork")
 const common = require('scirichon-common')
 const schema = require('redis-json-schema')
 const uuid_validator = require('uuid-validate')
 
-const cache = new RedisCache({
-    redisOptions: {host: redis_config.host, port: redis_config.port, db: 3},
-    poolOptions: {priorityRange: 1}
-})
-
 const prefix = 'scirichon-cache:'
 
-let load_url = {}
+let load_url,cache
 
-const initialize = async (url)=>{
-    load_url = url
-    return await schema.loadSchemas()
+const initialize = async (option)=>{
+    load_url = option.loadUrl
+    cache = new RedisCache({
+        redisOptions: _.assign({db:3},option.redisOption),
+        poolOptions: {priorityRange: 1}
+    })
 }
 
 const set = async (key,val)=>{
