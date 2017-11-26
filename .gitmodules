@@ -46,3 +46,6 @@
 [submodule "redis-json-schema"]
 	path = redis-json-schema
 	url = https://github.com/yrong/redis-json-schema
+[submodule "sequelize-wrapper"]
+	path = sequelize-wrapper
+	url = https://github.com/yrong/sequelize-wrapper.git
