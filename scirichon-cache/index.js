@@ -6,9 +6,7 @@ const common = require('scirichon-common')
 const schema = require('redis-json-schema')
 const uuid_validator = require('uuid-validate')
 
-const prefix = 'scirichon-cache:'
-
-let load_url,cache
+let load_url,cache,prefix
 
 const initialize = async (option)=>{
     load_url = option.loadUrl
@@ -16,6 +14,7 @@ const initialize = async (option)=>{
         redisOptions: _.assign({db:3},option.redisOption),
         poolOptions: {priorityRange: 1}
     })
+    prefix = option.prefix||`scirichon-cache:`
 }
 
 const set = async (key,val)=>{
@@ -42,18 +41,10 @@ const flushAll = async ()=>{
 
 const saveItem = async (item)=>{
     if(item&&item.uuid&&item.category){
-        if(item.category === 'User'){
-            item = {name:item.alias,alias:item.alias,uuid:item.userid,category:item.category,roles:item.roles}
-            await set(item.uuid,item)
-            if(item.alias)
-                await set(item.category + '_' + item.alias,item)
-        }
-        else {
-            item = {name:item.name,uuid:item.uuid,category:item.category,subtype:item.subtype}
-            await set(item.uuid,{name:item.name,uuid:item.uuid,category:item.category,subtype:item.subtype})
-            if(item.name){
-                await set(item.category + '_' + item.name,item)
-            }
+        item = {name:item.name,uuid:item.uuid,category:item.category,tags:item.tags}
+        await set(item.uuid,{name:item.name,uuid:item.uuid,category:item.category,tags:item.tags})
+        if(item.name){
+            await set(item.category + '_' + item.name,item)
         }
     }
     return item
@@ -81,7 +72,7 @@ const loadOne = async (category,uuid)=>{
     let item,body,name,route=schema.getRouteFromParentSchemas(category)
     if(route) {
         console.log(`load ${uuid} from cmdb`)
-        if(uuid_validator(uuid)||_.isInteger(uuid)){
+        if(uuid_validator(uuid)){
             body = {category,uuid,cypher:`MATCH (n:${category}) WHERE n.uuid={uuid} RETURN n`}
         }else if(_.isString(uuid)){
             name = uuid,body = {category,name,cypher:`MATCH (n:${category}) WHERE n.name={name} RETURN n`}
