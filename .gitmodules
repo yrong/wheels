@@ -49,3 +49,9 @@
 [submodule "sequelize-wrapper"]
 	path = sequelize-wrapper
 	url = https://github.com/yrong/sequelize-wrapper.git
+[submodule "sequelize-init"]
+	path = sequelize-init
+	url = https://github.com/yrong/sequelize-init.git
+[submodule "redis-json-schema-init"]
+	path = redis-json-schema-init
+	url = https://github.com/yrong/redis-json-schema-init.git
