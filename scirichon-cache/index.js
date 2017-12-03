@@ -14,7 +14,7 @@ const initialize = async (option)=>{
         redisOptions: _.assign({db:3},option.redisOption),
         poolOptions: {priorityRange: 1}
     })
-    prefix = option.prefix||`scirichon-cache:`
+    prefix = `${option.prefix}:`||`scirichon-cache:`
 }
 
 const set = async (key,val)=>{
@@ -39,29 +39,42 @@ const flushAll = async ()=>{
     }
 }
 
-const saveItem = async (item)=>{
-    if(item&&item.uuid&&item.category){
-        item = {name:item.name,uuid:item.uuid,category:item.category,tags:item.tags}
-        await set(item.uuid,{name:item.name,uuid:item.uuid,category:item.category,tags:item.tags})
-        if(item.name){
-            await set(item.category + '_' + item.name,item)
-        }
+const addItem = async (item)=>{
+    let schema_obj = schema.getAncestorSchema(item.category)
+    if(schema_obj.cache&&schema_obj.cache.ignore)
+        return
+    if(schema_obj.cache&&schema_obj.cache.fields)
+        item = _.pick(item,schema_obj.cache.fields)
+    if(item.uuid)
+        await set(item.uuid,item)
+    if(item.category&&item.uique_name){
+        await set(item.category + '_' + item.uique_name,item)
     }
     return item
 }
 
+const delItem = async (item)=>{
+    let schema_obj = schema.getAncestorSchema(item.category)
+    if(schema_obj.cache&&schema_obj.cache.ignore)
+        return
+    if (item.uuid)
+        await del(item.uuid)
+    if (item.category&&item.uique_name)
+        await del(item.category + '_' + item.uique_name)
+}
+
 const loadAll = async ()=>{
-    let results = [],key_id,key_name,cmdb_type_routes = schema.getApiRoutesAll()
+    let results = [],key_id,key_name,route_schemas = schema.getApiRouteSchemas()
     if(!_.isEmpty(cmdb_type_routes)){
         await flushAll()
-        for(let val of _.values(cmdb_type_routes)){
-            results.push(await common.apiInvoker('GET',load_url.cmdb_url,val.route,{'origional':true}))
+        for(let val of route_schemas){
+            results.push(await common.apiInvoker('GET',load_url.cmdb_url||load_url.vehicle_url,val.route,{'origional':true}))
         }
         for (let result of results){
             result = result.data||result
             if(result&&result.length){
                 for(let item of result){
-                    await saveItem(item)
+                    await addItem(item)
                 }
             }
         }
@@ -69,18 +82,16 @@ const loadAll = async ()=>{
 }
 
 const loadOne = async (category,uuid)=>{
-    let item,body,name,route=schema.getRouteFromParentSchemas(category)
-    if(route) {
-        console.log(`load ${uuid} from cmdb`)
-        if(uuid_validator(uuid)){
-            body = {category,uuid,cypher:`MATCH (n:${category}) WHERE n.uuid={uuid} RETURN n`}
-        }else if(_.isString(uuid)){
-            name = uuid,body = {category,name,cypher:`MATCH (n:${category}) WHERE n.name={name} RETURN n`}
-        }
-        item = await common.apiInvoker('POST',load_url.cmdb_url||load_url.vehicle_url,'/searchByCypher',{'origional':true,'plain':true},body)
-        item = item.data||item
-        item = await saveItem(item)
+    let item,body
+    if(uuid_validator(uuid)||(common.isLegacyUserId(category,uuid))){
+        body = {category,uuid,cypher:`MATCH (n:${category}) WHERE n.uuid={uuid} RETURN n`}
+    }else if(_.isString(uuid)){
+        body = {category,unique_name:uuid,cypher:`MATCH (n:${category}) WHERE n.unique_name={unique_name} RETURN n`}
     }
+    item = await common.apiInvoker('POST',load_url.cmdb_url||load_url.vehicle_url,'/searchByCypher',{'origional':true,'plain':true},body)
+    item = item.data||item
+    if(!_.isEmpty(item))
+        item = await addItem(item)
     return item
 }
 
@@ -95,10 +106,10 @@ const getByCategory = async (category)=>{
     return results
 }
 
-const getItemByCategoryAndName = async (category,name)=>{
-    let result = await get(category+"_"+name)
+const getItemByCategoryAndUniqueName = async (category,unique_name)=>{
+    let result = await get(category+"_"+unique_name)
     if(!result){
-        result = await loadOne(category,name)
+        result = await loadOne(category,unique_name)
     }
     return result
 }
@@ -112,4 +123,4 @@ const getItemByCategoryAndID = async (category,uuid)=>{
 };
 
 
-module.exports = {loadAll,get,set,del,flushAll,getByCategory,getItemByCategoryAndName,getItemByCategoryAndID,initialize}
+module.exports = {loadAll,get,set,del,flushAll,getByCategory,getItemByCategoryAndUniqueName,getItemByCategoryAndID,initialize,addItem,delItem}

@@ -59,5 +59,17 @@ class ScirichonWarning extends Error {
     }
 }
 
+const isLegacyUserId = (category,uuid) =>{
+    return category==='User'&& (/^\d+$/.test(uuid)||_.isInteger(uuid))
+}
 
-module.exports = {buildQueryCondition,apiInvoker,pruneEmpty,InternalTokenId,ScirichonError,TokenName,ScirichonWarning,TokenUserName}
+const buildCompoundKey = (fields,value) => {
+    let compound_model_key = '', split = '&&&'
+    for (let key of fields) {
+        compound_model_key = compound_model_key + value[key] + split
+    }
+    return compound_model_key.slice(0, (-split.length))
+}
+
+
+module.exports = {buildQueryCondition,apiInvoker,pruneEmpty,InternalTokenId,ScirichonError,TokenName,ScirichonWarning,TokenUserName,isLegacyUserId,buildCompoundKey}
