@@ -5,6 +5,7 @@ const RedisCache = require("node-cache-redis-fork")
 const common = require('scirichon-common')
 const schema = require('redis-json-schema')
 const uuid_validator = require('uuid-validate')
+const delimiter = '&&&'
 
 let load_url,cache,prefix
 
@@ -48,7 +49,7 @@ const addItem = async (item)=>{
     if(item.uuid)
         await set(item.uuid,item)
     if(item.category&&item.unique_name){
-        await set(item.category + '&&&' + item.unique_name,item)
+        await set(item.category + delimiter + item.unique_name,item)
     }
     return item
 }
@@ -59,8 +60,8 @@ const delItem = async (item)=>{
         return
     if (item.uuid)
         await del(item.uuid)
-    if (item.category&&item.uique_name)
-        await del(item.category + '_' + item.uique_name)
+    if (item.category&&item.unique_name)
+        await del(item.category + delimiter + item.unique_name)
 }
 
 const loadAll = async ()=>{
@@ -107,7 +108,7 @@ const getByCategory = async (category)=>{
 }
 
 const getItemByCategoryAndUniqueName = async (category,unique_name)=>{
-    let result = await get(category+"_"+unique_name)
+    let result = await get(category+delimiter+unique_name)
     if(!result){
         result = await loadOne(category,unique_name)
     }
