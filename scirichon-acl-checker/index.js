@@ -5,13 +5,13 @@ const Acl = require('acl-fork')
 const _ = require('lodash')
 
 const isOwn = (ctx,userInToken)=>{
-    let userId = userInToken.uuid,userAlias = userInToken.alias,userInObj
+    let userIdInToken = userInToken.uuid,userIdInObj
     if(ctx.path.includes('/api/cfgItems')){
-        userInObj = ctx.request.body.data.fields.responsibility
+        userIdInObj = ctx.request.body.data.fields.responsibility
     }else if(ctx.path.includes('/articles')){
-        userInObj = ctx.request.body.author
+        userIdInObj = ctx.request.body.author
     }
-    if(userInObj===userId||userInObj===userId.toString()||userInToken===userAlias)
+    if(userIdInObj===userIdInToken||userIdInObj===userIdInToken.toString())
         return true
     return false
 }
@@ -20,7 +20,7 @@ module.exports = (option)=>{
     const redisClient = Redis.createClient(_.assign({db:2},option.redisOption));
     const acl = new Acl(new Acl.redisBackend(redisClient, 'acl'))
     return async (ctx, next) => {
-        let hasRight,own,token_user = ctx[common.TokenUserName]||JSON.parse(ctx.cookies.get(common.TokenUserName)?ctx.cookies.get(common.TokenUserName):null)
+        let hasRight,own,token_user = ctx[common.TokenUserName]
         let promise = new Promise((resolve,reject)=>{
             if (ctx.path.includes('/auth/login') || ctx.path.includes('/auth/register')
                 || ctx.path.includes('.html')||ctx.path.includes('.ico')||!ctx.path.match(/api/i)||ctx.headers[common.TokenName]==common.InternalTokenId)
