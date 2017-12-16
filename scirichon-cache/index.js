@@ -16,6 +16,7 @@ const initialize = async (option)=>{
         poolOptions: {priorityRange: 1}
     })
     prefix = `${option.prefix}:`||`scirichon-cache:`
+    await schema.loadSchemas(option)
 }
 
 const set = async (key,val)=>{
