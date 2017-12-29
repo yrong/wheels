@@ -29,7 +29,7 @@ module.exports = function checkToken(options) {
             passport = result.data||result
             if(passport&&passport.local){
                 ctx[token_name] = token
-                ctx[token_user_name] = _.pick(passport.local,['uuid','name','email','avatar','roles'])
+                ctx[token_user_name] = passport.local
             }else{
                 throw new ScirichonError('no user for the token found')
             }
