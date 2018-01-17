@@ -55,3 +55,6 @@
 [submodule "redis-json-schema-init"]
 	path = redis-json-schema-init
 	url = https://github.com/yrong/redis-json-schema-init.git
+[submodule "webpack-builder-advanced"]
+	path = webpack-builder-advanced
+	url = https://github.com/yrong/webpack-builder-advanced.git
