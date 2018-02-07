@@ -31,17 +31,22 @@ module.exports = function responseWrapper() {
                     additional:String(error),
                     displayAs:"modal"
                 }
-            },error_message = error.message||String(error)
-            if(error_message.includes('Scirichon')){
-                error_object.message.content = error_message
-                if(error_message.includes('ScirichonWarning')){
+            }
+            let error_message = error.message||String(error)
+            if(error.error&&error.error.message){
+                error_message = error.error.message.content
+            }
+            let status=error.statusCode||error.status
+            if(status===501||status===502||error_message.includes('Scirichon')){
+                error_object.message.content = error.customized_message||error_message
+                if(status===502||error_message.includes('ScirichonWarning')){
                     error_object.status = 'warning'
                     error_object.message.displayAs = 'console'
                 }
                 delete error_object.message.additional
             }
             ctx.body = error_object
-            ctx.status = error.statusCode || 500
+            ctx.status = error.statusCode || error.status || 500
             logger.error('%s %s - %s', ctx.method,ctx.originalUrl, error.stack || error)
         }
     }
