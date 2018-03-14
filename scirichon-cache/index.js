@@ -67,8 +67,8 @@ const delItem = async (item)=>{
 
 const loadAll = async ()=>{
     let results = [],key_id,key_name,route_schemas = schema.getApiRouteSchemas(),result
+    await flushAll()
     if(!_.isEmpty(route_schemas)){
-        await flushAll()
         for(let val of route_schemas){
             result = await common.apiInvoker('GET',load_url.cmdb_url||load_url.vehicle_url,val.route,{'origional':true})
             result = result.data||result
