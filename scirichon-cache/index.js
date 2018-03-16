@@ -3,20 +3,36 @@ const rp = require('request-promise')
 const queryString = require('querystring')
 const RedisCache = require("node-cache-redis-fork")
 const common = require('scirichon-common')
-const schema = require('redis-json-schema')
+const scirichon_schema = require('redis-json-schema')
 const uuid_validator = require('uuid-validate')
-const delimiter = '&&&'
+const delimiter = common.Delimiter
+const config = require('config')
 
-let load_url,cache,prefix
+let cache,prefix,cache_loadUrl={}
 
 const initialize = async (option)=>{
-    load_url = option.loadUrl
+    if(!option.redisOption||!option.prefix){
+        throw new Error('required field missing when initialize cache')
+    }
     cache = new RedisCache({
         redisOptions: _.assign({db:3},option.redisOption),
         poolOptions: {priorityRange: 1}
     })
-    prefix = `${option.prefix}:`||`scirichon-cache:`
-    await schema.loadSchemas(option)
+    prefix = `${option.prefix}:`
+    await scirichon_schema.loadSchemas(option)
+    let schemas = scirichon_schema.getSchemas()
+    if(_.isEmpty(schemas)){
+        throw new Error('load schema failed')
+    }
+    _.each(schemas,(schema,category)=>{
+        if(schema.route){
+            port = config.get(`${process.env['NODE_NAME']}.port`)
+            cache_loadUrl[category] = `http://localhost:${port}/api${schema.route}`
+        }else if(schema.service&&schema.loadUrl){
+            port = config.get(`${schema.service}.port`)
+            cache_loadUrl[category] = `http://localhost:${port}${schema.loadUrl}`
+        }
+    })
 }
 
 const set = async (key,val)=>{
@@ -35,14 +51,12 @@ const flushAll = async ()=>{
     let keys = await cache.keys(prefix+'*')
     for(let key of keys){
         val = await cache.get(key)
-        if(val&&val.category&&(val.category !== 'User'&&val.category !== 'Role')){
-            await cache.del(key)
-        }
+        await cache.del(key)
     }
 }
 
 const addItem = async (item)=>{
-    let schema_obj = schema.getAncestorSchema(item.category)
+    let schema_obj = scirichon_schema.getAncestorSchema(item.category)
     if(schema_obj.cache&&schema_obj.cache.ignore)
         return
     if(schema_obj.cache&&schema_obj.cache.fields)
@@ -56,7 +70,7 @@ const addItem = async (item)=>{
 }
 
 const delItem = async (item)=>{
-    let schema_obj = schema.getAncestorSchema(item.category)
+    let schema_obj = scirichon_schema.getAncestorSchema(item.category)
     if(schema_obj.cache&&schema_obj.cache.ignore)
         return
     if (item.uuid)
@@ -66,54 +80,37 @@ const delItem = async (item)=>{
 }
 
 const loadAll = async ()=>{
-    let results = [],key_id,key_name,route_schemas = schema.getApiRouteSchemas(),result
+    let results = [],result,load_url
     await flushAll()
-    if(!_.isEmpty(route_schemas)){
-        for(let val of route_schemas){
-            result = await common.apiInvoker('GET',load_url.cmdb_url||load_url.vehicle_url,val.route,{'origional':true})
-            result = result.data||result
-            results.push(result)
+    for(let category in cache_loadUrl){
+        load_url = cache_loadUrl[category]
+        result = await common.apiInvoker('GET',load_url,'',{'origional':true})
+        result = result.data||result
+        if(result.length){
+            results = results.concat(result)
         }
-        for (let result of results){
-            if(result&&result.length){
-                for(let item of result){
-                    await addItem(item)
-                }
-            }
-        }
+    }
+    for (let item of results){
+        await addItem(item)
     }
 }
 
 const loadOne = async (category,uuid)=>{
-    let item,body
+    let item,load_url
     if(uuid_validator(uuid)||(common.isLegacyUserId(category,uuid))){
-        body = {category,uuid,cypher:`MATCH (n:${category}) WHERE n.uuid={uuid} RETURN n`}
-    }else if(_.isString(uuid)){
-        body = {category,unique_name:uuid,cypher:`MATCH (n:${category}) WHERE n.unique_name={unique_name} RETURN n`}
-    }
-    item = await common.apiInvoker('POST',load_url.cmdb_url||load_url.vehicle_url,'/searchByCypher',{'origional':true,'plain':true},body)
-    item = item.data||item
-    if(!_.isEmpty(item))
+        load_url = cache_loadUrl[category]
+        item = await common.apiInvoker('GET',load_url,`/${uuid}`,{'origional':true})
+        item = item.data||item
+        if(!_.isEmpty(item))
+            item.category = category
         item = await addItem(item)
+    }
     return item
 }
 
-const getByCategory = async (category)=>{
-    let keys = await cache.keys(prefix+'*'),results = []
-    for(let key of keys){
-        let val = await cache.get(key)
-        if(val.category === category){
-            results.push(val)
-        }
-    }
-    return results
-}
 
 const getItemByCategoryAndUniqueName = async (category,unique_name)=>{
     let result = await get(category+delimiter+unique_name)
-    if(!result){
-        result = await loadOne(category,unique_name)
-    }
     return result
 }
 
@@ -126,4 +123,4 @@ const getItemByCategoryAndID = async (category,uuid)=>{
 };
 
 
-module.exports = {loadAll,get,set,del,flushAll,getByCategory,getItemByCategoryAndUniqueName,getItemByCategoryAndID,initialize,addItem,delItem}
+module.exports = {loadAll,get,set,del,flushAll,getItemByCategoryAndUniqueName,getItemByCategoryAndID,initialize,addItem,delItem}

@@ -37,7 +37,7 @@ module.exports = function responseWrapper() {
                 error_message = error.error.message.content
             }
             let status=error.statusCode||error.status
-            if(status===501||status===502||error_message.includes('Scirichon')){
+            if(status===501||status===502||(_.isString(error_message)&&error_message.includes('Scirichon'))){
                 error_object.message.content = error.customized_message||error_message
                 if(status===502||error_message.includes('ScirichonWarning')){
                     error_object.status = 'warning'

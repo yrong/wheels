@@ -31,6 +31,7 @@ const buildQueryCondition = (querys) =>{
 const InternalTokenId = 'internal_api_invoke'
 const TokenName = 'token'
 const TokenUserName = 'token_user'
+const Delimiter = '&&&'
 
 const apiInvoker = function(method,url,path,params,body){
     var options = {
@@ -74,4 +75,5 @@ const buildCompoundKey = (fields,value) => {
 }
 
 
-module.exports = {buildQueryCondition,apiInvoker,pruneEmpty,InternalTokenId,ScirichonError,TokenName,ScirichonWarning,TokenUserName,isLegacyUserId,buildCompoundKey}
+module.exports = {buildQueryCondition,apiInvoker,pruneEmpty,ScirichonError,ScirichonWarning,isLegacyUserId,buildCompoundKey,
+    InternalTokenId,TokenName,TokenUserName,Delimiter}
