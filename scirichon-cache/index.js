@@ -101,9 +101,10 @@ const loadOne = async (category,uuid)=>{
         load_url = cache_loadUrl[category]
         item = await common.apiInvoker('GET',load_url,`/${uuid}`,{'origional':true})
         item = item.data||item
-        if(!_.isEmpty(item))
+        if(!_.isEmpty(item)){
             item.category = category
-        item = await addItem(item)
+            item = await addItem(item)
+        }
     }
     return item
 }
