@@ -20,7 +20,7 @@ const initialize = async (option)=>{
     })
     prefix = `${option.prefix}:`
     await scirichon_schema.loadSchemas(option)
-    let schemas = scirichon_schema.getSchemas()
+    let schemas = scirichon_schema.getSchemas(),service_url
     if(_.isEmpty(schemas)){
         throw new Error('load schema failed')
     }
@@ -29,8 +29,8 @@ const initialize = async (option)=>{
             port = config.get(`${process.env['NODE_NAME']}.port`)
             cache_loadUrl[category] = `http://localhost:${port}/api${schema.route}`
         }else if(schema.service&&schema.loadUrl){
-            port = config.get(`${schema.service}.port`)
-            cache_loadUrl[category] = `http://localhost:${port}${schema.loadUrl}`
+            service_url = common.getServiceApiUrl(schema.service)
+            cache_loadUrl[category] = `${service_url}${schema.loadUrl}`
         }
     })
 }
@@ -97,13 +97,19 @@ const loadAll = async ()=>{
 
 const loadOne = async (category,uuid)=>{
     let item,load_url
-    if(uuid_validator(uuid)||(common.isLegacyUserId(category,uuid))){
+    if(uuid_validator(uuid)||(common.isLegacyUserId(category,uuid))||category==='Role'){
         load_url = cache_loadUrl[category]
-        item = await common.apiInvoker('GET',load_url,`/${uuid}`,{'origional':true})
-        item = item.data||item
-        if(!_.isEmpty(item)){
-            item.category = category
-            item = await addItem(item)
+        try{
+            item = await common.apiInvoker('GET',load_url,`/${uuid}`,{'origional':true})
+        }catch(err){
+            console.log(`load err:${err.stack||err}`)
+        }
+        if(item){
+            item = item.data||item
+            if(!_.isEmpty(item)){
+                item.category = category
+                item = await addItem(item)
+            }
         }
     }
     return item

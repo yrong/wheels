@@ -1,6 +1,7 @@
 const rp = require('request-promise')
 const queryString = require('querystring')
 const _ = require('lodash')
+const config = require('config')
 
 const pruneEmpty = function(obj) {
     return function prune(current) {
@@ -74,6 +75,11 @@ const buildCompoundKey = (fields,value) => {
     return compound_model_key.slice(0, (-split.length))
 }
 
+const getServiceApiUrl = (serviceName)=>{
+    let service = config.get(serviceName),serviceIP=service.ip||'localhost',servicePort=service.port
+    return `http://${serviceIP}:${servicePort}`
+}
+
 
 module.exports = {buildQueryCondition,apiInvoker,pruneEmpty,ScirichonError,ScirichonWarning,isLegacyUserId,buildCompoundKey,
-    InternalTokenId,TokenName,TokenUserName,Delimiter}
+    InternalTokenId,TokenName,TokenUserName,Delimiter,getServiceApiUrl}
