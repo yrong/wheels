@@ -61,6 +61,8 @@ const addItem = async (item)=>{
         return
     if(schema_obj.cache&&schema_obj.cache.fields)
         item = _.pick(item,schema_obj.cache.fields)
+    if(schema_obj.cache&&schema_obj.cache.exclude_fields)
+        item = _.omit(item,schema_obj.cache.exclude_fields)
     if(item.uuid)
         await set(item.uuid,item)
     if(item.category&&item.unique_name){
