@@ -26,8 +26,8 @@ const initialize = async (option)=>{
     }
     _.each(schemas,(schema,category)=>{
         if(schema.route){
-            port = config.get(`${process.env['NODE_NAME']}.port`)
-            cache_loadUrl[category] = `http://localhost:${port}/api${schema.route}`
+            service_url = common.getServiceApiUrl(process.env['SCHEMA_TYPE'])
+            cache_loadUrl[category] = `${service_url}/api${schema.route}`
         }else if(schema.service&&schema.loadUrl){
             service_url = common.getServiceApiUrl(schema.service)
             cache_loadUrl[category] = `${service_url}${schema.loadUrl}`

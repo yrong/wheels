@@ -1,11 +1,11 @@
 {
   "name": "scirichon-response-mapper",
-  "version": "1.0.1-beta.3",
+  "version": "1.0.1-beta.5",
   "main": "index.js",
   "author": "Ronyang <yrong1997@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "lodash": "^4.17.4",
-    "scirichon-cache":"1.0.6-beta.4"
+    "scirichon-cache":"1.0.6-beta.5"
   }
 }

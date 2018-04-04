@@ -3,21 +3,22 @@
 const _ = require('lodash')
 const schema = require('redis-json-schema')
 const scirichon_cache = require('scirichon-cache')
+const common = require('scirichon-common')
 
-const replaceId = async (schema,key,val)=>{
-    if(_.isString(val[key])){
-        let obj = await scirichon_cache.getItemByCategoryAndID(schema,val[key])
+const replaceId = async (category,key,val)=>{
+    if(_.isString(val[key])||common.isLegacyUserId(category,val[key])){
+        let obj = await scirichon_cache.getItemByCategoryAndID(schema.getAncestorCategory(category),val[key].toString())
         if(!_.isEmpty(obj)){
             val[key] = obj
         }
     }
 }
 
-const replaceIdArray = async (schema,key,val)=>{
+const replaceIdArray = async (category,key,val)=>{
     let objs = []
     for(let id of val[key]){
-        if(_.isString(id)){
-            let obj = await scirichon_cache.getItemByCategoryAndID(schema,id)
+        if(_.isString(id)||common.isLegacyUserId(category,id)){
+            let obj = await scirichon_cache.getItemByCategoryAndID(schema.getAncestorCategory(category),id.toString())
             if(!_.isEmpty(obj)){
                 objs.push(obj)
             }
