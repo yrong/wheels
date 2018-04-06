@@ -86,7 +86,7 @@ const loadAll = async ()=>{
     await flushAll()
     for(let category in cache_loadUrl){
         load_url = cache_loadUrl[category]
-        result = await common.apiInvoker('GET',load_url,'',{'origional':true})
+        result = await common.apiInvoker('GET',load_url,'',{'original':true})
         result = result.data||result
         if(result.length){
             results = results.concat(result)
@@ -102,7 +102,7 @@ const loadOne = async (category,uuid)=>{
     if(uuid_validator(uuid)||(common.isLegacyUserId(category,uuid))||category==='Role'){
         load_url = cache_loadUrl[category]
         try{
-            item = await common.apiInvoker('GET',load_url,`/${uuid}`,{'origional':true})
+            item = await common.apiInvoker('GET',load_url,`/${uuid}`,{'original':true})
         }catch(err){
             console.log(`load err:${err.stack||err}`)
         }
