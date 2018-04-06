@@ -51,7 +51,10 @@ module.exports = (option)=>{
                         }
                     })
                 }
-                else if(ctx.method === 'POST'&&!ctx.path.includes('/search')){
+                else if(ctx.method === 'POST'){
+                    if(ctx.path.includes('/search')||ctx.path.includes('/members')){
+                        resolve(true)
+                    }
                     acl.isAllowed(token_user.uuid, '*', 'CREATE', function(err, res){
                         if(!res){
                             reject(new ScirichonError(`can not create resource with role as ${token_user.roles}`))
