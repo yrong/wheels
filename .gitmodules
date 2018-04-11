@@ -7,9 +7,6 @@
 [submodule "sequelize-forked"]
 	path = sequelize-forked
 	url = https://github.com/yrong/sequelize
-[submodule "koa-file-upload-fork"]
-	path = koa-file-upload-fork
-	url = https://github.com/yrong/koa-file-upload-nextcloud
 [submodule "passport-ldapauth-fork"]
 	path = passport-ldapauth-fork
 	url = https://github.com/yrong/passport-ldapauth
