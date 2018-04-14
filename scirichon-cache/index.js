@@ -120,6 +120,9 @@ const loadOne = async (category,uuid)=>{
 
 const getItemByCategoryAndUniqueName = async (category,unique_name)=>{
     let result = await get(category+delimiter+unique_name)
+    if(_.isEmpty(result)){
+        console.log(`cache hit missing with category ${category} and name ${unique_name}`)
+    }
     return result
 }
 
@@ -127,6 +130,9 @@ const getItemByCategoryAndID = async (category,uuid)=>{
     let result = await get(uuid)
     if(!result){
         result = await loadOne(category,uuid)
+    }
+    if(_.isEmpty(result)){
+        console.log(`cache hit missing with category ${category} and uuid ${uuid}`)
     }
     return result
 };
