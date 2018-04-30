@@ -34,16 +34,15 @@ const TokenName = 'token'
 const TokenUserName = 'token_user'
 const Delimiter = '&&&'
 
-const apiInvoker = function(method,url,path,params,body){
-    var options = {
+const apiInvoker = function(method,url,path,params,body,headers){
+    let options = {
         method: method,
         uri: url + path + (params?('?' + queryString.stringify(params)):''),
         body:body,
-        json: true,
-        headers: {
-        }
-    }
-    options.headers[TokenName] = InternalTokenId
+        json: true
+    },internal_token = {}
+    internal_token[TokenName]=InternalTokenId
+    options.headers = headers||internal_token
     return rp(options)
 }
 

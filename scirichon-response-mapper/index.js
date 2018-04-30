@@ -1,7 +1,7 @@
 'use strict';
 
 const _ = require('lodash')
-const schema = require('redis-json-schema')
+const schema = require('scirichon-json-schema')
 const scirichon_cache = require('scirichon-cache')
 const common = require('scirichon-common')
 
@@ -67,4 +67,6 @@ const referencedObjectMapper = async (val,params)=>{
     return val
 }
 
-module.exports = {referencedObjectMapper}
+const initialize = scirichon_cache.initialize
+
+module.exports = {referencedObjectMapper,initialize}

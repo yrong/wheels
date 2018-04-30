@@ -1,0 +1,17 @@
+{
+  "name": "scirichon-json-schema-init",
+  "version": "1.0.2-beta.1",
+  "bin": {
+    "initSchema": "index.js"
+  },
+  "author": "Ronyang <yrong1997@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "config": "^1.25.1",
+    "elasticsearch": "^12.1.3",
+    "lodash": "^4.17.4",
+    "scirichon-json-schema": "1.0.2-beta.4",
+    "neo4j-driver": "^1.5.0",
+    "parse-neo4j-fork": "^0.6.10"
+  }
+}

@@ -3,7 +3,7 @@ const rp = require('request-promise')
 const queryString = require('querystring')
 const RedisCache = require("node-cache-redis-fork")
 const common = require('scirichon-common')
-const scirichon_schema = require('redis-json-schema')
+const scirichon_schema = require('scirichon-json-schema')
 const uuid_validator = require('uuid-validate')
 const delimiter = common.Delimiter
 const config = require('config')
@@ -86,7 +86,11 @@ const loadAll = async ()=>{
     await flushAll()
     for(let category in cache_loadUrl){
         load_url = cache_loadUrl[category]
-        result = await common.apiInvoker('GET',load_url,'',{'original':true})
+        try{
+            result = await common.apiInvoker('GET',load_url,'',{'original':true})
+        }catch(err){
+            console.log(`load err:${err.stack||err}`)
+        }
         result = result.data||result
         if(result.length){
             results = results.concat(result)
