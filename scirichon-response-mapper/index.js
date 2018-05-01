@@ -67,6 +67,46 @@ const referencedObjectMapper = async (val,params)=>{
     return val
 }
 
+const parse2JsonObject = async (val,params)=>{
+    let properties = schema.getSchemaProperties(val.category||params.category)
+    for (let key in val) {
+        if (val[key] && properties[key]) {
+            if (properties[key].type === 'object' || (properties[key].type === 'array' && properties[key].items.type === 'object')) {
+                if (_.isString(val[key])) {
+                    try{
+                        val[key] = JSON.parse(val[key])
+                    }catch(err){
+                        //ignore
+                    }
+                }
+            }
+        }
+    }
+    return val
+}
+
+
+const resultMapper = async (val,params) => {
+    val = await parse2JsonObject(val,params)
+    if(!params.original){
+        val = await referencedObjectMapper(val,params)
+    }
+    return val
+}
+
+const responseMapper = async (val, params, ctx) => {
+    let results = []
+    if (_.isArray(val)) {
+        for(let single of val){
+            results.push(await resultMapper(single,params))
+        }
+        val = results
+    }else{
+        val = await resultMapper(val,params)
+    }
+    return val
+}
+
 const initialize = scirichon_cache.initialize
 
-module.exports = {referencedObjectMapper,initialize}
+module.exports = {responseMapper,initialize}

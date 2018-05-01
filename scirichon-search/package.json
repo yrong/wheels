@@ -1,13 +1,16 @@
 {
-  "name": "scirichon-response-mapper",
-  "version": "1.0.2-beta.4",
+  "name": "scirichon-search",
+  "version": "1.0.0-beta.2",
   "main": "index.js",
   "author": "Ronyang <yrong1997@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "config": "^1.25.1",
+    "elasticsearch": "^12.1.3",
     "lodash": "^4.17.4",
     "scirichon-json-schema": "1.0.2-beta.4",
     "scirichon-common": "1.0.2-beta.8",
-    "scirichon-cache":"1.0.7-beta.2"
+    "scirichon-cache":"1.0.7-beta.2",
+    "scirichon-response-mapper":"1.0.2-beta.4"
   }
 }
