@@ -13,7 +13,11 @@ const exportItemsByCategory = async(category,exportDir)=>{
     let node_name = process.env['NODE_NAME'], base_url=common.getServiceApiUrl(node_name)
     let result = await common.apiInvoker('POST',base_url,'/api/searchByCypher',{original:true},{category,cypher:`MATCH (n) WHERE n:${category} RETURN n`})
     let items = result.data||result
-    items = _.map(items,(item)=>(_.omit(item,'id')))
+    items = _.map(items,(item)=>{
+        item = _.omit(item,'id')
+        item.category = category
+        return item
+    })
     if (items && items.length) {
         jsonfile.writeFileSync(path.join(exportDir, `${category}.json`), items, {spaces: 2});
     }

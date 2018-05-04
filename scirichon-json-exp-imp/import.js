@@ -134,8 +134,16 @@ const importItems = async ()=>{
                                 }
                             }
                             category = category==='OrderHistory'?'StatisticOrder':category
-                            cypher = `CREATE (n:${category}) SET n = {item}`
-                            await common.apiInvoker('POST',base_url,'/api/searchByCypher',{original:true},{category:item.category||category,item,cypher})
+                            cypher = `MERGE (n:${category}{uuid: {uuid}})
+                                    ON CREATE SET n = {item}
+                                    ON MATCH SET n = {item}`
+                            await common.apiInvoker('POST',base_url,'/api/searchByCypher',{original:true},{category,cypher,item,uuid:item.uuid})
+                            if(category==='Department'&&item.parent){
+                                cypher = `MATCH (n:Department{uuid: {uuid}})
+                                    MATCH (p:Department{uuid: {parent}})
+                                    MERGE (n)-[:MemberOf]->(p)`
+                                await common.apiInvoker('POST',base_url,'/api/searchByCypher',{original:true},{category,cypher,uuid:item.uuid,parent:item.parent})
+                            }
                         }else{
                             await addItem(item.category||category, item)
                         }
