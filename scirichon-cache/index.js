@@ -25,12 +25,9 @@ const initialize = async (option)=>{
         throw new Error('load schema failed')
     }
     _.each(schemas,(schema,category)=>{
-        if(schema.route){
-            service_url = common.getServiceApiUrl(process.env['SCHEMA_TYPE'])
-            cache_loadUrl[category] = `${service_url}/api${schema.route}`
-        }else if(schema.service&&schema.loadUrl){
+        if(schema.route&&schema.service){
             service_url = common.getServiceApiUrl(schema.service)
-            cache_loadUrl[category] = `${service_url}${schema.loadUrl}`
+            cache_loadUrl[category] = `${service_url}/api${schema.route}`
         }
     })
 }

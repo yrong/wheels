@@ -1,6 +1,6 @@
 {
   "name": "scirichon-search",
-  "version": "1.0.0-beta.3",
+  "version": "1.0.0-beta.4",
   "main": "index.js",
   "author": "Ronyang <yrong1997@gmail.com>",
   "license": "MIT",
@@ -10,7 +10,7 @@
     "lodash": "^4.17.4",
     "scirichon-json-schema": "1.0.2-beta.4",
     "scirichon-common": "1.0.2-beta.8",
-    "scirichon-cache":"1.0.7-beta.2",
-    "scirichon-response-mapper":"1.0.2-beta.4"
+    "scirichon-cache":"1.0.7-beta.3",
+    "scirichon-response-mapper":"1.0.2-beta.5"
   }
 }
