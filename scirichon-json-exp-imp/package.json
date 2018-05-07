@@ -1,6 +1,6 @@
 {
   "name": "scirichon-json-exp-imp",
-  "version": "1.0.0-beta.5",
+  "version": "1.0.0-beta.6",
   "bin": {
     "json-export": "export.js",
     "json-import": "import.js"
@@ -16,12 +16,12 @@
     "lodash": "^4.17.4",
     "mkdirp": "^0.5.1",
     "moment": "^2.13.0",
-    "scirichon-json-schema": "1.0.2-beta.4",
     "request": "^2.81.0",
     "request-promise": "^4.1.1",
-    "scirichon-cache": "1.0.7-beta.2",
+    "scirichon-json-schema": "1.0.2-beta.4",
+    "scirichon-cache": "1.0.7-beta.3",
     "scirichon-common": "1.0.2-beta.8",
-    "scirichon-search":"1.0.0-beta.2",
+    "scirichon-search":"1.0.0-beta.4",
     "uuid": "^3.0.0",
     "uuid-validate": "0.0.2"
   }

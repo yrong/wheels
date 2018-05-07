@@ -10,8 +10,6 @@ const scirichonSearch = require('scirichon-search')
 const common = require('scirichon-common')
 const scirichonCache = require('scirichon-cache')
 
-let base_url= common.getServiceApiUrl(process.env['NODE_NAME'])
-
 const wrapRequest = (category,item) => {
     return {data:{category:category,fields:item},batchImport:true,jsonImport:true}
 }
@@ -21,11 +19,11 @@ const isSchemaCrossed = (category1, category2)=>{
 }
 
 const getSortedCategories = ()=>{
-    let sortedCategories = []
+    let sortedCategories = ['Department','Role','User']
     if(process.env['NODE_NAME']==='vehicle') {
-        sortedCategories = ['Warehouse','Brand','Model','Style','Exterior','Interior','Order','Vehicle','VehicleTrans']
+        sortedCategories = sortedCategories.concat(['Warehouse','Brand','Model','Style','Exterior','Interior','CompoundModel','Order','Vehicle','VehicleTrans','StatisticOrder'])
     }else if(process.env['NODE_NAME']==='cmdb'){
-        sortedCategories = ['ServerRoom','Cabinet','WareHouse','Shelf','ITServiceGroup','ITService','ConfigurationItem','ProcessFlow']
+        sortedCategories = sortedCategories.concat(['ServerRoom','Cabinet','WareHouse','Shelf','ITServiceGroup','ITService','ConfigurationItem','ProcessFlow'])
     }
     return sortedCategories
 }
@@ -69,9 +67,10 @@ const itemPreprocess = (item)=>{
 
 const addItem = async (category,item,update)=>{
     let category_schema = scirichonSchema.getAncestorSchema(category),method='POST',uri,
-        route = category_schema&&category_schema.route
+        route = category_schema&&category_schema.route,base_url
     if(!route)
         throw new Error(`${category} api route not found`)
+    base_url = common.getServiceApiUrl(category_schema.service)
     uri = base_url  + '/api' + route
     if(update){
         method = 'PATCH'
@@ -95,17 +94,7 @@ const importItems = async ()=>{
         categories = [],result = {},filePath,errorFolder,errorFilePath,errorItems,items,schema_obj,index_name,objectFields
     if(!data_dir)
         throw new Error(`env 'IMPORT_FOLDER' not defined`)
-    categories.push('Department')
-    categories.push('Role')
-    categories.push('User')
-    if(process.env['NODE_NAME']==='vehicle') {
-        categories.push('CompoundModel')
-    }
-    categories = categories.concat(getSortedCategories())
-    if(process.env['NODE_NAME']==='vehicle'){
-        categories.push('OrderHistory')
-        categories.push('StatisticOrder')
-    }
+    categories = getSortedCategories()
     for(let category of categories){
         filePath = path.join(data_dir,category + '.json')
         errorFolder = path.join(data_dir,'exception')
@@ -120,33 +109,7 @@ const importItems = async ()=>{
                 try {
                     item = itemPreprocess(item)
                     if(importStrategy === 'api'){
-                        if (category==='StatisticOrder'||category==='OrderHistory'||category==='Department'||category==='User'||category==='Role'||category==='CompoundModel'){
-                            await scirichonCache.addItem(item)
-                            if(category==='StatisticOrder'||category==='OrderHistory'){
-                                await scirichonSearch.addOrUpdateItem(item,false,true)
-                            }else{
-                                await scirichonSearch.addOrUpdateItem(item)
-                            }
-                            objectFields=scirichonSchema.getSchemaObjectProperties(category)
-                            for (let key of objectFields) {
-                                if (_.isObject(item[key])) {
-                                    item[key] = JSON.stringify(item[key])
-                                }
-                            }
-                            category = category==='OrderHistory'?'StatisticOrder':category
-                            cypher = `MERGE (n:${category}{uuid: {uuid}})
-                                    ON CREATE SET n = {item}
-                                    ON MATCH SET n = {item}`
-                            await common.apiInvoker('POST',base_url,'/api/searchByCypher',{original:true},{category,cypher,item,uuid:item.uuid})
-                            if(category==='Department'&&item.parent){
-                                cypher = `MATCH (n:Department{uuid: {uuid}})
-                                    MATCH (p:Department{uuid: {parent}})
-                                    MERGE (n)-[:MemberOf]->(p)`
-                                await common.apiInvoker('POST',base_url,'/api/searchByCypher',{original:true},{category,cypher,uuid:item.uuid,parent:item.parent})
-                            }
-                        }else{
-                            await addItem(item.category||category, item)
-                        }
+                        await addItem(item.category||category, item)
                     }
                     else if(importStrategy === 'search'){
                         if(category==='StatisticOrder'||category==='OrderHistory'){

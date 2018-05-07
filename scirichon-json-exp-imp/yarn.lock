@@ -607,9 +607,9 @@ safe-buffer@^5.0.1, safe-buffer@^5.1.1:
   version "5.1.2"
   resolved "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.1.2.tgz#991ec69d296e0313747d59bdfd2b745c35f8828d"
 
-scirichon-cache@1.0.7-beta.2:
-  version "1.0.7-beta.2"
-  resolved "https://registry.npmjs.org/scirichon-cache/-/scirichon-cache-1.0.7-beta.2.tgz#125fc943c303bb8c28c4cdf3d2f15a8f35a5c926"
+scirichon-cache@1.0.7-beta.3:
+  version "1.0.7-beta.3"
+  resolved "https://registry.npmjs.org/scirichon-cache/-/scirichon-cache-1.0.7-beta.3.tgz#3071e1a2d2598cf102eecf8da5f60a2c64bac2cb"
   dependencies:
     config "^1.25.1"
     lodash "^4.17.4"
@@ -647,26 +647,26 @@ scirichon-json-schema@1.0.2-beta.4:
     redis "^2.8.0"
     redis-crud-fork "1.0.0-beta.8"
 
-scirichon-response-mapper@1.0.2-beta.4:
-  version "1.0.2-beta.4"
-  resolved "https://registry.npmjs.org/scirichon-response-mapper/-/scirichon-response-mapper-1.0.2-beta.4.tgz#e35e8ec364ac415f179af667030ddc48f85e4de1"
+scirichon-response-mapper@1.0.2-beta.5:
+  version "1.0.2-beta.5"
+  resolved "https://registry.npmjs.org/scirichon-response-mapper/-/scirichon-response-mapper-1.0.2-beta.5.tgz#84e51e35a1da959eff213919c1e21ebebac428f7"
   dependencies:
     lodash "^4.17.4"
-    scirichon-cache "1.0.7-beta.2"
+    scirichon-cache "1.0.7-beta.3"
     scirichon-common "1.0.2-beta.8"
     scirichon-json-schema "1.0.2-beta.4"
 
-scirichon-search@1.0.0-beta.2:
-  version "1.0.0-beta.2"
-  resolved "https://registry.npmjs.org/scirichon-search/-/scirichon-search-1.0.0-beta.2.tgz#e9b3d4256ef938421e4bd0f5da7ecd9a49aebd4a"
+scirichon-search@1.0.0-beta.4:
+  version "1.0.0-beta.4"
+  resolved "https://registry.npmjs.org/scirichon-search/-/scirichon-search-1.0.0-beta.4.tgz#c08439af06c122dc4a6d005b3d30e6a9fa9cf089"
   dependencies:
     config "^1.25.1"
     elasticsearch "^12.1.3"
     lodash "^4.17.4"
-    scirichon-cache "1.0.7-beta.2"
+    scirichon-cache "1.0.7-beta.3"
     scirichon-common "1.0.2-beta.8"
     scirichon-json-schema "1.0.2-beta.4"
-    scirichon-response-mapper "1.0.2-beta.4"
+    scirichon-response-mapper "1.0.2-beta.5"
 
 semver@^5.3.0:
   version "5.5.0"
