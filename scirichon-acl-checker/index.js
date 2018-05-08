@@ -18,6 +18,9 @@ const needCheck = (ctx)=>{
     else if(ctx.method ==='POST' && (ctx.path.includes('/search')||ctx.path.includes('/members'))){
         return false
     }
+    else if(ctx.method ==='DELETE' && (ctx.path.includes('/hidden'))){
+        return false
+    }
     return true
 }
 

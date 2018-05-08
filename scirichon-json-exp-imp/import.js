@@ -19,13 +19,33 @@ const isSchemaCrossed = (category1, category2)=>{
 }
 
 const getSortedCategories = ()=>{
-    let sortedCategories = ['Department','Role','User']
-    if(process.env['NODE_NAME']==='vehicle') {
-        sortedCategories = sortedCategories.concat(['Warehouse','Brand','Model','Style','Exterior','Interior','CompoundModel','Order','Vehicle','VehicleTrans','StatisticOrder'])
-    }else if(process.env['NODE_NAME']==='cmdb'){
-        sortedCategories = sortedCategories.concat(['ServerRoom','Cabinet','WareHouse','Shelf','ITServiceGroup','ITService','ConfigurationItem','ProcessFlow'])
+    let schemas = scirichonSchema.getApiRouteSchemas(),sortedCategories
+    for(let schema of schemas){
+        setSchemaOrder(schema.id)
     }
+    schemas = _.sortBy(schemas, ['order'])
+    sortedCategories = _.map(schemas,(schema)=>schema.id)
     return sortedCategories
+}
+
+const setSchemaOrder = (category)=>{
+    let schema = scirichonSchema.getSchema(category),ref_schema,ref_order,max_ref_order=0
+    if(!schema.order){
+        refs = scirichonSchema.getSchemaRefProperties(schema.id)
+        if(refs.length){
+            for(let ref of refs){
+                if(ref.schema===schema.id)
+                    continue
+                ref_schema = scirichonSchema.getSchema(ref.schema)
+                ref_order = setSchemaOrder(ref_schema.id)
+                max_ref_order = ref_order>max_ref_order?ref_order:max_ref_order
+            }
+            schema.order = max_ref_order+1
+        }else{
+            schema.order = 1
+        }
+    }
+    return schema.order
 }
 
 const sortItemsDependentFirst = (items)=>{
