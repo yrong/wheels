@@ -29,14 +29,19 @@ const getSortedCategories = ()=>{
 }
 
 const setSchemaOrder = (category)=>{
-    let schema = scirichonSchema.getSchema(category),ref_schema,ref_order,max_ref_order=0
+    let schema = scirichonSchema.getSchema(category),ref_schema,ref_order,max_ref_order=0,refs
     if(!schema.order){
         refs = scirichonSchema.getSchemaRefProperties(schema.id)
         if(refs.length){
             for(let ref of refs){
+                if(!ref.schema)
+                    throw new Error(`${category} reference field not valid,${JSON.stringify(ref)}`)
                 if(ref.schema===schema.id)
                     continue
                 ref_schema = scirichonSchema.getSchema(ref.schema)
+                if(!ref_schema){
+                    throw new Error(`${category} reference field not valid,${JSON.stringify(ref)}`)
+                }
                 ref_order = setSchemaOrder(ref_schema.id)
                 max_ref_order = ref_order>max_ref_order?ref_order:max_ref_order
             }
