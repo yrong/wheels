@@ -1,0 +1,96 @@
+const _ = require('lodash')
+const common = require('scirichon-common')
+const logger = require('log4js_wrapper').getLogger()
+const schema = require('scirichon-json-schema')
+const search = require('scirichon-search')
+const scirichon_cache = require('scirichon-cache')
+const requestHandler = require('./requestHandler')
+const cypherInvoker = require('../cypher/cypherInvoker')
+const requestPostHandler = require('./requestPostHandler')
+const hooks = require('./index')
+const hidden_fields = common.internalUsedFields
+
+const batchUpdate  = async(ctx,category,uuids,change_obj,removed)=>{
+    let cypher = `unwind {uuids} as uuid match (n:${category}) where n.uuid=uuid set `,script=``,old_obj, new_obj,objs=[]
+    for(let key in change_obj){
+        cypher += `n.${key}={${key}},`
+        script += `ctx._source.${key}=params.${key};`
+    }
+    cypher = cypher.substr(0,cypher.length-1)
+    if(removed){
+        cypher += ` remove `
+        for(let key of removed){
+            cypher += `n.${key},`
+            script += `ctx._source.remove("${key}");`
+        }
+        cypher = cypher.substr(0,cypher.length-1)
+    }
+    await cypherInvoker.executeCypher(ctx, cypher, _.assign({uuids},change_obj))
+    let index = requestHandler.getIndexByCategory(category)
+    if(index) {
+        await search.batchUpdate(index, uuids, {script: {inline: script, params: change_obj}})
+    }
+    for (let uuid of uuids) {
+        old_obj = await scirichon_cache.getItemByCategoryAndID(category, uuid)
+        if (!_.isEmpty(old_obj)) {
+            new_obj = _.assign({}, old_obj, change_obj)
+            if (removed) {
+                new_obj = _.omit(new_obj, removed)
+            }
+            await scirichon_cache.addItem(new_obj)
+        }
+        objs.push({uuid,old_obj,new_obj})
+    }
+    let needNotify = requestPostHandler.needNotify({category},ctx)
+    if(needNotify) {
+        let notifications = [], notification_url = common.getServiceApiUrl('notifier'),
+            notification = {user: ctx[common.TokenUserName], source: process.env['NODE_NAME'], action: 'UPDATE'}
+        for (let obj of objs) {
+            notification.type = category
+            notification.update = change_obj
+            notification.new = obj.new_obj
+            notification.old = obj.old_obj
+            notifications.push(notification)
+        }
+        await common.apiInvoker('POST', notification_url, '/api/notifications/batch', '', notifications)
+    }
+}
+
+const batchAdd  = async(ctx,category,entries)=>{
+    let items = _.map(entries,(entry)=>entry.fields)
+    let cypher = `unwind {items} as item create (n:${category}) set n=item`
+    await cypherInvoker.executeCypher(ctx, cypher, {items: items})
+    let index = requestHandler.getIndexByCategory(category)
+    if(index){
+        await search.batchCreate(index,entries)
+    }
+    for(let item of entries){
+        await scirichon_cache.addItem(_.omit(item,hidden_fields))
+    }
+    let needNotify = requestPostHandler.needNotify({category},ctx)
+    if(needNotify){
+        let notifications = [],notification_url = common.getServiceApiUrl('notifier'),
+            notification = {user:ctx[common.TokenUserName],source:process.env['NODE_NAME'],action:'CREATE'}
+        for(let item of entries){
+            notification.type = item.category
+            notification.new = _.omit(item,hidden_fields)
+            notifications.push(notification)
+        }
+        await common.apiInvoker('POST',notification_url,'/api/notifications/batch','',notifications)
+    }
+}
+
+const batchAddProcessor = async (params,ctx)=>{
+    let entries = params.data.fields,category = params.data.category,processed_entries=[]
+    for(let entry of entries){
+        entry.category = category
+        schema.checkObject(category,entry)
+        requestHandler.fieldsChecker(entry)
+        entry = await hooks.cudItem_preProcess(entry,ctx)
+        processed_entries.push(entry)
+    }
+    await batchAdd(ctx,category,processed_entries)
+    return _.map(processed_entries,(entry)=>{return entry.uuid})
+}
+
+module.exports = {batchAdd,batchUpdate,batchAddProcessor}
