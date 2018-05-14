@@ -74,7 +74,7 @@ module.exports = {
     },
     customizedQueryItems_preProcess:(params,ctx)=>{
         if(params.cypherQueryFile){
-            params.cypher = fs.readFileSync(path.resolve(__dirname,'../cypher/'+params.cypherQueryFile + '.cyp'), "utf8")
+            params.cypher = fs.readFileSync(path.resolve('./cypher/'+params.cypherQueryFile + '.cyp'), "utf8")
         }
         requestHandler.logCypher(params)
         return params
