@@ -267,7 +267,7 @@ const generateCypher = async(params,ctx)=>{
 }
 
 const handleRequest = async (params, ctx)=>{
-    params = common.pruneEmpty(params)
+    // params = common.pruneEmpty(params)
     await assignFields(params,ctx)
     await generateCypher(params,ctx)
     return params
