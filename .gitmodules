@@ -19,9 +19,6 @@
 [submodule "koa-token-checker"]
 	path = koa-token-checker
 	url = https://github.com/yrong/koa-token-checker
-[submodule "koa-neo4j-fork"]
-	path = koa-neo4j-fork
-	url = https://github.com/yrong/koa-neo4j
 [submodule "async-busboy-fork"]
 	path = async-busboy-fork
 	url = https://github.com/yrong/async-busboy
@@ -58,3 +55,6 @@
 [submodule "koa-file-upload-all-in-one"]
 	path = koa-file-upload-all-in-one
 	url = https://github.com/yrong/koa-file-upload-all-in-one
+[submodule "koa-neo4j-monitor"]
+	path = koa-neo4j-monitor
+	url = https://github.com/yrong/koa-neo4j-monitor
