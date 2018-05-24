@@ -57,8 +57,17 @@ const batchUpdate  = async(ctx,category,uuids,change_obj,removed)=>{
 }
 
 const batchAdd  = async(ctx,category,entries)=>{
+    for(let item of entries){
+        let handlers = hooks.getHandlers(),customizedHandler = handlers&&handlers[category]
+        if(customizedHandler){
+            if(item.procedure&&item.procedure.ignoreCustomizedHandler) {
+            }else{
+                await customizedHandler.postProcess(item, ctx)
+            }
+        }
+    }
     let items = _.map(entries,(entry)=>entry.fields)
-    let cypher = `unwind {items} as item create (n:${category}) set n=item`
+    let cypher = `unwind {items} as item merge (n:${category} {uuid:item.uuid}) on create set n=item on match set n=item`
     await cypherInvoker.executeCypher(ctx, cypher, {items: items})
     let index = requestHandler.getIndexByCategory(category)
     if(index){
@@ -81,16 +90,18 @@ const batchAdd  = async(ctx,category,entries)=>{
 }
 
 const batchAddProcessor = async (params,ctx)=>{
-    let entries = params.data.fields,category = params.data.category,processed_entries=[]
+    let entries = params.data.fields,category = params.data.category,item,items=[],result
     for(let entry of entries){
-        entry.category = category
         schema.checkObject(category,entry)
         requestHandler.fieldsChecker(entry)
-        entry = await hooks.cudItem_preProcess(entry,ctx)
-        processed_entries.push(entry)
+        item={category,data:{category}}
+        item.data.fields = entry
+        item.procedure = params.procedure
+        item = await hooks.cudItem_preProcess(item,ctx)
+        items.push(item)
     }
-    await batchAdd(ctx,category,processed_entries)
-    return _.map(processed_entries,(entry)=>{return entry.uuid})
+    await batchAdd(ctx,category,items)
+    return _.map(items,(item)=>{return item.uuid})
 }
 
 module.exports = {batchAdd,batchUpdate,batchAddProcessor}

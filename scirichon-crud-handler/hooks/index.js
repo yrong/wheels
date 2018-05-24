@@ -20,17 +20,27 @@ module.exports = {
     setHandlers : function(handlers){
         customizedHandlers = handlers
     },
+    getHandlers : function(){
+        return customizedHandlers
+    },
     cudItem_preProcess: async function (params, ctx) {
         params = await requestHandler.handleRequest(params,ctx)
         let customizedHandler = customizedHandlers[params.category]
-        if(customizedHandler&&!params.jsonImport)
-            params = await customizedHandler.preProcess(params,ctx)
+        if(customizedHandler){
+            if(params.procedure&&params.procedure.ignoreCustomizedHandler){
+            }else{
+                params = await customizedHandler.preProcess(params,ctx)
+            }
+        }
         return params
     },
     cudItem_postProcess:async function (result,params,ctx) {
         let customizedHandler = customizedHandlers[params.category]
-        if(customizedHandler&&!params.jsonImport){
-            params = await customizedHandler.postProcess(params, ctx)
+        if(customizedHandler){
+            if(params.procedure&&params.procedure.ignoreCustomizedHandler) {
+            }else{
+                params = await customizedHandler.postProcess(params, ctx)
+            }
         }
         if(ctx.method==='POST'||ctx.method==='PUT'||ctx.method==='PATCH'){
             await Promise.all([requestPostHandler.updateCache(params,ctx),requestPostHandler.updateSearch(params,ctx),requestPostHandler.addNotification(params,ctx)]).catch((e)=>{

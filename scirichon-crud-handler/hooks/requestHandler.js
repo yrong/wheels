@@ -182,10 +182,13 @@ const assignFields4CreateOrUpdate = async (params,ctx)=>{
         params.fields.lastUpdated = params.fields.lastUpdated || Date.now()
         await generateDynamicSeqField(params, ctx)
         await generateUniqueNameFieldAndCompoundModel(params, ctx)
-        if(params.fields.unique_name && !(params.jsonImport)){
-            let obj = await scirichon_cache.getItemByCategoryAndUniqueName(params.category,params.fields.unique_name)
-            if(!_.isEmpty(obj)){
-                throw new ScirichonError(`${params.category}存在名为"${params.fields.unique_name}"的同名对象`)
+        if(params.procedure&&params.procedure.ignoreUniqueCheck) {
+        }else{
+            if(params.fields.unique_name){
+                let obj = await scirichon_cache.getItemByCategoryAndUniqueName(params.category,params.fields.unique_name)
+                if(!_.isEmpty(obj)){
+                    throw new ScirichonError(`${params.category}存在名为"${params.fields.unique_name}"的同名对象`)
+                }
             }
         }
     } else if (ctx.method === 'PUT' || ctx.method === 'PATCH') {

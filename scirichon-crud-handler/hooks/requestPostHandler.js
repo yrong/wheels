@@ -9,7 +9,7 @@ const hidden_fields = common.internalUsedFields
 const needNotify = (params,ctx)=>{
     if(ctx.deleteAll || ctx.headers[common.TokenName] === common.InternalTokenId)
         return false
-    if(params.jsonImport)
+    if(params.procedure&&params.procedure.ignoreNotification)
         return false
     let schema_obj = schema.getAncestorSchema(params.category)
     if(schema_obj&&schema_obj.notification)
@@ -52,7 +52,7 @@ const addNotification = async (params,ctx)=>{
                 notification.additional = notification_subscriber.additional
             }
         }
-        await common.apiInvoker('POST',`http://${config.get('privateIP')||'localhost'}:${config.get('notifier.port')}`,'/api/notifications','',notification)
+        await common.apiInvoker('POST',common.getServiceApiUrl('notifier'),'/api/notifications','',notification)
     }
 }
 
