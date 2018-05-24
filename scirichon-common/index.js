@@ -79,7 +79,7 @@ const getServiceApiUrl = (serviceName)=>{
     return `http://${serviceIP}:${servicePort}`
 }
 
-const internalUsedFields = ['fields', 'cyphers', 'cypher', 'data', 'token', 'fields_old', 'change', '_id', '_index', '_type','user','id','method']
+const internalUsedFields = ['fields', 'cyphers', 'cypher', 'data', 'token', 'fields_old', 'change', '_id', '_index', '_type','user','id','method','procedure']
 
 
 module.exports = {buildQueryCondition,apiInvoker,pruneEmpty,ScirichonError,ScirichonWarning,isLegacyUserId,buildCompoundKey,

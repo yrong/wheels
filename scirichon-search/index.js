@@ -61,7 +61,7 @@ const deleteAll = async function() {
 
 const searchItem = async (params, ctx)=> {
     let query = params.uuid?`uuid:${params.uuid}`:(params.keyword?params.keyword:'*');
-    let _source = params._source?params._source.split(','):true;
+    let _source = params.source?params.source:true;
     let params_pagination = {"from":0,"size":config.get('perPageSize')},from;
     if(params.page&&params.per_page){
         from = (String)((parseInt(params.page)-1) * parseInt(params.per_page));

@@ -11,7 +11,7 @@ const common = require('scirichon-common')
 const scirichonCache = require('scirichon-cache')
 
 const wrapRequest = (category,item) => {
-    return {data:{category:category,fields:item},batchImport:true,jsonImport:true}
+    return {data:{category:category,fields:item},procedure:{ignoreNotification:true,ignoreUniqueCheck:true,ignoreCustomizedHandler:true}}
 }
 
 const isSchemaCrossed = (category1, category2)=>{
