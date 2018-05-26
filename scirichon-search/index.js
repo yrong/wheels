@@ -82,7 +82,6 @@ const searchItem = async (params, ctx)=> {
         _source:_source
     },queryObj,params_pagination)
     let result = await es_client.search(searchObj)
-    console.log(`search in es:${JSON.stringify({body:searchObj,result},null,'\t')}`)
     result = await esMapper.esResponseMapper(result,params,ctx)
     return result
 }
