@@ -1,6 +1,6 @@
 {
   "name": "scirichon-token-checker",
-  "version": "1.0.1-beta.3",
+  "version": "1.0.1-beta.4",
   "main": "index.js",
   "author": "Ronyang <yrong1997@gmail.com>",
   "license": "MIT",
@@ -9,6 +9,6 @@
     "lodash": "^4.17.4",
     "request": "^2.81.0",
     "request-promise": "^4.1.1",
-    "scirichon-common": "1.0.2-beta.8"
+    "scirichon-common": "1.0.3-beta.1"
   }
 }

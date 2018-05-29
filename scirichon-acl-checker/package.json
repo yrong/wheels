@@ -1,6 +1,6 @@
 {
   "name": "scirichon-acl-checker",
-  "version": "1.0.2-beta.3",
+  "version": "1.0.2-beta.4",
   "main": "index.js",
   "author": "Ronyang <yrong1997@gmail.com>",
   "license": "MIT",
@@ -8,6 +8,6 @@
     "lodash": "^4.17.4",
     "redis": "^2.8.0",
     "acl-fork":"0.4.10-beta.3",
-    "scirichon-common": "1.0.2-beta.8"
+    "scirichon-common": "1.0.3-beta.1"
   }
 }

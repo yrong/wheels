@@ -75,7 +75,7 @@ const buildCompoundKey = (fields,value) => {
 }
 
 const getServiceApiUrl = (serviceName)=>{
-    let service = config.get(serviceName),serviceIP=service.ip||'localhost',servicePort=service.port
+    let service = config.get(serviceName),serviceIP=service.host||'localhost',servicePort=service.port
     return `http://${serviceIP}:${servicePort}`
 }
 

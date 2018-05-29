@@ -4,6 +4,7 @@ const elasticsearch = require('elasticsearch')
 const esConfig = config.get('elasticsearch')
 const es_client = new elasticsearch.Client({
     host: (process.env['ES_HOST']||esConfig.host) + ":" + esConfig.port,
+    httpAuth:esConfig.user +":" + esConfig.password,
     requestTimeout: esConfig.requestTimeout
 })
 const scirionCommon = require('scirichon-common')

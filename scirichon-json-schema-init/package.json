@@ -1,6 +1,6 @@
 {
   "name": "scirichon-json-schema-init",
-  "version": "1.0.2-beta.1",
+  "version": "1.0.2-beta.2",
   "bin": {
     "initSchema": "index.js"
   },
