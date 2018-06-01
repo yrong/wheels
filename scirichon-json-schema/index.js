@@ -4,68 +4,29 @@ const ajv = new Ajv({ useDefaults: true })
 const Redis = require('redis')
 const Model = require('redis-crud-fork')
 
-let allSchemas={},dereferencedSchemas = {},schemaRelations={},SchemaModel,additionalPropertyCheck
-
 const initialize = (option)=>{
     if(!option.redisOption||!option.prefix){
         throw new Error('required option field missing when initialize schema:' + JSON.stringify(option))
     }
-    let client = Redis.createClient(_.assign({db:option.redisOption.dbindex||1},option.redisOption))
-    SchemaModel = Model(client,option.prefix)
-    additionalPropertyCheck = option.additionalPropertyCheck
+    global._scirichonSchemaModel = Model(Redis.createClient(_.assign({db:option.redisOption.dbindex||1},option.redisOption)),option.prefix)
+    global._additionalPropertyCheck = option.additionalPropertyCheck
+    global._scirichonSchema = {}
+    global._scirichonSchemaRelation = {}
+    global._scirichonSchemaDereferenced = {}
 }
 
 const persitSchema = async (schema)=>{
-    await SchemaModel.insert(schema)
+    await global._scirichonSchemaModel.insert(schema)
 }
 
 const clearSchemas = async ()=>{
-    await SchemaModel.deleteAll()
+    await global._scirichonSchemaModel.deleteAll()
 }
 
 const checkSchema = (schema)=>{
     if(_.isEmpty(schema)||_.isEmpty(schema.id)){
         throw new Error('schema not valid:' + JSON.stringify(schema))
     }
-}
-
-const buildSchemaRelation = (schema)=>{
-    _.each(schema.allOf,(parent)=>{
-        if(parent['$ref']){
-            schemaRelations[parent['$ref']] = schemaRelations[parent['$ref']]||{}
-            schemaRelations[parent['$ref']]['children'] = schemaRelations[parent['$ref']]['children']||[]
-            schemaRelations[parent['$ref']]['children'].push(schema.id)
-        }
-    })
-}
-
-const loadSchema = async (schema, dereference=true, persistance=true)=>{
-    checkSchema(schema)
-    ajv.removeSchema(schema.id)
-    ajv.addSchema(schema)
-    if(persistance)
-        await persitSchema(schema)
-    allSchemas[schema.id] = schema
-    buildSchemaRelation(schema)
-    if(dereference)
-        dereferencedSchemas[schema.id]=dereferenceSchema(schema.id)
-}
-
-const loadSchemas = async (option)=>{
-    if(option)
-        initialize(option)
-    let schemas = await SchemaModel.findAll(),schema
-    if(!schemas.length){
-        throw new Error('no schemas found')
-    }
-    for(let schema of schemas){
-        await loadSchema(schema,false,false)
-    }
-    for(let schema of schemas){
-        schema = dereferenceSchema(schema.id)
-        dereferencedSchemas[schema.id]=schema
-    }
-    return schemas
 }
 
 const _getSchema = function (category) {
@@ -92,6 +53,41 @@ const dereferenceSchema = function (category) {
     return schema;
 }
 
+const loadSchema = async (schema, dereference=true, persistance=true)=>{
+    checkSchema(schema)
+    ajv.removeSchema(schema.id)
+    ajv.addSchema(schema)
+    if(persistance)
+        await persitSchema(schema)
+    global._scirichonSchema[schema.id] = schema
+    _.each(schema.allOf,(parent)=>{
+        if(parent['$ref']){
+            global._scirichonSchemaRelation[parent['$ref']] = global._scirichonSchemaRelation[parent['$ref']]||{}
+            global._scirichonSchemaRelation[parent['$ref']]['children'] = global._scirichonSchemaRelation[parent['$ref']]['children']||[]
+            global._scirichonSchemaRelation[parent['$ref']]['children'].push(schema.id)
+        }
+    })
+    if(dereference)
+        global._scirichonSchemaDereferenced[schema.id]=dereferenceSchema(schema.id)
+}
+
+const loadSchemas = async (option)=>{
+    if(option)
+        initialize(option)
+    let schemas = await global._scirichonSchemaModel.findAll(),schema
+    if(!schemas.length){
+        throw new Error('no schemas found')
+    }
+    for(let schema of schemas){
+        await loadSchema(schema,false,false)
+    }
+    for(let schema of schemas){
+        schema = dereferenceSchema(schema.id)
+        global._scirichonSchemaDereferenced[schema.id]=schema
+    }
+    return schemas
+}
+
 const traverseSchemaProperties = (schema,properties)=>{
     if(schema.properties){
         _.assign(properties,schema.properties)
@@ -109,7 +105,7 @@ const traverseSchemaProperties = (schema,properties)=>{
 }
 
 const getSchemaProperties = (category)=>{
-    let schema = dereferencedSchemas[category]
+    let schema = global._scirichonSchemaDereferenced[category]
     if(!schema){
         throw new Error(`${category} schema not found`)
     }
@@ -133,7 +129,7 @@ const traverseParentSchema = (schema,parents)=>{
 
 const getParentCategories = (category) => {
     let labels = [category]
-    let schema = dereferencedSchemas[category]
+    let schema = global._scirichonSchemaDereferenced[category]
     if(!schema){
         throw new Error(`${category} schema not found`)
     }
@@ -180,16 +176,6 @@ const getSchemaObjectProperties = (category)=>{
     return objectFields
 }
 
-const checkObject = function (category,object) {
-    var valid = ajv.validate(category,object);
-    if(!valid){
-        throw new Error(ajv.errorsText());
-    }
-    if(additionalPropertyCheck)
-        checkAdditionalProperty(category,object)
-    return valid;
-}
-
 const checkAdditionalProperty = function(category,object){
     let properties = getSchemaProperties(category)
     for (let key in object){
@@ -199,12 +185,22 @@ const checkAdditionalProperty = function(category,object){
     }
 }
 
+const checkObject = function (category,object) {
+    var valid = ajv.validate(category,object);
+    if(!valid){
+        throw new Error(ajv.errorsText());
+    }
+    if(global._additionalPropertyCheck)
+        checkAdditionalProperty(category,object)
+    return valid;
+}
+
 const getSchemaHierarchy = (category)=>{
     let result = {name:category}
-    if(schemaRelations[category]&&schemaRelations[category].children){
+    if(global._scirichonSchemaRelation[category]&&global._scirichonSchemaRelation[category].children){
         result.children = []
-        for(let child of schemaRelations[category].children){
-            if (schemaRelations[child]) {
+        for(let child of global._scirichonSchemaRelation[category].children){
+            if (global._scirichonSchemaRelation[child]) {
                 result.children.push(getSchemaHierarchy(child))
             }else{
                 result.children.push({name:child})
@@ -231,11 +227,11 @@ const getAncestorCategory = (category)=>{
 }
 
 const getSchema = (category)=>{
-    return allSchemas[category]
+    return global._scirichonSchema[category]
 }
 
 const getSchemas = ()=>{
-    return allSchemas
+    return global._scirichonSchema
 }
 
 const getAncestorSchema = (category)=>{
@@ -243,7 +239,7 @@ const getAncestorSchema = (category)=>{
 }
 
 const getApiRouteSchemas = ()=>{
-    return _.filter(allSchemas,(obj)=>{
+    return _.filter(global._scirichonSchema,(obj)=>{
         return !!obj.route
     })
 }
