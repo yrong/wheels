@@ -7,9 +7,13 @@ const common = require('scirichon-common')
 const ScirichonError = common.ScirichonError
 
 const needCheck = (ctx)=>{
-    if(ctx.method==='GET'&&!ctx.path.match(/api/i)){
+    if(ctx.headers[common.TokenName]==common.InternalTokenId){
         return false
-    }else if(ctx.headers[common.TokenName]==common.InternalTokenId){
+    }
+    else if(ctx.method==='GET'&&!ctx.path.match(/api/i)){
+        return false
+    }
+    else if(ctx.method ==='DELETE' && (ctx.path.includes('/hidden'))){
         return false
     }
     return true

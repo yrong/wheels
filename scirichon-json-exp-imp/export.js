@@ -24,14 +24,14 @@ const exportItemsByCategory = async(route_schema,exportDir)=>{
 }
 
 const exportItems = async ()=>{
-    let node_name = process.env['NODE_NAME'],categories,
+    let schema_type = process.env['SCHEMA_TYPE'],categories,
         redisOption = {host:`${process.env['REDIS_HOST']||config.get('redis.host')}`,port:config.get('redis.port')},
         timestamp = moment().format('YYYYMMDDHHmmss'),
-        json_export_dir = `runtime_data.${node_name}.json_export_dir`,
+        json_export_dir = `runtime_data.${schema_type}.json_export_dir`,
         exportDir = path.join((process.env['RUNTIME_PATH']||'../runtime') + config.get(json_export_dir), timestamp),
         routes,route,exported=[]
     mkdirp.sync(exportDir)
-    await schema.loadSchemas({redisOption,prefix:node_name})
+    await schema.loadSchemas({redisOption,prefix:schema_type})
     routes = schema.getApiRouteSchemas()
     for(route of routes){
         exported.push(route.id)

@@ -1,13 +1,13 @@
 'use strict';
 
 const _ = require('lodash')
-const schema = require('scirichon-json-schema')
+const scirichon_schema = require('scirichon-json-schema')
 const scirichon_cache = require('scirichon-cache')
-const common = require('scirichon-common')
+const scirichon_common = require('scirichon-common')
 
 const replaceId = async (category,key,val)=>{
-    if(_.isString(val[key])||common.isLegacyUserId(category,val[key])){
-        let obj = await scirichon_cache.getItemByCategoryAndID(schema.getAncestorCategory(category),val[key].toString())
+    if(_.isString(val[key])||scirichon_common.isLegacyUserId(category,val[key])){
+        let obj = await scirichon_cache.getItemByCategoryAndID(scirichon_schema.getAncestorCategory(category),val[key].toString())
         if(!_.isEmpty(obj)){
             val[key] = obj
         }
@@ -17,8 +17,8 @@ const replaceId = async (category,key,val)=>{
 const replaceIdArray = async (category,key,val)=>{
     let objs = []
     for(let id of val[key]){
-        if(_.isString(id)||common.isLegacyUserId(category,id)){
-            let obj = await scirichon_cache.getItemByCategoryAndID(schema.getAncestorCategory(category),id.toString())
+        if(_.isString(id)||scirichon_common.isLegacyUserId(category,id)){
+            let obj = await scirichon_cache.getItemByCategoryAndID(scirichon_schema.getAncestorCategory(category),id.toString())
             if(!_.isEmpty(obj)){
                 objs.push(obj)
             }
@@ -43,7 +43,7 @@ const replaceObj = async (val,props)=>{
 }
 
 const referencedObjectMapper = async (val,params)=>{
-    let properties = schema.getSchemaProperties(val.category||params.category),objs,obj
+    let properties = scirichon_schema.getSchemaProperties(val.category||params.category),objs,obj
     for (let key in val) {
         if (val[key] && properties[key]) {
             if(properties[key].type==='string'&&properties[key].schema){
@@ -68,7 +68,7 @@ const referencedObjectMapper = async (val,params)=>{
 }
 
 const parse2JsonObject = async (val,params)=>{
-    let properties = schema.getSchemaProperties(val.category||params.category)
+    let properties = scirichon_schema.getSchemaProperties(val.category||params.category)
     for (let key in val) {
         if (val[key] && properties[key]) {
             if (properties[key].type === 'object' || (properties[key].type === 'array' && properties[key].items.type === 'object')) {

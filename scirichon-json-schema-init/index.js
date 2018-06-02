@@ -14,7 +14,7 @@ const es_client = new elasticsearch.Client({
     httpAuth:esConfig.user +":" + esConfig.password,
     requestTimeout: esConfig.requestTimeout
 })
-const schema = require('scirichon-json-schema')
+const scirichonSchema = require('scirichon-json-schema')
 
 const executeCypher = (cql,params)=>{
     return new Promise((resolve, reject) => {
@@ -59,7 +59,7 @@ const initElasticSearchSchema = async ()=>{
 }
 
 const initNeo4jConstraints = async ()=>{
-    const schemas = schema.getSchemas()
+    const schemas = scirichonSchema.getSchemas()
     for(let category of _.keys(schemas)){
         let uniqueKeys = schemas[category].uniqueKeys
         if(uniqueKeys){
@@ -76,15 +76,15 @@ const initJsonSchema = async ()=>{
     let json_schema_dir = `./schema`
     let files = fs.readdirSync(json_schema_dir),schma_obj,
         redisOption = {host:`${process.env['REDIS_HOST']||config.get('redis.host')}`,port:config.get('redis.port')}
-    schema.initialize({redisOption,prefix:process.env['SCHEMA_TYPE']||process.env['NODE_NAME']})
+    scirichonSchema.initialize({redisOption,prefix:process.env['SCHEMA_TYPE']})
     for(let fileName of files){
         if(fileName.endsWith('.json')){
             schma_obj = JSON.parse(fs.readFileSync(json_schema_dir + '/' + fileName, 'utf8'))
-            schema.checkSchema(schma_obj)
-            await schema.persitSchema(schma_obj)
+            scirichonSchema.checkSchema(schma_obj)
+            await scirichonSchema.persitSchema(schma_obj)
         }
     }
-    await schema.loadSchemas()
+    await scirichonSchema.loadSchemas()
 }
 
 const initialize = async ()=>{
