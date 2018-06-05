@@ -7,7 +7,7 @@ const requestHandler = require('./requestHandler')
 const hidden_fields = common.internalUsedFields
 
 const needNotify = (params,ctx)=>{
-    if(ctx.deleteAll || ctx.headers[common.TokenName] === common.InternalTokenId)
+    if(ctx.headers[common.TokenName] === common.InternalTokenId)
         return false
     if(params.procedure&&params.procedure.ignoreNotification)
         return false
@@ -57,10 +57,6 @@ const addNotification = async (params,ctx)=>{
 }
 
 const updateCache = async (params,ctx)=>{
-    if (ctx.method === 'DELETE'&&ctx.deleteAll) {
-        await scirichon_cache.flushAll()
-        return
-    }
     if (ctx.method === 'POST') {
         await scirichon_cache.addItem(requestHandler.stringFields2Object(params.fields))
     }
@@ -74,10 +70,6 @@ const updateCache = async (params,ctx)=>{
 }
 
 const updateSearch = async (params,ctx)=>{
-    if (ctx.method === 'DELETE'&&ctx.deleteAll) {
-        await search.deleteAll()
-        return
-    }
     if(ctx.method==='POST'){
         let schema_obj = schema.getAncestorSchema(params.category)
         if(schema_obj&&schema_obj.search){

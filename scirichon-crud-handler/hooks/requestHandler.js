@@ -251,9 +251,6 @@ const generateCypher = async(params,ctx)=>{
         params.cypher = cypherBuilder.generateAddOrUpdateCyphers(params);
     }else if(ctx.method === 'DELETE'){
         params.cypher = cypherBuilder.generateDelNodeCypher(params)
-        if(ctx.deleteAll){
-            params.cypher = cypherBuilder.generateDelAllCypher()
-        }
     }else if(ctx.method === 'GET'){
         if(params.uuid){
             params.cypher = cypherBuilder.generateQueryNodeCypher(params)
@@ -270,7 +267,6 @@ const generateCypher = async(params,ctx)=>{
 }
 
 const handleRequest = async (params, ctx)=>{
-    // params = common.pruneEmpty(params)
     await assignFields(params,ctx)
     await generateCypher(params,ctx)
     return params

@@ -127,15 +127,16 @@ module.exports = (app)=>{
     if(process.env.NODE_ENV === 'development'){
         app.defineAPI({
             method: 'DEL',
-            route: '/api/items',
-            preProcess: hooks.cudItem_preProcess,
-            postProcess: hooks.cudItem_postProcess
+            route: '/hidden/clean',
+            procedure: hooks.clean
         })
     }
 
     /*license*/
-    app.router.get('/api/license', function (ctx, next) {
-        ctx.body = ctx.state.license
+    app.defineAPI({
+        method: 'GET',
+        route: '/api/license',
+        procedure: hooks.getLicense
     })
 
     /*member*/

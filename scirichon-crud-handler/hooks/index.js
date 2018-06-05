@@ -10,22 +10,22 @@ const cypherBuilder = require('../cypher/cypherBuilder')
 const requestHandler = require('./requestHandler')
 const cypherInvoker = require('../cypher/cypherInvoker')
 const requestPostHandler = require('./requestPostHandler')
-
-let customizedHandlers={}
+const cache = require('scirichon-cache')
+const search = require('scirichon-search')
 
 module.exports = {
     cypherInvoker,
     requestHandler,
     requestPostHandler,
     setHandlers : function(handlers){
-        customizedHandlers = handlers
+        global._scirichonHandlers = handlers
     },
     getHandlers : function(){
-        return customizedHandlers
+        return global._scirichonHandlers||{}
     },
     cudItem_preProcess: async function (params, ctx) {
         params = await requestHandler.handleRequest(params,ctx)
-        let customizedHandler = customizedHandlers[params.category]
+        let customizedHandler = global._scirichonHandlers&&global._scirichonHandlers[params.category]
         if(customizedHandler){
             if(params.procedure&&params.procedure.ignoreCustomizedHandler){
             }else{
@@ -35,7 +35,7 @@ module.exports = {
         return params
     },
     cudItem_postProcess:async function (result,params,ctx) {
-        let customizedHandler = customizedHandlers[params.category]
+        let customizedHandler = global._scirichonHandlers&&global._scirichonHandlers[params.category]
         if(customizedHandler){
             if(params.procedure&&params.procedure.ignoreCustomizedHandler) {
             }else{
@@ -49,7 +49,7 @@ module.exports = {
             })
         }
         if(ctx.method==='DELETE'){
-            if(!ctx.deleteAll&&(!result||(result.length!=1))){
+            if(!result||(result.length!=1)){
                 throw new ScirichonWarning('no record found')
             }
             await Promise.all([requestPostHandler.updateCache(params,ctx),requestPostHandler.updateSearch(params,ctx),requestPostHandler.addNotification(params,ctx)]).catch((e)=>{
@@ -160,6 +160,18 @@ module.exports = {
             }
         }
         return result
+    },
+    clean:async function(params, ctx) {
+        await cypherInvoker.executeCypher(ctx,cypherBuilder.generateDelAllCypher(params),params)
+        await cache.flushAll()
+        for(let fileName of fs.readdirSync('./search')){
+            if(fileName.endsWith('.json')){
+                await search.deleteAll(fileName.slice(0, -5))
+            }
+        }
+    },
+    getLicense:async function(params,ctx){
+        return ctx.state&&ctx.state.license||{}
     }
 }
 
