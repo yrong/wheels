@@ -34,7 +34,7 @@ module.exports = (app)=>{
                     case 'Add':
                         app.defineAPI({
                             method: 'POST',
-                            route: '/api'+val.route,
+                            route: val.route,
                             check:[fields_checker,schema_checker,es_checker],
                             preProcess: hooks.cudItem_preProcess,
                             postProcess: hooks.cudItem_postProcess
@@ -43,7 +43,7 @@ module.exports = (app)=>{
                     case 'Modify':
                         app.defineAPI({
                             method: 'PATCH',
-                            route: '/api'+val.route+'/:uuid',
+                            route: val.route+'/:uuid',
                             check:[fields_checker,es_checker],
                             preProcess: hooks.cudItem_preProcess,
                             postProcess: hooks.cudItem_postProcess
@@ -52,7 +52,7 @@ module.exports = (app)=>{
                     case 'Delete':
                         app.defineAPI({
                             method: 'DEL',
-                            route: '/api'+val.route+'/:uuid',
+                            route: val.route+'/:uuid',
                             check:[es_checker],
                             preProcess: hooks.cudItem_preProcess,
                             postProcess: hooks.cudItem_postProcess
@@ -60,7 +60,7 @@ module.exports = (app)=>{
                     case 'FindOne':
                         app.defineAPI({
                             method: 'GET',
-                            route: '/api'+val.route+'/:uuid',
+                            route: val.route+'/:uuid',
                             preProcess: hooks.queryItems_preProcess,
                             postProcess: hooks.queryItems_postProcess
                         })
@@ -68,7 +68,7 @@ module.exports = (app)=>{
                     case 'FindAll':
                         app.defineAPI({
                             method: 'GET',
-                            route: '/api'+val.route,
+                            route: val.route,
                             preProcess: hooks.queryItems_preProcess,
                             postProcess: hooks.queryItems_postProcess
                         })
@@ -76,7 +76,7 @@ module.exports = (app)=>{
                     case 'BatchAdd':
                         app.defineAPI({
                             method: 'POST',
-                            route: '/api'+val.route + '/batch',
+                            route: val.route + '/batch',
                             procedure:batchHandler.batchAddProcessor
                         })
                         break

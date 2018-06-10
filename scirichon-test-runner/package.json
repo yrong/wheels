@@ -1,6 +1,6 @@
 {
   "name": "scirichon-test-runner",
-  "version": "1.0.1-beta.2",
+  "version": "1.0.1-beta.3",
   "main": "index.js",
   "bin": {
     "loadtest": "runner.js"
@@ -11,7 +11,7 @@
     "config": "^1.25.1",
     "lodash": "^4.17.4",
     "loadtest": "^3.0.3",
-    "scirichon-json-schema": "1.0.2-beta.4",
-    "scirichon-common": "1.0.3-beta.1"
+    "scirichon-common": "1.0.3-beta.1",
+    "scirichon-json-schema": "1.0.2-beta.6"
   }
 }

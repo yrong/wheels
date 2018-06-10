@@ -91,12 +91,10 @@ const itemPreprocess = (item)=>{
 }
 
 const addItem = async (category,item,update)=>{
-    let category_schema = scirichonSchema.getAncestorSchema(category),method='POST',uri,
-        route = category_schema&&category_schema.route,base_url
-    if(!route)
-        throw new Error(`${category} api route not found`)
-    base_url = common.getServiceApiUrl(category_schema.service)
-    uri = base_url  + '/api' + route
+    let category_schema = scirichonSchema.getAncestorSchema(category),method='POST',uri
+    if(!category_schema||!category_schema.route||!category_schema.service)
+        throw new Error(`${category} api route not valid`)
+    uri = common.getServiceApiUrl(category_schema.service) + category_schema.route
     if(update){
         method = 'PATCH'
         uri = uri + "/" + item.uuid

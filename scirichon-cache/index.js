@@ -26,8 +26,7 @@ const initialize = async (option)=>{
     }
     _.each(schemas,(schema,category)=>{
         if(schema.route&&schema.service){
-            service_url = common.getServiceApiUrl(schema.service)
-            cache_loadUrl[category] = `${service_url}/api${schema.route}`
+            cache_loadUrl[category] = `${common.getServiceApiUrl(schema.service)}${schema.route}`
         }
     })
 }
@@ -79,7 +78,7 @@ const delItem = async (item)=>{
 }
 
 const loadAll = async ()=>{
-    let results = [],result,load_url
+    let result,load_url
     await flushAll()
     for(let category in cache_loadUrl){
         load_url = cache_loadUrl[category]
@@ -89,13 +88,13 @@ const loadAll = async ()=>{
             console.log(`load err:${err.stack||err}`)
         }
         result = result.data||result
-        if(result.length){
-            results = results.concat(result)
+        if(result&&result.length){
+            for (let item of result){
+                await addItem(item)
+            }
         }
     }
-    for (let item of results){
-        await addItem(item)
-    }
+
 }
 
 const loadOne = async (category,uuid)=>{

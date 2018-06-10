@@ -11,15 +11,15 @@ const common = require('scirichon-common')
 
 const exportItemsByCategory = async(route_schema,exportDir)=>{
     let base_url = common.getServiceApiUrl(route_schema.service)
-    let result = await common.apiInvoker('GET',base_url,`/api${route_schema.route}`,{original:true})
+    let result = await common.apiInvoker('GET',base_url,route_schema.route,{original:true})
     let items = result.data||result
-    items = _.map(items,(item)=>{
-        item = _.omit(item,'id')
-        item.category = item.category||route_schema.id
-        return item
-    })
-    if (items && items.length) {
-        jsonfile.writeFileSync(path.join(exportDir, `${route_schema.id}.json`), items, {spaces: 2});
+    if(items&&items.length){
+        items = _.map(items,(item)=>{
+            item = _.omit(item,'id')
+            item.category = item.category||route_schema.id
+            return item
+        })
+        jsonfile.writeFileSync(path.join(exportDir, `${route_schema.id}.json`), items, {spaces: 2})
     }
 }
 
