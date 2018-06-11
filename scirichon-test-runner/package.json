@@ -1,6 +1,6 @@
 {
   "name": "scirichon-test-runner",
-  "version": "1.0.1-beta.3",
+  "version": "1.0.1-beta.5",
   "main": "index.js",
   "bin": {
     "loadtest": "runner.js"

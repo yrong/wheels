@@ -17,7 +17,7 @@ const getCategoryItems = async (category)=> {
     if(!schema_obj||!schema_obj.route||!schema_obj.service)
         throw new Error(`${category} api route not found`)
     service_url = common.getServiceApiUrl(schema_obj.service)
-    result = await common.apiInvoker('GET', `${service_url}/api${schema_obj.route}`, '', {'original': true})
+    result = await common.apiInvoker('GET', `${service_url}${schema_obj.route}`, '', {'original': true})
     return _.map(result.data||result,(item)=>item.uuid)
 }
 
@@ -30,7 +30,7 @@ const batchAddItems = async(category,items)=>{
         if(!schema_obj||!schema_obj.route||!schema_obj.service)
             throw new Error(`${category} api route not found`)
         load_url= common.getServiceApiUrl(schema_obj.service)
-        load_url = load_url + '/api' + schema_obj.route + '/batch'
+        load_url = load_url + schema_obj.route + '/batch'
     }
     result = await common.apiInvoker(method,load_url,'','',wrapRequest(category,items))
     return result.data||result
