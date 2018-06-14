@@ -33,28 +33,70 @@ const executeCypher = (cql,params)=>{
 }
 
 const initElasticSearchSchema = async ()=>{
-    let es_schema_dir = `./search`,files = fs.readdirSync(es_schema_dir),categories=[]
-    for(let fileName of files){
-        if(fileName.endsWith('.json')){
-            categories.push(fileName.slice(0, -5))
+    const templateMapping =
+    {
+        "mappings": {
+            "doc": {
+                "dynamic_templates": [
+                    {
+                        "string_as_keyword": {
+                            "match_mapping_type": "string",
+                            "mapping": {
+                                "type": "keyword"
+                            }
+                        }
+                    },
+                    {
+                        "string_as_date": {
+                            "match_pattern": "regex",
+                            "match":   ".*date|.*time|created|lastUpdated",
+                            "mapping": {
+                                "type": "date"
+                            }
+                        }
+                    }
+                ]
+            }
         }
     }
-    let schema_promise = (category)=>{
-        return new Promise((resolve,reject)=>{
-            es_client.indices.delete({index:[category]},(err)=>{
-                es_client.indices.create({index:category,body:JSON.parse(fs.readFileSync(`${es_schema_dir}/${category}.json`, 'utf8'))},(err)=>{
-                    if(err){
-                        console.log(err.stack||err)
-                    }
-                    else{
-                        resolve()
-                    }
+    let schemas = await scirichonSchema.loadSchemas()
+    let route_schemas = scirichonSchema.getApiRouteSchemas()
+    for(let route_schema of route_schemas){
+        if(route_schema.search&&route_schema.search.index){
+            let rebuildIndex = (index)=>{
+                let mappingFile = `./search/${index}.json`
+                return new Promise((resolve,reject)=>{
+                    es_client.indices.delete({index:[index]},(err)=>{
+                        if (fs.existsSync(mappingFile)) {
+                            es_client.indices.create({
+                                index: index,
+                                body: JSON.parse(fs.readFileSync(mappingFile, 'utf8'))
+                            }, (err) => {
+                                if (err) {
+                                    console.log(err.stack || err)
+                                }
+                                else {
+                                    resolve()
+                                }
+                            })
+                        }else{
+                            es_client.indices.create({
+                                index: index,
+                                body: templateMapping
+                            },(err) => {
+                                if (err) {
+                                    console.log(err.stack || err)
+                                }
+                                else {
+                                    resolve()
+                                }
+                            })
+                        }
+                    })
                 })
-            })
-        })
-    }
-    for(let category of categories){
-        await schema_promise(category)
+            }
+            await rebuildIndex(route_schema.search.index)
+        }
     }
 }
 
