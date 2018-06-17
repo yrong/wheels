@@ -69,32 +69,46 @@ const stringFields2Object = (params) => {
     return params
 }
 
-const checkReferenceId = async (key,value)=>{
+const getReferenceObj = async (key,value)=>{
     let uuid,cached_val= await scirichon_cache.getItemByCategoryAndID(key,value)
     if(cached_val&&cached_val.uuid){
         uuid = cached_val.uuid
     }else{
         throw new ScirichonError(`can not find category ${key} as ${value} in scirichon cache`)
     }
-    return uuid
+    return cached_val
 }
 
 
 const checkReference = async (params)=>{
-    let refs = schema.getSchemaRefProperties(params.category),key,path,vals,category
+    let refs = schema.getSchemaRefProperties(params.category),key,path,key_name,vals,val,category,ref_obj
     if(refs){
         for(let ref of refs){
             key = ref.attr
             path = `$.${key}`
+            vals = jp.query(params, path)
+            key_name = _.replace(key, /\./g, '_')+'_name'
             category = ref.schema||(ref.items&&ref.items.schema)
-            vals = jp.query(params, path)[0]
-            if(!_.isEmpty(vals)){
-                if(_.isArray(vals)){
+            if(vals&&vals.length){
+                if(ref.type==='array'||ref.item_type){
+                    vals = _.isArray(vals[0])?vals[0]:vals
+                    params[key_name] = []
                     for(let val of vals){
-                        await checkReferenceId(category,val)
+                        if(!_.isEmpty(val)) {
+                            ref_obj = await getReferenceObj(category, val)
+                            if (ref_obj && ref_obj.unique_name) {
+                                params[key_name].push(ref_obj.unique_name)
+                            }
+                        }
                     }
-                } else{
-                    await checkReferenceId(category,vals)
+                }else{
+                    val = vals[0]
+                    if(!_.isEmpty(val)){
+                        ref_obj = await getReferenceObj(category,val)
+                        if(ref_obj&&ref_obj.unique_name){
+                            params[key_name] = ref_obj.unique_name
+                        }
+                    }
                 }
             }
         }
@@ -173,36 +187,48 @@ const generateDynamicSeqField = async (params,ctx)=>{
     }
 }
 
-const assignFields4CreateOrUpdate = async (params,ctx)=>{
-    if (ctx.method === 'POST') {
-        params.fields = legacyFormat(params)?_.assign({}, params.data.fields):_.assign({}, params)
-        params.category = params.fields.category = legacyFormat(params)?params.data.category:params.category
-        params.fields.uuid = params.fields.uuid || uuid.v1()
-        params.fields.created = params.fields.created || Date.now()
-        params.fields.lastUpdated = params.fields.lastUpdated || Date.now()
-        await generateDynamicSeqField(params, ctx)
-        await generateUniqueNameFieldAndCompoundModel(params, ctx)
-        if(params.procedure&&params.procedure.ignoreUniqueCheck) {
-        }else{
-            if(params.fields.unique_name){
-                let obj = await scirichon_cache.getItemByCategoryAndUniqueName(params.category,params.fields.unique_name)
-                if(!_.isEmpty(obj)){
-                    throw new ScirichonError(`${params.category}存在名为"${params.fields.unique_name}"的同名对象`)
-                }
+const checkUniqueField = async(params,ctx)=>{
+    if(params.procedure&&params.procedure.ignoreUniqueCheck) {
+    }else{
+        if(params.fields.unique_name){
+            let obj = await scirichon_cache.getItemByCategoryAndUniqueName(params.category,params.fields.unique_name)
+            if(!_.isEmpty(obj)){
+                throw new ScirichonError(`${params.category}存在名为"${params.fields.unique_name}"的同名对象`)
             }
         }
+    }
+}
+
+const generateFieldsForCreate = async(params,ctx)=>{
+    params.fields = legacyFormat(params)?_.assign({}, params.data.fields):_.assign({}, params)
+    params.category = params.fields.category = legacyFormat(params)?params.data.category:params.category
+    params.fields.uuid = params.fields.uuid || uuid.v1()
+    params.fields.created = params.fields.created || Date.now()
+    params.fields.lastUpdated = params.fields.lastUpdated || Date.now()
+    await generateDynamicSeqField(params, ctx)
+    await generateUniqueNameFieldAndCompoundModel(params, ctx)
+    await checkUniqueField(params,ctx)
+}
+
+const generateFieldsForUpdate = async(result,params,ctx)=>{
+    params.change = legacyFormat(params)?_.assign({}, params.data.fields):_.assign({}, params)
+    params.fields_old = _.omit(result, 'id')
+    params.fields = _.assign({}, params.fields_old, params.change)
+    params.fields.lastUpdated = params.change.lastUpdated || Date.now()
+    await generateUniqueNameFieldAndCompoundModel(params, ctx)
+}
+
+const assignFields4CreateOrUpdate = async (params,ctx)=>{
+    params.category = legacyFormat(params)?params.data.category:params.category
+    if (ctx.method === 'POST') {
+        await generateFieldsForCreate(params,ctx)
     } else if (ctx.method === 'PUT' || ctx.method === 'PATCH') {
-        params.category = legacyFormat(params)?params.data.category:params.category
         let result = await cypherInvoker.executeCypher(ctx, cypherBuilder.generateQueryNodeCypher(params), params)
         if (result && result[0]) {
-            params.change = legacyFormat(params)?_.assign({}, params.data.fields):_.assign({}, params)
-            params.fields_old = _.omit(result[0], 'id')
-            params.fields = _.assign({}, params.fields_old, params.change)
-            params.fields.lastUpdated = params.change.lastUpdated || Date.now()
+            await generateFieldsForUpdate(result[0],params,ctx)
         } else {
             throw new ScirichonError("no record found")
         }
-        await generateUniqueNameFieldAndCompoundModel(params, ctx)
     }
     params = _.assign(params, params.fields)
     await checkReference(params)
