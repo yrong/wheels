@@ -164,9 +164,12 @@ module.exports = {
     clean:async function(params, ctx) {
         await cypherInvoker.executeCypher(ctx,cypherBuilder.generateDelAllCypher(params),params)
         await cache.flushAll()
-        for(let fileName of fs.readdirSync('./search')){
-            if(fileName.endsWith('.json')){
-                await search.deleteAll(fileName.slice(0, -5))
+        let route_schemas = schema.getApiRouteSchemas()
+        for(let route_schema of route_schemas) {
+            if (route_schema.search && route_schema.search.index) {
+                if(route_schema.service===process.env['NODE_NAME']){
+                    await search.deleteAll(route_schema.search.index)
+                }
             }
         }
     },
