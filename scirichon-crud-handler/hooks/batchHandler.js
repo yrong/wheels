@@ -43,9 +43,9 @@ const batchUpdate  = async(ctx,category,uuids,change_obj,removed)=>{
     }
     let needNotify = requestPostHandler.needNotify({category},ctx)
     if(needNotify) {
-        let notifications = [], notification_url = common.getServiceApiUrl('notifier'),
-            notification = {user: ctx[common.TokenUserName], source: process.env['NODE_NAME'], action: 'UPDATE'}
+        let notifications = [], notification_url = common.getServiceApiUrl('notifier')
         for (let obj of objs) {
+            notification = {user: ctx[common.TokenUserName], source: process.env['NODE_NAME'], action: 'UPDATE'}
             notification.type = category
             notification.update = change_obj
             notification.new = obj.new_obj
@@ -78,9 +78,9 @@ const batchAdd  = async(ctx,category,entries)=>{
     }
     let needNotify = requestPostHandler.needNotify({category},ctx)
     if(needNotify){
-        let notifications = [],notification_url = common.getServiceApiUrl('notifier'),
-            notification = {user:ctx[common.TokenUserName],source:process.env['NODE_NAME'],action:'CREATE'}
+        let notifications = [],notification_url = common.getServiceApiUrl('notifier')
         for(let item of entries){
+            notification = {user:ctx[common.TokenUserName],source:process.env['NODE_NAME'],action:'CREATE'}
             notification.type = item.category
             notification.new = _.omit(item,hidden_fields)
             notifications.push(notification)
