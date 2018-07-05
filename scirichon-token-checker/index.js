@@ -16,6 +16,9 @@ const needCheck = (ctx)=>{
     else if(ctx.method ==='DELETE' && (ctx.path.includes('/hidden'))){
         return false
     }
+    else if(ctx.path.includes('/no_auth/api')){
+        return false
+    }
     return true
 }
 
