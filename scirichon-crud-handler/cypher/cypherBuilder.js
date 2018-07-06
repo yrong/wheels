@@ -40,13 +40,15 @@ const generateQueryNodeCypher = (params) =>
     RETURN n`
 
 
-const findNodesCypher = (label,condition) =>
+const findNodesCypher = (label,condition,sort,order) =>
     `MATCH (n:${label}) 
     ${condition}
-    RETURN n`
+    RETURN n
+    ORDER BY ${sort} ${order}
+    `
 
 
-const findPaginatedNodesCypher = (label,condition) =>
+const findPaginatedNodesCypher = (label,condition,sort,order) =>
     `MATCH (n:${label})
     ${condition}
     WITH
@@ -56,6 +58,7 @@ const findPaginatedNodesCypher = (label,condition) =>
     ${condition}
     WITH
     n as n, cnt
+    ORDER BY ${sort} ${order}
     SKIP {skip} LIMIT {limit}
     RETURN { count: cnt, results:collect(n) }`
 
@@ -147,11 +150,12 @@ module.exports = {
         return cyphers_todo
     },
     generateQueryNodesCypher:(params)=>{
-        let condition = '',cypher,label=params.category
+        let condition = '',cypher,label=params.category,sort = params.sort?`n.${params.sort}`:`n.lastUpdated`,
+        order = params.order?params.order:'DESC'
         if(params.pagination){
-            cypher = findPaginatedNodesCypher(label,condition)
+            cypher = findPaginatedNodesCypher(label,condition,sort,order)
         }else{
-            cypher = findNodesCypher(label,condition);
+            cypher = findNodesCypher(label,condition,sort,order)
         }
         return cypher;
     },
