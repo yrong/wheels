@@ -1,6 +1,6 @@
 {
   "name": "scirichon-json-exp-imp",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "bin": {
     "json-export": "export.js",
     "json-import": "import.js"
@@ -18,9 +18,9 @@
     "request-promise": "^4.1.1",
     "uuid": "^3.0.0",
     "uuid-validate": "^0.0.2",
-    "scirichon-common": "^1.0.4",
+    "scirichon-common": "^1.0.5",
     "scirichon-json-schema": "^1.0.3",
-    "scirichon-cache": "^1.0.8",
-    "scirichon-search": "^1.0.2"
+    "scirichon-cache": "^1.0.9",
+    "scirichon-search": "^1.0.3"
   }
 }

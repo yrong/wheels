@@ -29,9 +29,12 @@ const buildQueryCondition = (querys) =>{
     return {where:querys.filter,order:[[sortby,order]],offset:offset,limit:per_page,raw:true};
 }
 
-const InternalTokenId = 'internal_api_invoke'
-const TokenName = 'token'
-const TokenUserName = 'token_user'
+const InternalTokenId = config.get('auth.internalUsedToken')
+const TokenName = config.get('auth.tokenFieldName')
+const TokenUserName = config.get('auth.userFieldName')
+
+
+const internalUsedFields = ['fields', 'cyphers', 'cypher', 'data', 'token', 'fields_old', 'change', '_id', '_index', '_type','user','id','method','procedure']
 const Delimiter = '&&&'
 
 const apiInvoker = function(method,url,path,params,body,headers){
@@ -79,8 +82,21 @@ const getServiceApiUrl = (serviceName)=>{
     return `http://${serviceIP}:${servicePort}`
 }
 
-const internalUsedFields = ['fields', 'cyphers', 'cypher', 'data', 'token', 'fields_old', 'change', '_id', '_index', '_type','user','id','method','procedure']
-
+const needCheck = (ctx)=>{
+    if(ctx.headers[TokenName]==InternalTokenId){
+        return false
+    }
+    else if(ctx.method==='GET'){
+        return false
+    }
+    else if(ctx.method ==='POST' && (ctx.path.includes('/search')||ctx.path.includes('/members'))){
+        return false
+    }
+    else if(ctx.path.includes('/no_auth/api')||(ctx.path.includes('/hidden'))){
+        return false
+    }
+    return true
+}
 
 module.exports = {buildQueryCondition,apiInvoker,pruneEmpty,ScirichonError,ScirichonWarning,isLegacyUserId,buildCompoundKey,
-    InternalTokenId,TokenName,TokenUserName,Delimiter,getServiceApiUrl,internalUsedFields}
+    InternalTokenId,TokenName,TokenUserName,Delimiter,getServiceApiUrl,internalUsedFields,needCheck}

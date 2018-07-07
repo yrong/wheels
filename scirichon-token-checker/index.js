@@ -6,28 +6,12 @@ const rp = require('request-promise')
 const common = require('scirichon-common')
 const ScirichonError = common.ScirichonError
 
-const needCheck = (ctx)=>{
-    if(ctx.headers[common.TokenName]==common.InternalTokenId){
-        return false
-    }
-    else if(ctx.method==='GET'&&!ctx.path.match(/api/i)){
-        return false
-    }
-    else if(ctx.method ==='DELETE' && (ctx.path.includes('/hidden'))){
-        return false
-    }
-    else if(ctx.path.includes('/no_auth/api')){
-        return false
-    }
-    return true
-}
-
 module.exports = function checkToken(options) {
     if(!options.check_token_url){
         throw new Error('missing auth_url')
     }
     return async function (ctx, next) {
-        if (needCheck(ctx))
+        if (common.needCheck(ctx))
         {
             let token,result,passport,Token=common.TokenName,User=common.TokenUserName
             token = (ctx.request.body && ctx.request.body[Token])

@@ -8,30 +8,11 @@ const isOwn = (ctx)=>{
     return true
 }
 
-const needCheck = (ctx)=>{
-    if(ctx.headers[common.TokenName]==common.InternalTokenId){
-        return false
-    }
-    else if (ctx.method === 'GET'){
-        return false
-    }
-    else if(ctx.method ==='POST' && (ctx.path.includes('/search')||ctx.path.includes('/members'))){
-        return false
-    }
-    else if(ctx.method ==='DELETE' && (ctx.path.includes('/hidden'))){
-        return false
-    }
-    else if(ctx.path.includes('/no_auth/api')){
-        return false
-    }
-    return true
-}
-
 module.exports = (option)=>{
     const redisClient = Redis.createClient(_.assign({db:2},option.redisOption));
     const acl = new Acl(new Acl.redisBackend(redisClient, 'acl'))
     return async (ctx, next) => {
-        if(needCheck(ctx)){
+        if(common.needCheck(ctx)){
             let hasRight,own,user = ctx[common.TokenUserName],name = user&&user.name,roles = user&&user.roles,own_exception_msg,promise
             if(!roles.length){
                 throw new ScirichonError(`user ${name} without role not allowed`)
