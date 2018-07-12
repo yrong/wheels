@@ -1,6 +1,6 @@
 'use strict';
 
-const Log = require('log4js_wrapper')
+const Log = require('log4js-wrapper-advanced')
 const logger = Log.getLogger()
 const _ = require('lodash')
 
