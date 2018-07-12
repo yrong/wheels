@@ -33,8 +33,7 @@ const InternalTokenId = config.get('auth.internalUsedToken')
 const TokenName = config.get('auth.tokenFieldName')
 const TokenUserName = config.get('auth.userFieldName')
 
-
-const internalUsedFields = ['fields', 'cyphers', 'cypher', 'data', 'token', 'fields_old', 'change', '_id', '_index', '_type','user','id','method','procedure']
+const InternalUsedFields = ['fields', 'cyphers', 'cypher', 'data', 'token', 'fields_old', 'change', '_id', '_index', '_type','user','id','method','procedure']
 const Delimiter = '&&&'
 
 const apiInvoker = function(method,url,path,params,body,headers){
@@ -70,11 +69,11 @@ const isLegacyUserId = (category,uuid) =>{
 }
 
 const buildCompoundKey = (fields,value) => {
-    let compound_model_key = '', split = '&&&'
+    let compound_model_key = ''
     for (let key of fields) {
-        compound_model_key = compound_model_key + value[key] + split
+        compound_model_key = compound_model_key + value[key] + Delimiter
     }
-    return compound_model_key.slice(0, (-split.length))
+    return compound_model_key.slice(0, (-Delimiter.length))
 }
 
 const getServiceApiUrl = (serviceName)=>{
@@ -82,21 +81,5 @@ const getServiceApiUrl = (serviceName)=>{
     return `http://${serviceIP}:${servicePort}`
 }
 
-const needCheck = (ctx)=>{
-    if(ctx.headers[TokenName]==InternalTokenId){
-        return false
-    }
-    else if(ctx.method==='GET'){
-        return false
-    }
-    else if(ctx.method ==='POST' && (ctx.path.includes('/search')||ctx.path.includes('/members'))){
-        return false
-    }
-    else if(ctx.path.includes('/no_auth/api')||(ctx.path.includes('/hidden'))){
-        return false
-    }
-    return true
-}
-
 module.exports = {buildQueryCondition,apiInvoker,pruneEmpty,ScirichonError,ScirichonWarning,isLegacyUserId,buildCompoundKey,
-    InternalTokenId,TokenName,TokenUserName,Delimiter,getServiceApiUrl,internalUsedFields,needCheck}
+    InternalTokenId,TokenName,TokenUserName,Delimiter,getServiceApiUrl,InternalUsedFields}

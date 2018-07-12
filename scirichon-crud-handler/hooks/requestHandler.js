@@ -5,11 +5,11 @@ const uuid = require('uuid')
 const schema = require('scirichon-json-schema')
 const common = require('scirichon-common')
 const ScirichonError = common.ScirichonError
-const logger = require('log4js_wrapper').getLogger()
+const logger = require('log4js-wrapper-advanced').getLogger()
 const cypherBuilder = require('../cypher/cypherBuilder')
 const scirichon_cache = require('scirichon-cache')
 const cypherInvoker = require('../cypher/cypherInvoker')
-const internalUsedFields = common.internalUsedFields
+const InternalUsedFields = common.InternalUsedFields
 
 const getCategoryByUrl = function (ctx) {
     let category,val,routeSchemas = schema.getApiRouteSchemas()
@@ -146,7 +146,7 @@ const checkIfUidReferencedByOthers = (uuid,items)=>{
 const fieldsChecker = (params)=>{
     let fields = params.data&&params.data.fields||params
     for (let prop in fields) {
-        if(_.includes(internalUsedFields,prop)){
+        if(_.includes(InternalUsedFields,prop)){
             throw new ScirichonError(`${prop} not allowed`)
         }
     }

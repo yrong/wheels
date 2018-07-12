@@ -4,7 +4,6 @@ const schema = require('scirichon-json-schema')
 const scirichon_cache = require('scirichon-cache')
 const search = require('scirichon-search')
 const requestHandler = require('./requestHandler')
-const hidden_fields = common.internalUsedFields
 
 const needNotify = (params,ctx)=>{
     if(ctx.headers[common.TokenName] === common.InternalTokenId)

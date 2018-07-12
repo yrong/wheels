@@ -1,6 +1,6 @@
 const _ = require('lodash')
 const common = require('scirichon-common')
-const logger = require('log4js_wrapper').getLogger()
+const logger = require('log4js-wrapper-advanced').getLogger()
 const schema = require('scirichon-json-schema')
 const search = require('scirichon-search')
 const scirichon_cache = require('scirichon-cache')
@@ -8,7 +8,7 @@ const requestHandler = require('./requestHandler')
 const cypherInvoker = require('../cypher/cypherInvoker')
 const requestPostHandler = require('./requestPostHandler')
 const hooks = require('./index')
-const hidden_fields = common.internalUsedFields
+const InternalUsedFields = common.InternalUsedFields
 
 const batchUpdate  = async(ctx,category,uuids,change_obj,removed)=>{
     let cypher = `unwind {uuids} as uuid match (n:${category}) where n.uuid=uuid set `,script=``,old_obj, new_obj,objs=[]
@@ -74,7 +74,7 @@ const batchAdd  = async(ctx,category,entries)=>{
         await search.batchCreate(index,entries)
     }
     for(let item of entries){
-        await scirichon_cache.addItem(_.omit(item,hidden_fields))
+        await scirichon_cache.addItem(_.omit(item,InternalUsedFields))
     }
     let needNotify = requestPostHandler.needNotify({category},ctx)
     if(needNotify){
@@ -82,7 +82,7 @@ const batchAdd  = async(ctx,category,entries)=>{
         for(let item of entries){
             notification = {user:ctx[common.TokenUserName],source:process.env['NODE_NAME'],action:'CREATE'}
             notification.type = item.category
-            notification.new = _.omit(item,hidden_fields)
+            notification.new = _.omit(item,InternalUsedFields)
             notifications.push(notification)
         }
         await common.apiInvoker('POST',notification_url,'/api/notifications/batch','',notifications)

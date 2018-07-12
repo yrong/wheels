@@ -1,4 +1,4 @@
-const logger = require('log4js_wrapper').getLogger()
+const logger = require('log4js-wrapper-advanced').getLogger()
 const config = require('config')
 const neo4j = require('neo4j-driver').v1
 const {parse} = require('parse-neo4j-fork')
