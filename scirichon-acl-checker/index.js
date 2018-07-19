@@ -34,13 +34,16 @@ module.exports = (option)=>{
     return async (ctx, next) => {
         if(needCheck(ctx)){
             let hasRight,own,user = ctx[common.TokenUserName],name = user&&user.name,roles = user&&user.roles,exception_msg,promise
-            if(!roles.length){
-                throw new ScirichonError(`user ${name} without role not allowed`,401)
-            }
             promise = new Promise((resolve,reject)=>{
                 if(isSearchRequest(ctx)){
                     resolve(true)
                 }else{
+                    if(_.isEmpty(user)){
+                        throw new ScirichonError(`token user not found`,401)
+                    }
+                    if(_.isEmpty(roles)){
+                        throw new ScirichonError(`user ${name} without role not allowed`,401)
+                    }
                     exception_msg = `user ${name} with roles ${roles} can not create/update/delete resource`
                     acl.isAllowed(user.uuid, '*', 'UPDATE', async function(err, res){
                         if(!res){
