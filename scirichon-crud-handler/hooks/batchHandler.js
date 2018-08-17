@@ -104,4 +104,10 @@ const batchAddProcessor = async (params,ctx)=>{
     return _.map(items,(item)=>{return item.uuid})
 }
 
-module.exports = {batchAdd,batchUpdate,batchAddProcessor}
+const batchUpdateProcessor = async (params,ctx)=>{
+    let fields = params.data.fields,category = params.data.category,uuids = params.data.uuids,item,items=[],result
+    await batchUpdate(ctx,category,uuids,fields)
+    return uuids
+}
+
+module.exports = {batchAdd,batchUpdate,batchAddProcessor,batchUpdateProcessor}

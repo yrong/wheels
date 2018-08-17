@@ -1,6 +1,6 @@
 {
   "name": "scirichon-crud-handler",
-  "version": "1.0.5-beta.10",
+  "version": "1.0.5-beta.12",
   "bin": {
     "scirichon-crud-api": "run.js"
   },
@@ -21,12 +21,14 @@
     "uuid-validate": "^0.0.2",
     "koa-neo4j-monitor": "^1.2.9",
     "scirichon-response-wrapper": "^1.0.2",
-    "scirichon-token-checker": "^1.0.6",
-    "scirichon-acl-checker": "^1.0.8",
+    "scirichon-token-checker": "^1.0.7",
+    "scirichon-acl-checker": "^1.0.9",
     "scirichon-common": "^1.0.7",
     "scirichon-json-schema": "^1.0.3",
+    "scirichon-json-schema-init":"^1.0.3",
     "scirichon-cache": "^1.0.11",
     "scirichon-response-mapper": "^1.0.7",
-    "scirichon-search": "^1.0.5"
+    "scirichon-search": "^1.0.5",
+    "scirichon-json-exp-imp": "^1.0.5"
   }
 }

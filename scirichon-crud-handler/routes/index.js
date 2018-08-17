@@ -23,7 +23,7 @@ const none_checker = ()=>true
 const fields_checker = requestHandler.fieldsChecker
 
 module.exports = (app)=>{
-    let routesDef = schema.getApiRouteSchemas(),allowed_methods=['Add', 'Modify', 'Delete','FindOne','FindAll','BatchAdd'],
+    let routesDef = schema.getApiRouteSchemas(),allowed_methods=['Add', 'Modify', 'Delete','FindOne','FindAll','BatchAdd','BatchUpdate'],
         preProcess,postProcess,http_method,route,checker,procedure,node_name = process.env['NODE_NAME']
 
     /*common route*/
@@ -78,6 +78,13 @@ module.exports = (app)=>{
                             method: 'POST',
                             route: val.route + '/batch',
                             procedure:batchHandler.batchAddProcessor
+                        })
+                        break
+                    case 'BatchUpdate':
+                        app.defineAPI({
+                            method: 'PUT',
+                            route: val.route + '/batch',
+                            procedure:batchHandler.batchUpdateProcessor
                         })
                         break
                 }
