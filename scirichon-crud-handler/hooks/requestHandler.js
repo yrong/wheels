@@ -34,7 +34,7 @@ const assignFields4Query = async function (params,ctx) {
     params.category = params.category||getCategoryByUrl(ctx)
     if(params.page){
         params.pagination = true
-        params.limit = params.per_page = params.per_page || config.get('perPageSize')
+        params.limit = params.per_page = parseInt(params.per_page || config.get('perPageSize'))
         params.skip = (parseInt(params.page)-1) * parseInt(params.per_page)
     }
 }
