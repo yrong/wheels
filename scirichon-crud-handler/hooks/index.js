@@ -128,8 +128,10 @@ module.exports = {
                 if (result.members&&result.members.length) {
                     let members = []
                     for (let member of result.members) {
-                        member = await addItemMembers(member)
-                        members.push(member)
+                        if(member.status!=='deleted'){
+                            member = await addItemMembers(member)
+                            members.push(member)
+                        }
                     }
                     item = _.merge(result.self, {members})
                 }
