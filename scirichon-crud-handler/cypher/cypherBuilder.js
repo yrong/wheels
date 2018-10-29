@@ -77,7 +77,8 @@ const generateSequence=(name)=>
 const generateQueryItemWithMembersCypher = (label) => {
     return `MATCH (n:${label} {uuid:{uuid}})
     OPTIONAL MATCH
-        (n)<-[:MemberOf]-(m)      
+        (n)<-[:MemberOf]-(m)
+    where not exists(m.status) or m.status<>'deleted'          
     WITH { self: n, members:collect(distinct m) } as item
     RETURN item`
 }
