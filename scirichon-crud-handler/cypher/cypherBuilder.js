@@ -150,8 +150,15 @@ module.exports = {
         return cyphers_todo
     },
     generateQueryNodesCypher:(params)=>{
-        let condition = '',cypher,label=params.category,sort = params.sort?`n.${params.sort}`:`n.lastUpdated`,
-        order = params.order?params.order:'DESC'
+        let condition = `where not exists(n.status) or n.status<>'deleted'`,cypher,label=params.category,sort = params.sort?`n.${params.sort}`:`n.lastUpdated`,
+            order = params.order?params.order:'DESC'
+        if(params.status_filter){
+            params.status_filter = params.status_filter.split(",")
+            condition = 'where '
+            condition += _.map(params.status_filter, (status) => {
+                return `n.status='${status}'`
+            }).join(' or ')
+        }
         if(params.pagination){
             cypher = findPaginatedNodesCypher(label,condition,sort,order)
         }else{
