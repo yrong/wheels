@@ -42,20 +42,18 @@ module.exports = {
                 params = await customizedHandler.postProcess(params, ctx)
             }
         }
-        if(ctx.method==='POST'||ctx.method==='PUT'||ctx.method==='PATCH'){
-            await Promise.all([requestPostHandler.updateCache(params,ctx),requestPostHandler.updateSearch(params,ctx),requestPostHandler.addNotification(params,ctx)]).catch((e)=>{
-                logger.error(e.stack || e)
-                throw new ScirichonWarning(String(e))
-            })
-        }
-        if(ctx.method==='DELETE'){
-            if(!result||(result.length!=1)){
+        if(ctx.method==='POST'||ctx.method==='PUT'||ctx.method==='PATCH'||ctx.method==='DELETE'){
+            if(ctx.method==='DELETE'&&(!result||(result.length!=1))){
                 throw new ScirichonWarning('no record found')
             }
-            await Promise.all([requestPostHandler.updateCache(params,ctx),requestPostHandler.updateSearch(params,ctx),requestPostHandler.addNotification(params,ctx)]).catch((e)=>{
+            try{
+                requestPostHandler.updateCache(params,ctx)
+                requestPostHandler.updateSearch(params,ctx)
+                requestPostHandler.addNotification(params,ctx)
+            }catch(e){
                 logger.error(e.stack || e)
                 throw new ScirichonWarning(String(e))
-            })
+            }
         }
         return {uuid:params.uuid}||{}
     },
