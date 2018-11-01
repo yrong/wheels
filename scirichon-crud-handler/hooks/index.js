@@ -73,7 +73,7 @@ module.exports = {
             if(params.pagination){
                 result = result[0]
                 if(result.results)
-                    result.results = await responseHandler.responseMapper(result.results,params,ctx);
+                    result.results = await responseHandler.responseMapper(result.results,params,ctx)
             }else{
                 result = await responseHandler.responseMapper(result,params,ctx)
             }
@@ -123,13 +123,16 @@ module.exports = {
             let result = await cypherInvoker.executeCypher(ctx,cypherBuilder.generateQueryItemWithMembersCypher(item.category),{uuid:item.uuid})
             if(result&&result.length) {
                 result = result[0]
+                if(result.self){
+                    item = await responseHandler.responseMapper(result.self,params,ctx)
+                }
                 if (result.members&&result.members.length) {
                     let members = []
                     for (let member of result.members) {
                         member = await addItemMembers(member)
                         members.push(member)
                     }
-                    item = _.merge(result.self, {members})
+                    item = _.merge(item, {members})
                 }
             }
             return item
