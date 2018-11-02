@@ -137,7 +137,7 @@ module.exports = {
             }
             return item
         }
-        let result
+        let result=[]
         if(params.uuid){
             result = await cypherInvoker.executeCypher(ctx,cypherBuilder.generateQueryNodeCypher(params),{uuid:params.uuid})
             if(result&&result.length){
@@ -145,19 +145,15 @@ module.exports = {
                 result = await addItemMembers(result)
             }
         }else{
-            result = await cypherInvoker.executeCypher(ctx,cypherBuilder.generateQueryNodesCypher(params))
-            let results = []
-            if(result&&result.length){
-                for(let item of result){
+            results = await cypherInvoker.executeCypher(ctx,cypherBuilder.generateQueryNodesCypher(params))
+            if(results&&results.length){
+                results = _.filter(results,(result)=>{
+                    return result.root===true
+                })
+                for(let item of results){
                     item = await addItemMembers(item)
-                    results.push(item)
+                    result.push(item)
                 }
-                if(params.root){
-                    results = _.filter(results,(result)=>{
-                        return result.root===true
-                    })
-                }
-                result = results
             }
         }
         return result
