@@ -112,31 +112,42 @@ const generateInheritRelCypher = `MERGE (base:CategoryLabel{category:{category}}
 
 
 const generateRelationCypher = (params)=>{
-    let refProperties = schema.getSchemaRefProperties(params.category),val,cypher,rel_part,rel_cyphers = []
+    let refProperties = schema.getSchemaRefProperties(params.category),val,cypher,rel_part,rel_attr,rel_cyphers = []
     for(let ref of refProperties){
         val = jp.query(params, `$.${ref.attr}`)[0]
         if(val&&ref.relationship){
-            if(ref.relationship.parentObjectAsRelProperty){
-                cypher = `MATCH (node:${params.category}{uuid:{uuid}})
-                MATCH (ref_node:${ref.schema}{uuid:{${ref.attr.split('.')[0]}}.${ref.attr.split('.')[1]}})
-                `
-            }else if(ref.type === 'array'&&val.length){
+            cypher = `MATCH (node:${params.category}{uuid:{uuid}})
+                MATCH (ref_node:${ref.schema}{uuid:{${ref.attr}}})`
+            if(ref.type === 'array'&&val.length){
                 cypher = `UNWIND {${ref.attr}} as ref_id
                 MATCH (node:${params.category} {uuid:{uuid}})
-                MATCH (ref_node:${ref.schema}{uuid:ref_id})
-                `
-            }else{
-                cypher = `MATCH (node:${params.category}{uuid:{uuid}})
-                MATCH (ref_node:${ref.schema}{uuid:{${ref.attr}}})
-                `
+                MATCH (ref_node:${ref.schema}{uuid:ref_id})`
+            }
+            else if(ref.relationship.parentObjectAsRelProperty){
+                rel_attr = ref.attr.split('.')
+                if(rel_attr.length==2){
+                    cypher = `MATCH (node:${params.category}{uuid:{uuid}})
+                    MATCH (ref_node:${ref.schema}{uuid:{${rel_attr[0]}}.${rel_attr[1]}})`
+                }else if(rel_attr.length==3){
+                    cypher = `UNWIND {${rel_attr[0]}} as ref_item
+                    MATCH (node:${params.category} {uuid:{uuid}})
+                    MATCH (ref_node:${ref.schema}{uuid:ref_item.${rel_attr[2]}})`
+                }else{
+                    throw new Error(`${ref.attr} not support yet`)
+                }
             }
             rel_part = `[r:${ref.relationship.name}]`
             if(ref.relationship.reverse)
-                cypher = cypher + `MERGE (node)<-${rel_part}-(ref_node)`
+                cypher = cypher + ` MERGE (node)<-${rel_part}-(ref_node)`
             else
-                cypher = cypher + `MERGE (node)-${rel_part}->(ref_node)`
+                cypher = cypher + ` MERGE (node)-${rel_part}->(ref_node)`
             if(ref.relationship.parentObjectAsRelProperty){
-                cypher = cypher + ` ON MATCH SET r={${ref.attr.split('.')[0]}}`
+                rel_attr = ref.attr.split('.')
+                if(rel_attr.length==2){
+                    cypher = cypher + ` ON CREATE SET r={${rel_attr[0]}} ON MATCH SET r={${rel_attr[0]}}`
+                }else if(rel_attr.length==3){
+                    cypher = cypher + ` ON CREATE SET r=ref_item ON MATCH SET r=ref_item`
+                }
             }
             rel_cyphers.push(cypher)
         }
