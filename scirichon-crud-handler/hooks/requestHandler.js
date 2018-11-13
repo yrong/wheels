@@ -273,9 +273,12 @@ const assignFields = async (params,ctx)=>{
 }
 
 const generateCypher = async(params,ctx)=>{
-    if(ctx.method === 'POST'||ctx.method === 'PUT' || ctx.method === 'PATCH'){
-        params.cypher = cypherBuilder.generateAddOrUpdateCyphers(params);
-    }else if(ctx.method === 'DELETE'){
+    if(ctx.method === 'POST'){
+        params.cypher = cypherBuilder.generateAddCyphers(params)
+    }else if(ctx.method === 'PUT' || ctx.method === 'PATCH'){
+        params.cypher = cypherBuilder.generateUpdateCyphers(params)
+    }
+    else if(ctx.method === 'DELETE'){
         params.cypher = cypherBuilder.generateDelNodeCypher(params)
     }else if(ctx.method === 'GET'){
         if(params.uuid){
