@@ -97,7 +97,7 @@ const generateQueryItemByCategoryCypher = (params) => {
     let condition = _.map(params.tags, (tag) => {
         return `n:${tag}`
     }).join(' OR ')
-    return `MATCH (n) WHERE (${condition})
+    return `MATCH (n) WHERE ((not exists(n.status) or n.status<>'deleted') and (${condition}))
     return n
     `
 }
