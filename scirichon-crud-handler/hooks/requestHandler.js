@@ -74,7 +74,7 @@ const getReferenceObj = async (key,value)=>{
     if(cached_val&&cached_val.uuid){
         uuid = cached_val.uuid
     }else{
-        throw new ScirichonError(`can not find category ${key} as ${value} in scirichon cache`)
+        throw new ScirichonError(`不存在引用类型为${key},id为${value}的节点`)
     }
     return cached_val
 }
@@ -137,7 +137,7 @@ const checkIfUidReferencedByOthers = (uuid,items)=>{
             let key = refProperty.attr
             let val = jp.query(item, `$.${key}`)[0]
             if(uuid==val||(_.isArray(val)&&_.includes(val,uuid))){
-                throw new ScirichonError(`node already used by ${JSON.stringify(item)}`)
+                throw new ScirichonError(`被类型为${item.category},id为${item.uuid}的节点引用，不允许删除`)
             }
         }
     }
@@ -227,7 +227,7 @@ const assignFields4CreateOrUpdate = async (params,ctx)=>{
         if (result && result[0]) {
             await generateFieldsForUpdate(result[0],params,ctx)
         } else {
-            throw new ScirichonError("no record found")
+            throw new ScirichonError("不存在该节点,更新失败")
         }
     }
     params = _.assign(params, params.fields)
@@ -243,17 +243,15 @@ const assignFields4Delete = async (params,ctx)=>{
             result = result[0]
             if(result.self){
                 params.fields_old = _.omit(result.self,'id')
-                if(result.items&&result.items.length){
+                if(result.items&&result.items.length&&params.force_delete!=='true'){
                     checkIfUidReferencedByOthers(params.uuid,result.items)
                 }
             }
         }else{
-            throw new ScirichonError("no record found")
+            throw new ScirichonError("不存在该节点,删除失败")
         }
     }else if(ctx.url.includes('/api/items')&&ctx.method==='DELETE'){
         ctx.deleteAll = true
-    }else{
-        throw new ScirichonError("missing uuid")
     }
 }
 
