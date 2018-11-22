@@ -33,7 +33,7 @@ const executeCypher = (cql,params)=>{
 }
 
 const initElasticSearchSchema = async ()=>{
-    const templateMapping =
+    let templateMapping =
     {
         "mappings": {
             "doc": {
@@ -59,6 +59,23 @@ const initElasticSearchSchema = async ()=>{
             }
         }
     }
+    if(process.env['PINYIN']){
+        templateMapping.settings = {
+            "analysis" : {
+                "analyzer" : {
+                    "pinyin_analyzer" : {
+                        "tokenizer" : "my_pinyin"
+                    }
+                },
+                "tokenizer" : {
+                    "my_pinyin" : {
+                        "type" : "pinyin",
+                        "keep_full_pinyin":false
+                    }
+                }
+            }
+        }
+    }
     let schemas = await scirichonSchema.loadSchemas()
     let route_schemas = scirichonSchema.getApiRouteSchemas()
     for(let route_schema of route_schemas){
@@ -67,37 +84,25 @@ const initElasticSearchSchema = async ()=>{
                 let mappingFile = `./search/${index}.json`
                 return new Promise((resolve,reject)=>{
                     es_client.indices.delete({index:[index]},(err)=>{
-                        if (fs.existsSync(mappingFile)) {
-                            es_client.indices.create({
-                                index: index,
-                                body: JSON.parse(fs.readFileSync(mappingFile, 'utf8'))
-                            }, (err) => {
-                                if (err) {
-                                    console.log(err.stack || err)
-                                }
-                                else {
-                                    resolve()
-                                }
-                            })
-                        }else{
-                            es_client.indices.create({
-                                index: index,
-                                body: templateMapping
-                            },(err) => {
-                                if (err) {
-                                    console.log(err.stack || err)
-                                }
-                                else {
-                                    resolve()
-                                }
-                            })
-                        }
+                        let mappingBody = fs.existsSync(mappingFile)?JSON.parse(fs.readFileSync(mappingFile, 'utf8')):templateMapping
+                        es_client.indices.create({
+                            index: index,
+                            body: mappingBody
+                        }, (err) => {
+                            if (err) {
+                                console.log(err.stack || err)
+                            }
+                            else {
+                                resolve()
+                            }
+                        })
                     })
                 })
             }
             await rebuildIndex(route_schema.search.index)
         }
     }
+    console.log("add mapping in es success")
 }
 
 const initNeo4jConstraints = async ()=>{
@@ -111,7 +116,7 @@ const initNeo4jConstraints = async ()=>{
         }
         await executeCypher(`CREATE CONSTRAINT ON (n:${category}) ASSERT n.unique_name IS UNIQUE`)
     }
-
+    console.log("add constraint in neo4j success")
 }
 
 const initJsonSchema = async ()=>{
@@ -127,6 +132,7 @@ const initJsonSchema = async ()=>{
         }
     }
     await scirichonSchema.loadSchemas()
+    console.log("load schema to redis success")
 }
 
 const initialize = async ()=>{
