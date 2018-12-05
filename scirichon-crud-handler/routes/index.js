@@ -41,12 +41,14 @@ module.exports = (app)=>{
                         })
                         break
                     case 'Modify':
-                        app.defineAPI({
-                            method: 'PATCH',
-                            route: val.route+'/:uuid',
-                            check:[fields_checker,es_checker],
-                            preProcess: hooks.cudItem_preProcess,
-                            postProcess: hooks.cudItem_postProcess
+                        ['PATCH','PUT'].forEach((method)=>{
+                            app.defineAPI({
+                                method: method,
+                                route: val.route+'/:uuid',
+                                check:[fields_checker,es_checker],
+                                preProcess: hooks.cudItem_preProcess,
+                                postProcess: hooks.cudItem_postProcess
+                            })
                         })
                         break
                     case 'Delete':
