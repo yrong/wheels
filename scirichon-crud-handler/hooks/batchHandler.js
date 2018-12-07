@@ -89,6 +89,31 @@ const batchAdd  = async(ctx,category,entries)=>{
     }
 }
 
+const batchDelete  = async(ctx,category,uuids)=>{
+    let cypher = `unwind {uuids} as uuid match (n:${category} {uuid:uuid}) detach delete n`
+    await cypherInvoker.executeCypher(ctx, cypher, {uuids: uuids})
+    let index = requestHandler.getIndexByCategory(category)
+    if(index){
+        await search.batchDelete(index,uuids)
+    }
+    let needNotify = requestPostHandler.needNotify({category},ctx),old_obj,
+        notifications = [],notification_url = common.getServiceApiUrl('notifier')
+    if(needNotify){
+        for(let uuid of uuids){
+            old_obj = await scirichon_cache.getItemByCategoryAndID(category, uuid)
+            notification = {user:ctx[common.TokenUserName],source:process.env['NODE_NAME'],action:'DELETE'}
+            notification.type = category
+            notification.old = old_obj
+            notifications.push(notification)
+        }
+        await common.apiInvoker('POST',notification_url,'/api/notifications/batch','',notifications)
+    }
+    for(let uuid of uuids){
+        old_obj = await scirichon_cache.getItemByCategoryAndID(category, uuid)
+        await scirichon_cache.delItem(old_obj)
+    }
+}
+
 const batchAddProcessor = async (params,ctx)=>{
     let entries = params.data.fields,category = params.data.category,item,items=[],result
     for(let entry of entries){
@@ -105,9 +130,15 @@ const batchAddProcessor = async (params,ctx)=>{
 }
 
 const batchUpdateProcessor = async (params,ctx)=>{
-    let fields = params.data.fields,category = params.data.category,uuids = params.data.uuids,item,items=[],result
+    let fields = params.data.fields,category = params.data.category,uuids = params.data.uuids
     await batchUpdate(ctx,category,uuids,fields)
     return uuids
 }
 
-module.exports = {batchAdd,batchUpdate,batchAddProcessor,batchUpdateProcessor}
+const batchDeleteProcessor = async (params,ctx)=>{
+    let category = params.data.category,uuids = params.data.uuids
+    await batchDelete(ctx,category,uuids)
+    return uuids
+}
+
+module.exports = {batchAdd,batchUpdate,batchAddProcessor,batchUpdateProcessor,batchDeleteProcessor}

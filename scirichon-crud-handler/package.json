@@ -1,6 +1,6 @@
 {
   "name": "scirichon-crud-handler",
-  "version": "1.0.5-beta.26",
+  "version": "1.0.5-beta.27",
   "bin": {
     "scirichon-crud-api": "run.js"
   },
@@ -28,7 +28,7 @@
     "scirichon-json-schema-init":"^1.0.4",
     "scirichon-cache": "^1.0.11",
     "scirichon-response-mapper": "^1.0.7",
-    "scirichon-search": "^1.0.5",
+    "scirichon-search": "^1.0.6",
     "scirichon-json-exp-imp": "^1.0.5"
   }
 }
