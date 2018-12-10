@@ -39,19 +39,20 @@ const initElasticSearchSchema = async ()=>{
             "doc": {
                 "dynamic_templates": [
                     {
-                        "string_as_keyword": {
-                            "match_mapping_type": "string",
+                        "string_as_date": {
+                            "match_pattern": "regex",
+                            "match":   ".*_date$|.*_time$|created|lastUpdated",
                             "mapping": {
-                                "type": "keyword"
+                                "type": "date"
                             }
                         }
                     },
                     {
-                        "string_as_date": {
-                            "match_pattern": "regex",
-                            "match":   ".*date|.*time|created|lastUpdated",
+                        "string_as_keyword": {
+                            "match_mapping_type": "string",
+                            "unmatch": "*_pinyin",
                             "mapping": {
-                                "type": "date"
+                                "type": "keyword"
                             }
                         }
                     }
@@ -59,7 +60,7 @@ const initElasticSearchSchema = async ()=>{
             }
         }
     }
-    if(process.env['PINYIN']){
+    if(process.env['PINYIN']==="1"){
         templateMapping.settings = {
             "analysis" : {
                 "analyzer" : {
@@ -75,6 +76,17 @@ const initElasticSearchSchema = async ()=>{
                 }
             }
         }
+        templateMapping.mappings.doc.dynamic_templates.push({
+            "string_as_pinyin": {
+                "match_pattern": "regex",
+                "match":   ".*_pinyin$",
+                "mapping": {
+                    "type": "text",
+                    "analyzer": "pinyin_analyzer",
+                    "fielddata": true
+                }
+            }
+        })
     }
     let schemas = await scirichonSchema.loadSchemas()
     let route_schemas = scirichonSchema.getApiRouteSchemas()
@@ -102,7 +114,7 @@ const initElasticSearchSchema = async ()=>{
             await rebuildIndex(route_schema.search.index)
         }
     }
-    console.log("add mapping in es success")
+    console.log("add mapping in es success!")
 }
 
 const initNeo4jConstraints = async ()=>{
@@ -116,7 +128,7 @@ const initNeo4jConstraints = async ()=>{
         }
         await executeCypher(`CREATE CONSTRAINT ON (n:${category}) ASSERT n.unique_name IS UNIQUE`)
     }
-    console.log("add constraint in neo4j success")
+    console.log("add constraint in neo4j success!")
 }
 
 const initJsonSchema = async ()=>{
@@ -132,18 +144,17 @@ const initJsonSchema = async ()=>{
         }
     }
     await scirichonSchema.loadSchemas()
-    console.log("load schema to redis success")
+    console.log("load schema to redis success!")
 }
 
 const initialize = async ()=>{
     await initJsonSchema()
     await initNeo4jConstraints()
-    if(process.env['INIT_ES'])
+    if(process.env['INIT_ES']==="1")
         await initElasticSearchSchema()
 }
 
 initialize().then((schemas)=>{
-    console.log('intialize schema success!')
     process.exit(0)
 }).catch(err=>console.log(err.stack||err))
 
