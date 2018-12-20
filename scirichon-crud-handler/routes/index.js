@@ -6,6 +6,7 @@ const search = require('scirichon-search')
 const hooks = require('../hooks')
 const requestHandler = require('../hooks/requestHandler')
 const batchHandler = require('../hooks/batchHandler')
+const timeout = config.get('timeout')
 
 const schema_checker = (params)=>{
     schema.checkObject((params.data&&params.data.category)||params.category,(params.data&&params.data.fields)||params)
@@ -20,8 +21,6 @@ const es_checker=()=>{
 
 const none_checker = ()=>true
 
-const fields_checker = requestHandler.fieldsChecker
-
 module.exports = (app)=>{
     let routesDef = schema.getApiRouteSchemas(),allowed_methods=['Add', 'Modify', 'Delete','FindOne','FindAll','BatchAdd','BatchUpdate','BatchDelete'],
         preProcess,postProcess,http_method,route,checker,procedure,node_name = process.env['NODE_NAME']
@@ -35,9 +34,10 @@ module.exports = (app)=>{
                         app.defineAPI({
                             method: 'POST',
                             route: val.route,
-                            check:[fields_checker,schema_checker,es_checker],
+                            check:[schema_checker,es_checker],
                             preProcess: hooks.cudItem_preProcess,
-                            postProcess: hooks.cudItem_postProcess
+                            postProcess: hooks.cudItem_postProcess,
+                            timeout:timeout
                         })
                         break
                     case 'Modify':
@@ -45,9 +45,10 @@ module.exports = (app)=>{
                             app.defineAPI({
                                 method: method,
                                 route: val.route+'/:uuid',
-                                check:[fields_checker,es_checker],
+                                check:[es_checker],
                                 preProcess: hooks.cudItem_preProcess,
-                                postProcess: hooks.cudItem_postProcess
+                                postProcess: hooks.cudItem_postProcess,
+                                timeout:timeout
                             })
                         })
                         break
@@ -57,7 +58,8 @@ module.exports = (app)=>{
                             route: val.route+'/:uuid',
                             check:[es_checker],
                             preProcess: hooks.cudItem_preProcess,
-                            postProcess: hooks.cudItem_postProcess
+                            postProcess: hooks.cudItem_postProcess,
+                            timeout:timeout
                         })
                     case 'FindOne':
                         app.defineAPI({
