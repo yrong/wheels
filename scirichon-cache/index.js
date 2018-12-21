@@ -7,17 +7,20 @@ const scirichon_schema = require('scirichon-json-schema')
 const uuid_validator = require('uuid-validate')
 const delimiter = common.Delimiter
 const config = require('config')
+const redis = require('redis')
 
-let cache,prefix,cache_loadUrl={}
+let cache,client,prefix,cache_loadUrl={}
 
 const initialize = async (option)=>{
     if(!option.redisOption||!option.prefix){
         throw new Error('required field missing when initialize cache')
     }
+    let redisOption = _.assign({db:3},option.redisOption)
     cache = new RedisCache({
-        redisOptions: _.assign({db:3},option.redisOption),
-        poolOptions: {priorityRange: 1}
+        redisOptions: redisOption,
+        poolOptions: {priorityRange: option.priorityRange||1}
     })
+    client = redis.createClient(redisOption);
     prefix = `${option.prefix}:`
     await scirichon_schema.loadSchemas(option)
     let schemas = scirichon_schema.getSchemas(),service_url
@@ -44,11 +47,12 @@ const del = async (key)=>{
 }
 
 const flushAll = async ()=>{
-    let keys = await cache.keys(prefix+'*')
-    for(let key of keys){
-        val = await cache.get(key)
-        await cache.del(key)
-    }
+    client.eval("return redis.call('del', 'default-template',unpack(redis.call('keys', ARGV[1])))", 0, prefix+'*', (err, res) => {
+        if(err)
+            reject(err)
+        else
+            resolve(res)
+    })
 }
 
 const addItem = async (item)=>{

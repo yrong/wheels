@@ -1,6 +1,6 @@
 {
   "name": "scirichon-cache",
-  "version": "1.0.11",
+  "version": "1.0.11-beta.1",
   "main": "index.js",
   "author": "Ronyang <yrong1997@gmail.com>",
   "license": "MIT",
@@ -10,8 +10,8 @@
     "request": "^2.81.0",
     "request-promise": "^4.1.1",
     "uuid-validate": "^0.0.2",
-    "node-cache-redis-fork":"^2.2.1",
-    "scirichon-common": "^1.0.7",
+    "node-cache-redis-fork":"^2.2.2",
+    "scirichon-common": "1.0.7-beta.1",
     "scirichon-json-schema": "^1.0.3"
   }
 }

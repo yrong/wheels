@@ -33,7 +33,6 @@ const InternalTokenId = config.get('auth.internalUsedToken')
 const TokenName = config.get('auth.tokenFieldName')
 const TokenUserName = config.get('auth.userFieldName')
 
-const InternalUsedFields = ['fields', 'cyphers', 'cypher', 'data', 'token', 'fields_old', 'change', '_id', '_index', '_type','user','id','method','procedure']
 const Delimiter = '&&&'
 
 const apiInvoker = function(method,url,path,params,body,headers){
@@ -82,4 +81,4 @@ const getServiceApiUrl = (serviceName)=>{
 }
 
 module.exports = {buildQueryCondition,apiInvoker,pruneEmpty,ScirichonError,ScirichonWarning,isLegacyUserId,buildCompoundKey,
-    InternalTokenId,TokenName,TokenUserName,Delimiter,getServiceApiUrl,InternalUsedFields}
+    InternalTokenId,TokenName,TokenUserName,Delimiter,getServiceApiUrl}
