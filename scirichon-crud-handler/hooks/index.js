@@ -32,6 +32,10 @@ module.exports = {
                 params = await customizedHandler.preProcess(params,ctx)
             }
         }
+        if (ctx.method === 'POST'||ctx.method === 'PUT' || ctx.method === 'PATCH') {
+            params.stringified_fields = requestHandler.objectFields2String(_.assign({},params.fields))
+        }
+        requestHandler.logCypher(params)
         return params
     },
     cudItem_postProcess:async function (result,params,ctx) {
@@ -42,7 +46,7 @@ module.exports = {
                 params = await customizedHandler.postProcess(params, ctx)
             }
         }
-        if(ctx.method==='POST'||ctx.method==='PUT'||ctx.method==='PATCH'||ctx.method==='DELETE'){
+        if((ctx.method==='POST'||ctx.method==='PUT'||ctx.method==='PATCH'||ctx.method==='DELETE')&&ctx.fromBatch!==true){
             if(ctx.method==='DELETE'&&(!result||(result.length!=1))){
                 throw new ScirichonWarning('no record found')
             }
@@ -67,7 +71,7 @@ module.exports = {
             if(result){
                 result = await responseHandler.responseMapper(result,params,ctx)
             }else{
-                logger.warn(`${params.uuid} not found`)
+                logger.warn(`不存在uuid:${params.uuid}的对象`)
             }
         }else{
             if(params.pagination){

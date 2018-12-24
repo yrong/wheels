@@ -20,16 +20,16 @@ const addNotification = async (params,ctx)=>{
         let notification = {type:params.category,user:ctx[common.TokenUserName],source:process.env['NODE_NAME']}
         if(ctx.method === 'POST'){
             notification.action = 'CREATE'
-            notification.new = requestHandler.stringFields2Object(params.fields)
+            notification.new = params.fields
         }
         else if(ctx.method === 'PUT' || ctx.method === 'PATCH'){
             notification.action = 'UPDATE'
-            notification.new = requestHandler.stringFields2Object(params.fields)
-            notification.old = requestHandler.stringFields2Object(params.fields_old)
+            notification.new = params.fields
+            notification.old = params.fields_old
             notification.update = params.change
         }else if(ctx.method === 'DELETE'){
             notification.action = 'DELETE'
-            notification.old = requestHandler.stringFields2Object(params.fields_old)
+            notification.old = params.fields_old
         }
         let notification_subscriber = requestHandler.legacyFormat(params)?params.data.notification:params.notification_subscriber
         if(notification_subscriber){
@@ -57,14 +57,14 @@ const addNotification = async (params,ctx)=>{
 
 const updateCache = async (params,ctx)=>{
     if (ctx.method === 'POST') {
-        await scirichon_cache.addItem(requestHandler.stringFields2Object(params.fields))
+        await scirichon_cache.addItem(params.fields)
     }
     else if(ctx.method === 'PUT' || ctx.method === 'PATCH'){
-        await scirichon_cache.delItem(requestHandler.stringFields2Object(params.fields_old))
-        await scirichon_cache.addItem(requestHandler.stringFields2Object(params.fields))
+        await scirichon_cache.delItem(params.fields_old)
+        await scirichon_cache.addItem(params.fields)
     }
     else if (ctx.method === 'DELETE') {
-        await scirichon_cache.delItem(requestHandler.stringFields2Object(params.fields_old))
+        await scirichon_cache.delItem(params.fields_old)
     }
 }
 
@@ -73,17 +73,17 @@ const updateSearch = async (params,ctx)=>{
         let schema_obj = schema.getAncestorSchema(params.category)
         if(schema_obj&&schema_obj.search){
             if(schema_obj.search.upsert){
-                await search.addOrUpdateItem(params,false,true)
+                await search.addOrUpdateItem(params.fields,false,true)
             }else{
-                await search.addOrUpdateItem(params,false,false)
+                await search.addOrUpdateItem(params.fields,false,false)
             }
         }
     }
     else if(ctx.method==='PUT'||ctx.method==='PATCH'){
-        await search.addOrUpdateItem(params,true)
+        await search.addOrUpdateItem(params.fields,true)
     }
     if(ctx.method==='DELETE'){
-        await search.deleteItem(params)
+        await search.deleteItem(params.fields_old)
     }
 }
 

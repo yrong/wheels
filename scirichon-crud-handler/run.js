@@ -12,8 +12,6 @@ const responseWrapper = require('scirichon-response-wrapper')
 const KoaNeo4jApp = require('koa-neo4j-monitor')
 const scirichonSchema = require('scirichon-json-schema')
 const scirichonCache = require('scirichon-cache')
-const scirichonSearch = require('scirichon-search')
-const scirichonCrudHandler = require('scirichon-crud-handler')
 
 /**
  * int koa app and load middleware
@@ -47,8 +45,6 @@ const routes = require(path.resolve('./routes'));
         await app.neo4jConnection.initialized
         await scirichonSchema.initialize(schema_option)
         await scirichonCache.initialize(schema_option)
-        await scirichonSearch.initialize(schema_option)
-        await scirichonCrudHandler.initialize(schema_option)
         app.use(app.router.routes());
         routes.load(app)
         app.server.listen(config.get(`${NODE_NAME}.port`), async function () {

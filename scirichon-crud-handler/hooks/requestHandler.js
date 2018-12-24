@@ -9,7 +9,6 @@ const logger = require('log4js-wrapper-advanced').getLogger()
 const cypherBuilder = require('../cypher/cypherBuilder')
 const scirichon_cache = require('scirichon-cache')
 const cypherInvoker = require('../cypher/cypherInvoker')
-const InternalUsedFields = common.InternalUsedFields
 
 const getCategoryByUrl = function (ctx) {
     let category,val,routeSchemas = schema.getApiRouteSchemas()
@@ -39,37 +38,33 @@ const assignFields4Query = async function (params,ctx) {
     }
 }
 
-const stringifyFields = async (params) => {
-    objectFields2String(params)
-    _.assign(params, params.fields)
-    stringFields2Object(params)
-}
-
 const objectFields2String = (params)=>{
+    let object = _.cloneDeep(params)
     let objectFields=schema.getSchemaObjectProperties(params.category)
     for (let key of objectFields) {
-        if (_.isObject(params.fields[key])) {
-            params.fields[key] = JSON.stringify(params.fields[key])
+        if (_.isObject(params[key])) {
+            object[key] = JSON.stringify(params[key])
         }
     }
-    return params
+    return object
 }
 
 const stringFields2Object = (params) => {
+    let object = _.cloneDeep(params)
     let objectFields=schema.getSchemaObjectProperties(params.category)
     for(let key of objectFields){
         if(_.isString(params[key])){
             try{
-                params[key] = JSON.parse(params[key])
+                object[key] = JSON.parse(params[key])
             }catch(error){
-                //same field with different type in different categories(e.g:'status in 'ConfigurationItem' and 'ProcessFlow'),ignore error and just for protection here
+                //just ignore
             }
         }
     }
-    return params
+    return object
 }
 
-const getReferenceObj = async (key,value)=>{
+const checkReferenceObj = async (key,value)=>{
     let uuid,cached_val= await scirichon_cache.getItemByCategoryAndID(key,value)
     if(cached_val&&cached_val.uuid){
         uuid = cached_val.uuid
@@ -80,33 +75,36 @@ const getReferenceObj = async (key,value)=>{
 }
 
 
-const checkReference = async (params)=>{
-    let refs = schema.getSchemaRefProperties(params.category),key,path,key_name,vals,val,category,ref_obj
+const checkReferenceAndSetNameField = async (params)=>{
+    let refs = schema.getSchemaRefProperties(params.category),key,path,key_name,vals,val,category,ref_obj,ref_names
     if(refs){
         for(let ref of refs){
             key = ref.attr
             path = `$.${key}`
-            vals = jp.query(params, path)
+            vals = jp.query(params.fields, path)
             key_name = _.replace(key, /\./g, '_')+'_name'
             category = ref.schema||(ref.items&&ref.items.schema)
             if(vals&&vals.length){
-                if(ref.type==='array'||ref.item_type){
+                if(ref.type==='array'&&ref.item_type){
                     vals = _.isArray(vals[0])?vals[0]:vals
-                    params[key_name] = []
+                    ref_names = []
                     for(let val of vals){
-                        if(!_.isEmpty(val)) {
-                            ref_obj = await getReferenceObj(category, val)
-                            if (ref_obj && ref_obj.unique_name) {
-                                params[key_name].push(ref_obj.unique_name)
+                        if(_.isString(val)) {
+                            ref_obj = await checkReferenceObj(category, val)
+                            if (ref_obj && ref_obj.unique_name &&config.get("addRefUniqueNameField")) {
+                                ref_names.push(ref_obj.unique_name)
                             }
                         }
+                    }
+                    if(ref_names.length){
+                        params.fields[key_name] = ref_names
                     }
                 }else{
                     val = vals[0]
                     if(!_.isEmpty(val)){
-                        ref_obj = await getReferenceObj(category,val)
-                        if(ref_obj&&ref_obj.unique_name){
-                            params[key_name] = ref_obj.unique_name
+                        ref_obj = await checkReferenceObj(category,val)
+                        if(ref_obj&&ref_obj.unique_name&&config.get("addRefUniqueNameField")){
+                            params.fields[key_name] = ref_obj.unique_name
                         }
                     }
                 }
@@ -122,16 +120,7 @@ const logCypher = (params)=>{
 
 const checkIfUidReferencedByOthers = (uuid,items)=>{
     for(let item of items){
-        let objectFields=schema.getSchemaObjectProperties(item.category)
-        for(let key of objectFields){
-            if(_.isString(item[key])){
-                try{
-                    item[key] = JSON.parse(item[key])
-                }catch(error){
-                    //same field with different type in different categories(e.g:'status in 'ConfigurationItem' and 'ProcessFlow'),ignore error and just for protection here
-                }
-            }
-        }
+        item = stringFields2Object(item)
         let refProperties = schema.getSchemaRefProperties(item.category)
         for(let refProperty of refProperties){
             let key = refProperty.attr
@@ -141,16 +130,6 @@ const checkIfUidReferencedByOthers = (uuid,items)=>{
             }
         }
     }
-}
-
-const fieldsChecker = (params)=>{
-    let fields = params.data&&params.data.fields||params
-    for (let prop in fields) {
-        if(_.includes(InternalUsedFields,prop)){
-            throw new ScirichonError(`${prop} not allowed`)
-        }
-    }
-    return params
 }
 
 const generateUniqueNameFieldAndCompoundModel = async (params, ctx) => {
@@ -202,7 +181,7 @@ const checkUniqueField = async(params,ctx)=>{
 const generateFieldsForCreate = async(params,ctx)=>{
     params.fields = legacyFormat(params)?_.assign({}, params.data.fields):_.assign({}, params)
     params.category = params.fields.category = legacyFormat(params)?params.data.category:params.category
-    params.fields.uuid = params.fields.uuid || uuid.v1()
+    params.uuid = params.fields.uuid = params.fields.uuid || uuid.v1()
     params.fields.created = params.fields.created || Date.now()
     params.fields.lastUpdated = params.fields.lastUpdated || Date.now()
     await generateDynamicSeqField(params, ctx)
@@ -212,7 +191,7 @@ const generateFieldsForCreate = async(params,ctx)=>{
 
 const generateFieldsForUpdate = async(result,params,ctx)=>{
     params.change = legacyFormat(params)?_.assign({}, params.data.fields):_.assign({}, params)
-    params.fields_old = _.omit(result, 'id')
+    params.fields_old = stringFields2Object(_.omit(result, 'id'))
     params.fields = _.assign({}, params.fields_old, params.change)
     params.fields.lastUpdated = params.change.lastUpdated || Date.now()
     await generateUniqueNameFieldAndCompoundModel(params, ctx)
@@ -230,9 +209,7 @@ const assignFields4CreateOrUpdate = async (params,ctx)=>{
             throw new ScirichonError("不存在该节点,更新失败")
         }
     }
-    params = _.assign(params, params.fields)
-    await checkReference(params)
-    await stringifyFields(params)
+    await checkReferenceAndSetNameField(params)
 }
 
 const assignFields4Delete = async (params,ctx)=>{
@@ -242,7 +219,7 @@ const assignFields4Delete = async (params,ctx)=>{
         if(result&&result[0]){
             result = result[0]
             if(result.self){
-                params.fields_old = _.omit(result.self,'id')
+                params.fields_old = stringFields2Object(_.omit(result.self,'id'))
                 if(result.items&&result.items.length&&params.force_delete!=='true'){
                     checkIfUidReferencedByOthers(params.uuid,result.items)
                 }
@@ -290,7 +267,6 @@ const generateCypher = async(params,ctx)=>{
             }
         }
     }
-    logCypher(params)
 }
 
 const handleRequest = async (params, ctx)=>{
@@ -300,4 +276,4 @@ const handleRequest = async (params, ctx)=>{
 }
 
 
-module.exports = {getCategoryByUrl,handleRequest,fieldsChecker,logCypher,getIndexByCategory,generateUniqueNameFieldAndCompoundModel,stringFields2Object,legacyFormat}
+module.exports = {getCategoryByUrl,handleRequest,logCypher,getIndexByCategory,generateUniqueNameFieldAndCompoundModel,stringFields2Object,legacyFormat,objectFields2String}

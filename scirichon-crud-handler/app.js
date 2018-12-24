@@ -46,8 +46,6 @@ const routes = require('./routes');
         await app.neo4jConnection.initialized
         await scirichonSchema.initialize(schema_option)
         await scirichonCache.initialize(schema_option)
-        await scirichonSearch.initialize(schema_option)
-        await scirichonCrudHandler.initialize(schema_option)
         app.use(app.router.routes());
         routes.load(app)
         app.server.listen(config.get(`${NODE_NAME}.port`), async function () {

@@ -8,7 +8,6 @@ const requestHandler = require('./requestHandler')
 const cypherInvoker = require('../cypher/cypherInvoker')
 const requestPostHandler = require('./requestPostHandler')
 const hooks = require('./index')
-const InternalUsedFields = common.InternalUsedFields
 
 const batchUpdate  = async(ctx,category,uuids,change_obj,removed)=>{
     let cypher = `unwind {uuids} as uuid match (n:${category}) where n.uuid=uuid set `,script=``,old_obj, new_obj,objs=[]
@@ -30,59 +29,59 @@ const batchUpdate  = async(ctx,category,uuids,change_obj,removed)=>{
     if(index) {
         await search.batchUpdate(index, uuids, {script: {inline: script, params: change_obj}})
     }
-    for (let uuid of uuids) {
-        old_obj = await scirichon_cache.getItemByCategoryAndID(category, uuid)
-        if (!_.isEmpty(old_obj)) {
-            new_obj = _.assign({}, old_obj, change_obj)
-            if (removed) {
-                new_obj = _.omit(new_obj, removed)
+    let schema_obj = schema.getAncestorSchema(category)
+    if(schema_obj.cache&&schema_obj.cache.ignore){
+    }else{
+        for (let uuid of uuids) {
+            old_obj = await scirichon_cache.getItemByCategoryAndID(category, uuid)
+            if (!_.isEmpty(old_obj)) {
+                new_obj = _.assign({}, old_obj, change_obj)
+                if (removed) {
+                    new_obj = _.omit(new_obj, removed)
+                }
+                await scirichon_cache.addItem(new_obj)
+                objs.push({uuid,old_obj,new_obj})
             }
-            await scirichon_cache.addItem(new_obj)
         }
-        objs.push({uuid,old_obj,new_obj})
-    }
-    let needNotify = requestPostHandler.needNotify({category},ctx)
-    if(needNotify) {
-        let notifications = [], notification_url = common.getServiceApiUrl('notifier')
-        for (let obj of objs) {
-            notification = {user: ctx[common.TokenUserName], source: process.env['NODE_NAME'], action: 'UPDATE'}
-            notification.type = category
-            notification.update = change_obj
-            notification.new = obj.new_obj
-            notification.old = obj.old_obj
-            notifications.push(notification)
+        let needNotify = requestPostHandler.needNotify({category},ctx)
+        if(needNotify) {
+            let notifications = [], notification_url = common.getServiceApiUrl('notifier')
+            for (let obj of objs) {
+                notification = {user: ctx[common.TokenUserName], source: process.env['NODE_NAME'], action: 'UPDATE'}
+                notification.type = category
+                notification.update = change_obj
+                notification.new = obj.new_obj
+                notification.old = obj.old_obj
+                notifications.push(notification)
+            }
+            await common.apiInvoker('POST', notification_url, '/api/notifications/batch', '', notifications)
         }
-        await common.apiInvoker('POST', notification_url, '/api/notifications/batch', '', notifications)
     }
 }
 
 const batchAdd  = async(ctx,category,entries)=>{
-    for(let item of entries){
-        let handlers = hooks.getHandlers(),customizedHandler = handlers&&handlers[category]
-        if(customizedHandler){
-            if(item.procedure&&item.procedure.ignoreCustomizedHandler) {
-            }else{
-                await customizedHandler.postProcess(item, ctx)
-            }
-        }
-    }
-    let items = _.map(entries,(entry)=>entry.fields)
+    let stringified_items = _.map(entries,(entry)=>entry.stringified_fields)
     let cypher = `unwind {items} as item merge (n:${category} {uuid:item.uuid}) on create set n=item on match set n=item`
-    await cypherInvoker.executeCypher(ctx, cypher, {items: items})
+    let result = await cypherInvoker.executeCypher(ctx, cypher, {items: stringified_items})
+    ctx.fromBatch = true
+    for(let item of entries){
+        await hooks.cudItem_postProcess(result,item,ctx)
+    }
     let index = requestHandler.getIndexByCategory(category)
     if(index){
-        await search.batchCreate(index,entries)
+        let items = _.map(entries,(entry)=>entry.fields)
+        await search.batchCreate(index,items)
     }
-    for(let item of entries){
-        await scirichon_cache.addItem(_.omit(item,InternalUsedFields))
+    for(let entry of entries){
+        await scirichon_cache.addItem(entry.fields)
     }
     let needNotify = requestPostHandler.needNotify({category},ctx)
     if(needNotify){
         let notifications = [],notification_url = common.getServiceApiUrl('notifier')
-        for(let item of entries){
+        for(let entry of entries){
             notification = {user:ctx[common.TokenUserName],source:process.env['NODE_NAME'],action:'CREATE'}
-            notification.type = item.category
-            notification.new = _.omit(item,InternalUsedFields)
+            notification.type = entry.category
+            notification.new = entry.fields
             notifications.push(notification)
         }
         await common.apiInvoker('POST',notification_url,'/api/notifications/batch','',notifications)
@@ -96,29 +95,31 @@ const batchDelete  = async(ctx,category,uuids)=>{
     if(index){
         await search.batchDelete(index,uuids)
     }
-    let needNotify = requestPostHandler.needNotify({category},ctx),old_obj,
-        notifications = [],notification_url = common.getServiceApiUrl('notifier')
-    if(needNotify){
-        for(let uuid of uuids){
-            old_obj = await scirichon_cache.getItemByCategoryAndID(category, uuid)
-            notification = {user:ctx[common.TokenUserName],source:process.env['NODE_NAME'],action:'DELETE'}
-            notification.type = category
-            notification.old = old_obj
-            notifications.push(notification)
+    let schema_obj = schema.getAncestorSchema(category)
+    if(schema_obj.cache&&schema_obj.cache.ignore){
+    }else{
+        let needNotify = requestPostHandler.needNotify({category},ctx),old_obj,
+            notifications = [],notification_url = common.getServiceApiUrl('notifier')
+        if(needNotify){
+            for(let uuid of uuids){
+                old_obj = await scirichon_cache.getItemByCategoryAndID(category, uuid)
+                if (!_.isEmpty(old_obj)){
+                    await scirichon_cache.delItem(old_obj)
+                    notification = {user:ctx[common.TokenUserName],source:process.env['NODE_NAME'],action:'DELETE'}
+                    notification.type = category
+                    notification.old = old_obj
+                    notifications.push(notification)
+                }
+            }
+            await common.apiInvoker('POST',notification_url,'/api/notifications/batch','',notifications)
         }
-        await common.apiInvoker('POST',notification_url,'/api/notifications/batch','',notifications)
-    }
-    for(let uuid of uuids){
-        old_obj = await scirichon_cache.getItemByCategoryAndID(category, uuid)
-        await scirichon_cache.delItem(old_obj)
     }
 }
 
 const batchAddProcessor = async (params,ctx)=>{
-    let entries = params.data.fields,category = params.data.category,item,items=[],result
+    let entries = params.data.fields,category = params.data.category,item,items=[],result,handlers
     for(let entry of entries){
         schema.checkObject(category,entry)
-        requestHandler.fieldsChecker(entry)
         item={category,data:{category}}
         item.data.fields = entry
         item.procedure = params.procedure

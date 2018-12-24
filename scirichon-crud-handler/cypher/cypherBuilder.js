@@ -9,8 +9,8 @@ const jp = require('jsonpath')
  * common template
  */
 const addNodeCypher = (labels) => `MERGE (n:${labels} {uuid: {uuid}})
-                                    ON CREATE SET n = {fields}
-                                    ON MATCH SET n = {fields}`
+                                    ON CREATE SET n = {stringified_fields}
+                                    ON MATCH SET n = {stringified_fields}`
 
 const generateNodeCypher=(params)=>{
     let labels = schema.getParentCategories(params.category)
@@ -98,8 +98,7 @@ const generateQueryItemByCategoryCypher = (params) => {
         return `n:${tag}`
     }).join(' OR ')
     return `MATCH (n) WHERE ((not exists(n.status) or n.status<>'deleted') and (${condition}))
-    return n
-    `
+    return n`
 }
 
 const generateQueryInheritHierarchyCypher = `MATCH (base:CategoryLabel{category:{category}})
@@ -112,20 +111,20 @@ const generateInheritRelCypher = `MERGE (base:CategoryLabel{category:{category}}
 
 const addRelCypher = (params,ref)=>{
     let cypher=`MATCH (node:${params.category}{uuid:{uuid}})
-                MATCH (ref_node:${ref.schema}{uuid:{${ref.attr}}})`,
+                MATCH (ref_node:${ref.schema}{uuid:{fields}.${ref.attr}})`,
         rel_attr=ref.attr.split('.'),relType=ref.relationship.name
     if(rel_attr.length==1){
         if(ref.type === 'array'){
-            cypher = `UNWIND {${ref.attr}} as ref_id
+            cypher = `UNWIND {fields}.${ref.attr} as ref_id
                 MATCH (node:${params.category} {uuid:{uuid}})
                 MATCH (ref_node:${ref.schema}{uuid:ref_id})`
         }
     }
     else if(rel_attr.length==2){
         cypher = `MATCH (node:${params.category}{uuid:{uuid}})
-                    MATCH (ref_node:${ref.schema}{uuid:{${rel_attr[0]}}.${rel_attr[1]}})`
+                    MATCH (ref_node:${ref.schema}{uuid:{fields}.${rel_attr[0]}.${rel_attr[1]}})`
     }else if(rel_attr.length==3){
-        cypher = `UNWIND {${rel_attr[0]}} as ref_item
+        cypher = `UNWIND {fields}.${rel_attr[0]} as ref_item
                     MATCH (node:${params.category} {uuid:{uuid}})
                     MATCH (ref_node:${ref.schema}{uuid:ref_item.${rel_attr[2]}})`
     }else{
@@ -137,7 +136,7 @@ const addRelCypher = (params,ref)=>{
         cypher = cypher + ` MERGE (node)-[r:${relType}]->(ref_node)`
     if(ref.relationship.parentObjectAsRelProperty){
         if(rel_attr.length==2){
-            cypher = cypher + ` ON CREATE SET r={${rel_attr[0]}} ON MATCH SET r={${rel_attr[0]}}`
+            cypher = cypher + ` ON CREATE SET r={fields}.${rel_attr[0]} ON MATCH SET r={fields}.${rel_attr[0]}`
         }else if(rel_attr.length==3){
             cypher = cypher + ` ON CREATE SET r=ref_item ON MATCH SET r=ref_item`
         }else{
@@ -166,7 +165,7 @@ const generateDeleteRelationCypher = (params)=>{
 const generateAddRelationCypher = (params)=>{
     let refProperties = schema.getSchemaRefProperties(params.category),val,cypher,cyphers = []
     for(let ref of refProperties){
-        val = jp.query(params, `$.${ref.attr}`)[0]
+        val = jp.query(params.fields, `$.${ref.attr}`)[0]
         if(val&&ref.relationship){
             cypher = addRelCypher(params,ref)
             cyphers.push(cypher)
