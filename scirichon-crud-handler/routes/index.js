@@ -164,5 +164,12 @@ module.exports = (app)=>{
         procedure: hooks.getItemWithMembers
     })
 
+    /*generate uuid*/
+    app.defineAPI({
+        method: 'POST',
+        route: '/api/generateId',
+        procedure: hooks.generateId
+    })
+
     return app
 }

@@ -12,6 +12,7 @@ const cypherInvoker = require('../cypher/cypherInvoker')
 const requestPostHandler = require('./requestPostHandler')
 const cache = require('scirichon-cache')
 const search = require('scirichon-search')
+const uuid = require('uuid')
 
 module.exports = {
     cypherInvoker,
@@ -178,6 +179,13 @@ module.exports = {
     },
     getLicense:async function(params,ctx){
         return ctx.state&&ctx.state.license||{}
+    },
+    generateId:async function(params,ctx){
+        let size = params.size||1,ids = []
+        for(var i=0;i<size;i++){
+            ids.push(uuid.v1())
+        }
+        return ids
     }
 }
 
