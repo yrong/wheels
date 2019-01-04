@@ -6,6 +6,12 @@ JSONSelect@0.4.0:
   version "0.4.0"
   resolved "https://registry.npmjs.org/JSONSelect/-/JSONSelect-0.4.0.tgz#a08edcc67eb3fcbe99ed630855344a0cf282bb8d"
 
+agentkeepalive@^3.4.1:
+  version "3.5.2"
+  resolved "https://registry.npmjs.org/agentkeepalive/-/agentkeepalive-3.5.2.tgz#a113924dd3fa24a0bc3b78108c450c2abee00f67"
+  dependencies:
+    humanize-ms "^1.2.1"
+
 ajv@^5.1.0, ajv@^5.3.0:
   version "5.5.2"
   resolved "https://registry.npmjs.org/ajv/-/ajv-5.5.2.tgz#73b5eeca3fab653e3d3f9422b341ad42205dc965"
@@ -22,10 +28,6 @@ ansi-regex@^2.0.0:
 ansi-styles@^2.2.1:
   version "2.2.1"
   resolved "https://registry.npmjs.org/ansi-styles/-/ansi-styles-2.2.1.tgz#b432dd3358b634cf75e1e4664368240533c1ddbe"
-
-asap@~2.0.3:
-  version "2.0.6"
-  resolved "https://registry.npmjs.org/asap/-/asap-2.0.6.tgz#e50347611d7e690943208bbdafebcbc2fb866d46"
 
 asn1@~0.2.3:
   version "0.2.3"
@@ -108,7 +110,7 @@ config@^1.25.1:
     json5 "0.4.0"
     os-homedir "1.0.2"
 
-core-util-is@1.0.2, core-util-is@~1.0.0:
+core-util-is@1.0.2:
   version "1.0.2"
   resolved "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
 
@@ -124,15 +126,7 @@ dashdash@^1.12.0:
   dependencies:
     assert-plus "^1.0.0"
 
-date-format@^0.0.0:
-  version "0.0.0"
-  resolved "https://registry.npmjs.org/date-format/-/date-format-0.0.0.tgz#09206863ab070eb459acea5542cbd856b11966b3"
-
-debug@^0.7.2:
-  version "0.7.4"
-  resolved "https://registry.npmjs.org/debug/-/debug-0.7.4.tgz#06e1ea8082c2cb14e39806e22e2f6f757f92af39"
-
-debug@^2.2.0, debug@^2.6.6, debug@^2.6.9:
+debug@^2.6.6, debug@^2.6.9:
   version "2.6.9"
   resolved "https://registry.npmjs.org/debug/-/debug-2.6.9.tgz#5d128515df134ff327e90a4c93f4e077a536341f"
   dependencies:
@@ -160,14 +154,13 @@ ecc-jsbn@~0.1.1:
   dependencies:
     jsbn "~0.1.0"
 
-elasticsearch@^12.1.3:
-  version "12.1.3"
-  resolved "https://registry.npmjs.org/elasticsearch/-/elasticsearch-12.1.3.tgz#5108e67ae5d83e5e7f30d3d294fd7017df0e3771"
+elasticsearch@^15.0.0:
+  version "15.2.0"
+  resolved "https://registry.npmjs.org/elasticsearch/-/elasticsearch-15.2.0.tgz#234362b5aa743d9c0a925566569ea7813b8f2569"
   dependencies:
+    agentkeepalive "^3.4.1"
     chalk "^1.0.0"
-    forever-agent "^0.6.0"
-    lodash "^4.12.0"
-    promise "^7.1.1"
+    lodash "^4.17.10"
 
 es6-promise@^4.0.3:
   version "4.2.4"
@@ -251,7 +244,7 @@ fast-levenshtein@~2.0.4:
   version "2.0.6"
   resolved "https://registry.npmjs.org/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz#3d8a5c66883a16a30ca8643e851f19baa7797917"
 
-forever-agent@^0.6.0, forever-agent@~0.6.1:
+forever-agent@~0.6.1:
   version "0.6.1"
   resolved "https://registry.npmjs.org/forever-agent/-/forever-agent-0.6.1.tgz#fbc71f0c41adeb37f96c577ad1ed42d8fdacca91"
 
@@ -315,9 +308,11 @@ http-signature@~1.2.0:
     jsprim "^1.2.2"
     sshpk "^1.7.0"
 
-inherits@~2.0.1:
-  version "2.0.3"
-  resolved "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz#633c2c83e3da42a502f52466022480f4208261de"
+humanize-ms@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.npmjs.org/humanize-ms/-/humanize-ms-1.2.1.tgz#c46e3159a293f6b896da29316d8b6fe8bb79bbed"
+  dependencies:
+    ms "^2.0.0"
 
 is-json@^2.0.1:
   version "2.0.1"
@@ -326,10 +321,6 @@ is-json@^2.0.1:
 is-typedarray@~1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/is-typedarray/-/is-typedarray-1.0.0.tgz#e479c80858df0c1b11ddda6940f96011fcda4a9a"
-
-isarray@0.0.1:
-  version "0.0.1"
-  resolved "https://registry.npmjs.org/isarray/-/isarray-0.0.1.tgz#8a18acfca9a8f4177e09abfc6038939b05d1eedf"
 
 isstream@~0.1.2:
   version "0.1.2"
@@ -418,23 +409,13 @@ lodash.pick@^4.4.0:
   version "4.4.0"
   resolved "https://registry.npmjs.org/lodash.pick/-/lodash.pick-4.4.0.tgz#52f05610fff9ded422611441ed1fc123a03001b3"
 
-lodash@^4.12.0, lodash@^4.13.1, lodash@^4.17.4:
+lodash@^4.13.1, lodash@^4.17.4:
   version "4.17.10"
   resolved "https://registry.npmjs.org/lodash/-/lodash-4.17.10.tgz#1b7793cf7259ea38fb3661d4d38b3260af8ae4e7"
 
-log4js@^1.1.0:
-  version "1.1.1"
-  resolved "https://registry.npmjs.org/log4js/-/log4js-1.1.1.tgz#c21d29c7604089e4f255833e7f94b3461de1ff43"
-  dependencies:
-    debug "^2.2.0"
-    semver "^5.3.0"
-    streamroller "^0.4.0"
-
-log4js_wrapper@1.0.3-beta.5:
-  version "1.0.3-beta.5"
-  resolved "https://registry.npmjs.org/log4js_wrapper/-/log4js_wrapper-1.0.3-beta.5.tgz#9ce92fe63dbff2a79788b0337075b785c0141693"
-  dependencies:
-    log4js "^1.1.0"
+lodash@^4.17.10:
+  version "4.17.11"
+  resolved "https://registry.npmjs.org/lodash/-/lodash-4.17.11.tgz#b39ea6229ef607ecd89e2c8df12536891cac9b8d"
 
 mime-db@~1.33.0:
   version "1.33.0"
@@ -464,9 +445,13 @@ ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
 
-node-cache-redis-fork@2.2.0-beta.3:
-  version "2.2.0-beta.3"
-  resolved "https://registry.npmjs.org/node-cache-redis-fork/-/node-cache-redis-fork-2.2.0-beta.3.tgz#1d6931353a4e6f49749e1285820ed09bdf408e0b"
+ms@^2.0.0:
+  version "2.1.1"
+  resolved "https://registry.npmjs.org/ms/-/ms-2.1.1.tgz#30a5864eb3ebb0a66f2ebe6d727af06a09d86e0a"
+
+node-cache-redis-fork@^2.2.2:
+  version "2.2.2"
+  resolved "https://registry.npmjs.org/node-cache-redis-fork/-/node-cache-redis-fork-2.2.2.tgz#e95c25d9bec0b43a7ae01123d5379f65f9d85cca"
   dependencies:
     debug "^2.6.6"
     es6-promisify "^5.0.0"
@@ -511,12 +496,6 @@ prelude-ls@~1.1.2:
   version "1.1.2"
   resolved "https://registry.npmjs.org/prelude-ls/-/prelude-ls-1.1.2.tgz#21932a549f5e52ffd9a827f570e04be62a97da54"
 
-promise@^7.1.1:
-  version "7.3.1"
-  resolved "https://registry.npmjs.org/promise/-/promise-7.3.1.tgz#064b72602b18f90f29192b8b1bc418ffd1ebd3bf"
-  dependencies:
-    asap "~2.0.3"
-
 punycode@^1.4.1:
   version "1.4.1"
   resolved "https://registry.npmjs.org/punycode/-/punycode-1.4.1.tgz#c0d5a63b2718800ad8e1eb0fa5269c84dd41845e"
@@ -525,22 +504,13 @@ qs@~6.5.1:
   version "6.5.1"
   resolved "https://registry.npmjs.org/qs/-/qs-6.5.1.tgz#349cdf6eef89ec45c12d7d5eb3fc0c870343a6d8"
 
-readable-stream@^1.1.7:
-  version "1.1.14"
-  resolved "https://registry.npmjs.org/readable-stream/-/readable-stream-1.1.14.tgz#7cf4c54ef648e3813084c636dd2079e166c081d9"
-  dependencies:
-    core-util-is "~1.0.0"
-    inherits "~2.0.1"
-    isarray "0.0.1"
-    string_decoder "~0.10.x"
-
 redis-commands@^1.2.0:
   version "1.3.5"
   resolved "https://registry.npmjs.org/redis-commands/-/redis-commands-1.3.5.tgz#4495889414f1e886261180b1442e7295602d83a2"
 
-redis-crud-fork@1.0.0-beta.8:
-  version "1.0.0-beta.8"
-  resolved "https://registry.npmjs.org/redis-crud-fork/-/redis-crud-fork-1.0.0-beta.8.tgz#6ff803b251f092bb7a5d108c75d24f43b30fd057"
+redis-crud-fork@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.npmjs.org/redis-crud-fork/-/redis-crud-fork-1.0.1.tgz#91160c6f967c5d6180d62515b70dcae84cd6f9b4"
 
 redis-parser@^2.6.0:
   version "2.6.0"
@@ -607,70 +577,57 @@ safe-buffer@^5.0.1, safe-buffer@^5.1.1:
   version "5.1.2"
   resolved "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.1.2.tgz#991ec69d296e0313747d59bdfd2b745c35f8828d"
 
-scirichon-cache@1.0.7-beta.3:
-  version "1.0.7-beta.3"
-  resolved "https://registry.npmjs.org/scirichon-cache/-/scirichon-cache-1.0.7-beta.3.tgz#3071e1a2d2598cf102eecf8da5f60a2c64bac2cb"
+scirichon-cache@1.0.11-beta.1:
+  version "1.0.11-beta.1"
+  resolved "https://registry.npmjs.org/scirichon-cache/-/scirichon-cache-1.0.11-beta.1.tgz#c91b8767638244766e6a349c396c6fd8f9f2c5f3"
   dependencies:
     config "^1.25.1"
     lodash "^4.17.4"
-    node-cache-redis-fork "2.2.0-beta.3"
+    node-cache-redis-fork "^2.2.2"
     request "^2.81.0"
     request-promise "^4.1.1"
-    scirichon-common "1.0.2-beta.7"
-    scirichon-json-schema "1.0.2-beta.4"
-    uuid-validate "0.0.2"
+    scirichon-common "1.0.7-beta.1"
+    scirichon-json-schema "^1.0.3"
+    uuid-validate "^0.0.2"
 
-scirichon-common@1.0.2-beta.7:
-  version "1.0.2-beta.7"
-  resolved "https://registry.npmjs.org/scirichon-common/-/scirichon-common-1.0.2-beta.7.tgz#03dba99b6d9187dd9b4769bfb1a109138e8bf549"
-  dependencies:
-    config "^1.25.1"
-    lodash "^4.17.4"
-    request "^2.81.0"
-    request-promise "^4.1.1"
-
-scirichon-common@1.0.2-beta.8:
-  version "1.0.2-beta.8"
-  resolved "https://registry.npmjs.org/scirichon-common/-/scirichon-common-1.0.2-beta.8.tgz#37e63df5478683b21f1d42890822f08cecdb6846"
+scirichon-common@1.0.7-beta.1:
+  version "1.0.7-beta.1"
+  resolved "https://registry.npmjs.org/scirichon-common/-/scirichon-common-1.0.7-beta.1.tgz#0138fbc56e4092bed308e904d7ad4320ad58b82a"
   dependencies:
     config "^1.25.1"
     lodash "^4.17.4"
     request "^2.81.0"
     request-promise "^4.1.1"
 
-scirichon-json-schema@1.0.2-beta.4:
-  version "1.0.2-beta.4"
-  resolved "https://registry.npmjs.org/scirichon-json-schema/-/scirichon-json-schema-1.0.2-beta.4.tgz#5d64723d32555f0750713e095d64606764c831d4"
+scirichon-json-schema@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.npmjs.org/scirichon-json-schema/-/scirichon-json-schema-1.0.3.tgz#ecadcab06a7e45329fec93f0fb36e2b80f739198"
   dependencies:
     ajv "^5.3.0"
     lodash "^4.17.4"
     redis "^2.8.0"
-    redis-crud-fork "1.0.0-beta.8"
+    redis-crud-fork "^1.0.1"
 
-scirichon-response-mapper@1.0.2-beta.5:
-  version "1.0.2-beta.5"
-  resolved "https://registry.npmjs.org/scirichon-response-mapper/-/scirichon-response-mapper-1.0.2-beta.5.tgz#84e51e35a1da959eff213919c1e21ebebac428f7"
+scirichon-response-mapper@1.0.7-beta.1:
+  version "1.0.7-beta.1"
+  resolved "https://registry.npmjs.org/scirichon-response-mapper/-/scirichon-response-mapper-1.0.7-beta.1.tgz#edf9c5a51ffe6a44069cd72979189530ba3212d6"
   dependencies:
     lodash "^4.17.4"
-    scirichon-cache "1.0.7-beta.3"
-    scirichon-common "1.0.2-beta.8"
-    scirichon-json-schema "1.0.2-beta.4"
+    scirichon-cache "1.0.11-beta.1"
+    scirichon-common "1.0.7-beta.1"
+    scirichon-json-schema "^1.0.3"
 
-scirichon-search@1.0.0-beta.4:
-  version "1.0.0-beta.4"
-  resolved "https://registry.npmjs.org/scirichon-search/-/scirichon-search-1.0.0-beta.4.tgz#c08439af06c122dc4a6d005b3d30e6a9fa9cf089"
+scirichon-search@1.0.6-beta.1:
+  version "1.0.6-beta.1"
+  resolved "https://registry.npmjs.org/scirichon-search/-/scirichon-search-1.0.6-beta.1.tgz#e5280974b27b00cf71dc8c023b6786ecfb84ec04"
   dependencies:
     config "^1.25.1"
-    elasticsearch "^12.1.3"
+    elasticsearch "^15.0.0"
     lodash "^4.17.4"
-    scirichon-cache "1.0.7-beta.3"
-    scirichon-common "1.0.2-beta.8"
-    scirichon-json-schema "1.0.2-beta.4"
-    scirichon-response-mapper "1.0.2-beta.5"
-
-semver@^5.3.0:
-  version "5.5.0"
-  resolved "https://registry.npmjs.org/semver/-/semver-5.5.0.tgz#dc4bbc7a6ca9d916dee5d43516f0092b58f7b8ab"
+    scirichon-cache "1.0.11-beta.1"
+    scirichon-common "1.0.7-beta.1"
+    scirichon-json-schema "^1.0.3"
+    scirichon-response-mapper "1.0.7-beta.1"
 
 sntp@2.x.x:
   version "2.1.0"
@@ -709,19 +666,6 @@ static-eval@2.0.0:
 stealthy-require@^1.1.0:
   version "1.1.1"
   resolved "https://registry.npmjs.org/stealthy-require/-/stealthy-require-1.1.1.tgz#35b09875b4ff49f26a777e509b3090a3226bf24b"
-
-streamroller@^0.4.0:
-  version "0.4.1"
-  resolved "https://registry.npmjs.org/streamroller/-/streamroller-0.4.1.tgz#d435bd5974373abd9bd9068359513085106cc05f"
-  dependencies:
-    date-format "^0.0.0"
-    debug "^0.7.2"
-    mkdirp "^0.5.1"
-    readable-stream "^1.1.7"
-
-string_decoder@~0.10.x:
-  version "0.10.31"
-  resolved "https://registry.npmjs.org/string_decoder/-/string_decoder-0.10.31.tgz#62e203bc41766c6c28c9fc84301dab1c5310fa94"
 
 stringstream@~0.0.5:
   version "0.0.5"
@@ -767,7 +711,7 @@ underscore@1.7.0:
   version "1.7.0"
   resolved "https://registry.npmjs.org/underscore/-/underscore-1.7.0.tgz#6bbaf0877500d36be34ecaa584e0db9fef035209"
 
-uuid-validate@0.0.2:
+uuid-validate@^0.0.2:
   version "0.0.2"
   resolved "https://registry.npmjs.org/uuid-validate/-/uuid-validate-0.0.2.tgz#ed883d26cf0d1819763abfa315e9626ddb67c8e8"
 
