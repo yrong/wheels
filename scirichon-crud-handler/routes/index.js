@@ -80,14 +80,14 @@ module.exports = (app)=>{
                     case 'BatchAdd':
                         app.defineAPI({
                             method: 'POST',
-                            route: val.route + '/batch',
+                            route: '/batch' + val.route,
                             procedure:batchHandler.batchAddProcessor
                         })
                         break
                     case 'BatchUpdate':
                         app.defineAPI({
                             method: 'PUT',
-                            route: val.route + '/batch',
+                            route: '/batch' + val.route ,
                             procedure:batchHandler.batchUpdateProcessor
                         })
                         break

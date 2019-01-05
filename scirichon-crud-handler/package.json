@@ -1,6 +1,6 @@
 {
   "name": "scirichon-crud-handler",
-  "version": "1.0.5-beta.32",
+  "version": "1.0.5-beta.33",
   "bin": {
     "scirichon-crud-api": "run.js"
   },
