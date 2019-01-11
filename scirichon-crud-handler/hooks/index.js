@@ -176,6 +176,7 @@ module.exports = {
                 }
             }
         }
+        return {}
     },
     getLicense:async function(params,ctx){
         return ctx.state&&ctx.state.license||{}

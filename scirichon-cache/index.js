@@ -47,11 +47,13 @@ const del = async (key)=>{
 }
 
 const flushAll = async ()=>{
-    client.eval("return redis.call('del', 'default-template',unpack(redis.call('keys', ARGV[1])))", 0, prefix+'*', (err, res) => {
-        if(err)
-            reject(err)
-        else
-            resolve(res)
+    return new Promise((resolve, reject) => {
+        client.eval("return redis.call('del', 'default-template',unpack(redis.call('keys', ARGV[1])))", 0, prefix+'*', (err, res) => {
+            if(err)
+                reject(err)
+            else
+                resolve(res)
+        })
     })
 }
 
