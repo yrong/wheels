@@ -20,14 +20,16 @@ const findRefCategory = (category,key)=>{
     }
 }
 
-const aggsMetaFields = ['key','key_as_string','buckets','doc_count','doc_count_error_upper_bound','sum_other_doc_count','ref_obj']
+const ignoredMetaFields = ['doc_count_error_upper_bound','sum_other_doc_count','key_as_string','value_as_string']
+const aggsMetaFields = _.concat(['key','buckets','doc_count','ref_obj'],ignoredMetaFields)
 
-const aggsReferencedMapper =  async (val,category) => {
+const removeBucketAndAddRefObjField =  async (val,category) => {
     let keys = _.keys(val)
     for(let key of keys){
         if(!_.includes(aggsMetaFields,key)){
             if(_.isArray(val[key]['buckets'])){
-                for(let internal_val of val[key]['buckets']){
+                val[key] = val[key]['buckets']
+                for(let internal_val of val[key]){
                     let ref_category = findRefCategory(category,key),cached_obj
                     if(ref_category){
                         cached_obj = await scirichonCache.getItemByCategoryAndID(ref_category,internal_val.key)
@@ -35,7 +37,7 @@ const aggsReferencedMapper =  async (val,category) => {
                             internal_val.ref_obj = cached_obj
                         }
                     }
-                    await aggsReferencedMapper(internal_val,category)
+                    await removeBucketAndAddRefObjField(internal_val,category)
                 }
             }
         }
@@ -43,18 +45,18 @@ const aggsReferencedMapper =  async (val,category) => {
     return val
 }
 
-const removeAndRenameInternalProperties =  (val) => {
+const removeIgnoredMetaField =  (val) => {
     if(_.isArray(val)) {
         val = _.map(val, function (val) {
-            return removeAndRenameInternalProperties(val)
+            return removeIgnoredMetaField(val)
         });
     }else if(_.isObject(val)){
         for (let prop in val) {
-            if(_.includes(['doc_count_error_upper_bound','sum_other_doc_count'],prop)){
+            if(_.includes(ignoredMetaFields,prop)){
                 delete val[prop]
             }
             if(typeof val[prop] === 'object')
-                removeAndRenameInternalProperties(val[prop])
+                removeIgnoredMetaField(val[prop])
         }
     }
     return val
@@ -63,8 +65,8 @@ const removeAndRenameInternalProperties =  (val) => {
 const esResponseMapper = async function(result,params,ctx){
     if(params.aggs){
         result = result.aggregations
-        result = await aggsReferencedMapper(result,params.category)
-        result = removeAndRenameInternalProperties(result)
+        result = await removeBucketAndAddRefObjField(result,params.category)
+        result = removeIgnoredMetaField(result)
     }else{
         result =  {count:result.hits.total,results:_.map(result.hits.hits,(result)=>result._source)}
         if(result.count>0&&_.isArray(result.results)){
