@@ -2,6 +2,8 @@ const _ = require('lodash')
 const scirichonSchema = require('scirichon-json-schema')
 const scirichonCache = require('scirichon-cache')
 const scirichonResponseMapper = require('scirichon-response-mapper')
+const config = require('config')
+const ignoreAggrMetaFields = config.get('elasticsearch.ignoreAggrMetaFields')
 
 const getIndexByCategory = (category)=>{
     let schema_obj = scirichonSchema.getAncestorSchema(category),index
@@ -24,12 +26,15 @@ const ignoredMetaFields = ['doc_count_error_upper_bound','sum_other_doc_count','
 const aggsMetaFields = _.concat(['key','buckets','doc_count','ref_obj'],ignoredMetaFields)
 
 const removeBucketAndAddRefObjField =  async (val,category) => {
-    let keys = _.keys(val)
+    let keys = _.keys(val),buckets
     for(let key of keys){
         if(!_.includes(aggsMetaFields,key)){
             if(_.isArray(val[key]['buckets'])){
-                val[key] = val[key]['buckets']
-                for(let internal_val of val[key]){
+                buckets = val[key]['buckets']
+                if(ignoreAggrMetaFields){
+                    val[key] = buckets
+                }
+                for(let internal_val of buckets){
                     let ref_category = findRefCategory(category,key),cached_obj
                     if(ref_category){
                         cached_obj = await scirichonCache.getItemByCategoryAndID(ref_category,internal_val.key)
@@ -65,8 +70,10 @@ const removeIgnoredMetaField =  (val) => {
 const esResponseMapper = async function(result,params,ctx){
     if(params.aggs){
         result = result.aggregations
+        if(ignoreAggrMetaFields) {
+            result = removeIgnoredMetaField(result)
+        }
         result = await removeBucketAndAddRefObjField(result,params.category)
-        result = removeIgnoredMetaField(result)
     }else{
         result =  {count:result.hits.total,results:_.map(result.hits.hits,(result)=>result._source)}
         if(result.count>0&&_.isArray(result.results)){
