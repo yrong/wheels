@@ -4,16 +4,6 @@ const Redis = require('redis')
 const Acl = require('acl-fork')
 const _ = require('lodash')
 
-const needCheck = (ctx)=>{
-    if(ctx.headers[common.TokenName]===common.InternalTokenId){
-        return false
-    }
-    if(ctx.path.includes('/no_auth')||(ctx.path.includes('/hidden'))||!ctx.path.match(/api/i)){
-        return false
-    }
-    return true
-}
-
 const isSearchRequest = (ctx)=>{
     if(ctx.method==='GET'){
         return true
@@ -32,7 +22,7 @@ module.exports = (option)=>{
     const redisClient = Redis.createClient(_.assign({db:2},option.redisOption));
     const acl = new Acl(new Acl.redisBackend(redisClient, 'acl'))
     return async (ctx, next) => {
-        if(needCheck(ctx)){
+        if(common.needCheck(ctx)){
             let hasRight,own,user = ctx[common.TokenUserName],name = user&&user.name,roles = user&&user.roles,exception_msg,promise
             promise = new Promise((resolve,reject)=>{
                 if(isSearchRequest(ctx)){

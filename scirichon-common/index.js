@@ -80,5 +80,20 @@ const getServiceApiUrl = (serviceName)=>{
     return `http://${serviceIP}:${servicePort}`
 }
 
+const needCheck = (ctx)=>{
+    if(ctx.headers[TokenName]===InternalTokenId){
+        return false
+    }
+    let ignoredUrlPattern = config.get('auth.ignoredUrlPattern'),ignoredUrlExp = new RegExp(ignoredUrlPattern,"i")
+    if(ctx.path.match(ignoredUrlExp)){
+        return false
+    }
+    let apiUrlPattern = config.get('auth.apiUrlPattern'), apiUrlExp = new RegExp(apiUrlPattern,"i");
+    if(ctx.path.match(apiUrlExp)){
+        return true
+    }
+    return false
+}
+
 module.exports = {buildQueryCondition,apiInvoker,pruneEmpty,ScirichonError,ScirichonWarning,isLegacyUserId,buildCompoundKey,
-    InternalTokenId,TokenName,TokenUserName,Delimiter,getServiceApiUrl}
+    InternalTokenId,TokenName,TokenUserName,Delimiter,getServiceApiUrl,needCheck}

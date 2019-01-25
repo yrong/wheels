@@ -1,25 +1,13 @@
-'use strict';
-
 const _ = require('lodash')
 const common = require('scirichon-common')
 const ScirichonError = common.ScirichonError
-
-const needCheck = (ctx)=>{
-    if(ctx.headers[common.TokenName]===common.InternalTokenId){
-        return false
-    }
-    if(ctx.path.includes('/no_auth')||(ctx.path.includes('/hidden'))||!ctx.path.match(/api/i)){
-        return false
-    }
-    return true
-}
 
 module.exports = function checkToken(options) {
     if(!options.check_token_url){
         throw new Error('missing auth_url')
     }
     return async function (ctx, next) {
-        if (needCheck(ctx))
+        if (common.needCheck(ctx))
         {
             let token,result,passport,Token=common.TokenName,User=common.TokenUserName,error_msg
             token = (ctx.request.body && ctx.request.body[Token])
