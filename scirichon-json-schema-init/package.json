@@ -1,6 +1,6 @@
 {
   "name": "scirichon-json-schema-init",
-  "version": "1.0.5",
+  "version": "1.0.5-beta.1",
   "bin": {
     "initSchema": "index.js"
   },
@@ -12,6 +12,6 @@
     "lodash": "^4.17.4",
     "neo4j-driver": "^1.5.0",
     "parse-neo4j-fork": "^0.6.10",
-    "scirichon-json-schema": "^1.0.3"
+    "scirichon-json-schema": "1.0.3-beta.1"
   }
 }

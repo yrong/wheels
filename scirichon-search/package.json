@@ -1,6 +1,6 @@
 {
   "name": "scirichon-search",
-  "version": "1.0.6-beta.4",
+  "version": "1.0.6-beta.5",
   "main": "index.js",
   "author": "Ronyang <yrong1997@gmail.com>",
   "license": "MIT",
@@ -8,9 +8,9 @@
     "config": "^1.25.1",
     "elasticsearch": "^15.0.0",
     "lodash": "^4.17.4",
-    "scirichon-common": "1.0.7-beta.1",
-    "scirichon-json-schema": "^1.0.3",
-    "scirichon-cache":"1.0.11-beta.2",
-    "scirichon-response-mapper":"1.0.7-beta.2"
+    "scirichon-common": "1.0.7-beta.2",
+    "scirichon-json-schema": "1.0.3-beta.1",
+    "scirichon-cache":"1.0.11-beta.3",
+    "scirichon-response-mapper":"1.0.7-beta.3"
   }
 }
