@@ -72,6 +72,46 @@ const searchItem = async (params, ctx)=> {
     return result
 }
 
+const joinSearchItem = async (params, ctx)=> {
+    let refAttr = params.refAttr,category = params.category,refCategory = esMapper.findRefCategory(category,refAttr)
+    if(!refCategory){
+        throw new Error(`attribute ${refAttr} in ${category} is not joinable`)
+    }
+    let refIndex = esMapper.getIndexByCategory(refCategory)
+    if(!refIndex){
+        throw new Error(`${refCategory} not searchable`)
+    }
+    if(!params.body){
+        throw new Error(`body field not found`)
+    }
+    let inner_result = await client.search({
+        index: refIndex,
+        body: params.body,
+        _source:'uuid'
+    })
+    let inner_uuids = _.map(_.map(inner_result.hits.hits,(result)=>result._source),(obj)=>obj.uuid)
+    let index = esMapper.getIndexByCategory(category)
+    if(!index){
+        throw new Error(`${category} not searchable`)
+    }
+    let _source = params._source?params._source:true;
+    let params_pagination = {"from":0,"size":config.get('perPageSize')},from;
+    if(params.page&&params.per_page){
+        from = (String)((parseInt(params.page)-1) * parseInt(params.per_page));
+        params_pagination = {"from":from,"size":params.per_page}
+    }
+    let terms_id_query = {};terms_id_query[refAttr] = inner_uuids
+    let queryObj = {"query":{"terms":terms_id_query}}
+    let searchObj = _.assign({
+        index: index,
+        _source:_source,
+        body: queryObj
+    },params_pagination)
+    let result = await client.search(searchObj)
+    result = await esMapper.esResponseMapper(result,params,ctx)
+    return result
+}
+
 const checkStatus = ()=> {
     return client.ping({
         requestTimeout: Infinity
@@ -120,4 +160,4 @@ const deleteAll = async function (index) {
     await client.deleteByQuery(delObj)
 }
 
-module.exports = {searchItem,deleteItem,addOrUpdateItem,checkStatus,batchUpdate,batchCreate,client,deleteAll,batchDelete}
+module.exports = {searchItem,deleteItem,addOrUpdateItem,checkStatus,batchUpdate,batchCreate,client,deleteAll,batchDelete,joinSearchItem}

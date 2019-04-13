@@ -171,5 +171,12 @@ module.exports = (app)=>{
         procedure: hooks.generateId
     })
 
+    /*join search by es*/
+    app.defineAPI({
+        method: 'POST',
+        route: '/api/joinSearchByEql',
+        procedure:search.joinSearchItem
+    })
+
     return app
 }

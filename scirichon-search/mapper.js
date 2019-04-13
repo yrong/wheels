@@ -83,4 +83,4 @@ const esResponseMapper = async function(result,params,ctx){
     return result
 }
 
-module.exports = {esResponseMapper,getIndexByCategory}
+module.exports = {esResponseMapper,getIndexByCategory,findRefCategory}
