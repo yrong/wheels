@@ -13,7 +13,7 @@ const cypherInvoker = require('../cypher/cypherInvoker')
 const getCategoryByUrl = function (ctx) {
     let category,val,routeSchemas = schema.getApiRouteSchemas()
     for (val of routeSchemas){
-        if(ctx.url.includes(val.route)){
+        if(ctx.path===val.route){
             category = val.id
             break
         }
