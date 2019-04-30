@@ -18,6 +18,17 @@ const getCategoryByUrl = function (ctx) {
             break
         }
     }
+    if(!category){
+        for (val of routeSchemas){
+            if(ctx.path.includes(val.route)){
+                category = val.id
+                break
+            }
+        }
+    }
+    if(!category){
+        throw new ScirichonError(`can not find category for ${ctx.path}`)
+    }
     return category;
 }
 
