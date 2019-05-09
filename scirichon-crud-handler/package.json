@@ -1,6 +1,6 @@
 {
   "name": "scirichon-crud-handler",
-  "version": "1.0.5-beta.42",
+  "version": "1.0.5-beta.43",
   "bin": {
     "scirichon-crud-api": "run.js"
   },
@@ -27,8 +27,8 @@
     "scirichon-json-schema": "1.0.3-beta.1",
     "scirichon-json-schema-init":"1.0.5-beta.1",
     "scirichon-cache": "1.0.11-beta.3",
-    "scirichon-response-mapper": "1.0.7-beta.4",
-    "scirichon-search": "1.0.6-beta.7",
-    "scirichon-json-exp-imp": "1.0.5-beta.8"
+    "scirichon-response-mapper": "1.0.7-beta.5",
+    "scirichon-search": "1.0.6-beta.8",
+    "scirichon-json-exp-imp": "1.0.5-beta.9"
   }
 }

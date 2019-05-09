@@ -18,15 +18,15 @@ const replaceIdArray = async (category,key,val)=>{
     let objs = []
     for(let id of val[key]){
         if(_.isString(id)||scirichon_common.isLegacyUserId(category,id)){
-            let obj = await scirichon_cache.getItemByCategoryAndID(scirichon_schema.getAncestorCategory(category),id.toString())
+            let obj = await scirichon_cache.getItemByCategoryAndID(scirichon_schema.getAncestorCategory(category),id)
             if(!_.isEmpty(obj)){
                 objs.push(obj)
+            }else{
+                objs.push({category,uuid:id})
             }
         }
     }
-    if(val[key].length === objs.length) {
-        val[key] = objs
-    }
+    val[key] = objs
 }
 
 const replaceObj = async (val,props)=>{
