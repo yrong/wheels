@@ -103,7 +103,7 @@ const addItem = async (category,item,update)=>{
 }
 
 const initializeComponents = async ()=>{
-    let redisOption = {host:`${process.env['REDIS_HOST']||config.get('redis.host')}`,port:config.get('redis.port')},
+    let redisOption = config.get('redis'),
         additionalPropertyCheck = config.get('additionalPropertyCheck'),SCHEMA_TYPE=process.env['SCHEMA_TYPE']
     let schema_option = {redisOption,additionalPropertyCheck,prefix:SCHEMA_TYPE}
     await scirichonSchema.initialize(schema_option)

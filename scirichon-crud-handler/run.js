@@ -35,7 +35,7 @@ middleware.load(app)
 /**
  * load route from schema and start server
  */
-const redisOption = {host:`${process.env['REDIS_HOST']||config.get('redis.host')}`,port:config.get('redis.port')}
+const redisOption = config.get('redis')
 const additionalPropertyCheck = config.get('additionalPropertyCheck')
 const schema_option = {redisOption,additionalPropertyCheck,prefix:process.env['SCHEMA_TYPE']}
 const NODE_NAME = process.env['NODE_NAME']

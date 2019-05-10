@@ -134,7 +134,7 @@ const initNeo4jConstraints = async ()=>{
 const initJsonSchema = async ()=>{
     let json_schema_dir = `./schema`
     let files = fs.readdirSync(json_schema_dir),schma_obj,
-        redisOption = {host:`${process.env['REDIS_HOST']||config.get('redis.host')}`,port:config.get('redis.port')}
+        redisOption = config.get('redis')
     scirichonSchema.initialize({redisOption,prefix:process.env['SCHEMA_TYPE']})
     for(let fileName of files){
         if(fileName.endsWith('.json')){

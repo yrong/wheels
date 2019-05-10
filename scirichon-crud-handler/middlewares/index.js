@@ -16,7 +16,7 @@ logger.info('license:' + JSON.stringify(license))
  * scirichon middlewares
  */
 module.exports = (app)=>{
-    const redisOption = {host:`${process.env['REDIS_HOST']||config.get('redis.host')}`,port:config.get('redis.port')}
+    const redisOption = config.get('redis')
     const auth_url = scirichonCommon.getServiceApiUrl('auth')
     const license_middleware = license_helper.license_middleware
     app.use(license_middleware({path:lincense_file}))
