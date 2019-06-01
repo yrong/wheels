@@ -52,9 +52,9 @@ module.exports = {
                 throw new ScirichonWarning('no record found')
             }
             try{
-                requestPostHandler.updateCache(params,ctx)
-                requestPostHandler.updateSearch(params,ctx)
-                requestPostHandler.addNotification(params,ctx)
+                await requestPostHandler.updateCache(params,ctx)
+                await requestPostHandler.updateSearch(params,ctx)
+                await requestPostHandler.addNotification(params,ctx)
             }catch(e){
                 logger.error(e.stack || e)
                 throw new ScirichonWarning(String(e))
