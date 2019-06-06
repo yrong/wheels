@@ -7,7 +7,6 @@ const neo4jDriver = neo4j.driver("bolt://"+(process.env['NEO4J_HOST']||neo4jConf
 
 
 const executeCypher = async (ctx,cypher,params)=>{
-    logger.debug(`cypher to executed:${JSON.stringify({cypher,params},null,'\t')}`)
     let result = await ctx.app.executeCypher.bind(ctx.app.neo4jConnection)(cypher,params,true)
     return result
 }

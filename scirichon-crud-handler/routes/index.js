@@ -22,8 +22,9 @@ const es_checker=()=>{
 const none_checker = ()=>true
 
 module.exports = (app)=>{
-    let routesDef = schema.getApiRouteSchemas(),allowed_methods=['Add', 'Modify', 'Delete','FindOne','FindAll','BatchAdd','BatchUpdate','BatchDelete'],
-        preProcess,postProcess,http_method,route,checker,procedure,node_name = process.env['NODE_NAME']
+    let routesDef = schema.getApiRouteSchemas(),
+        allowed_methods = ['Add', 'Modify', 'Delete', 'FindOne', 'FindAll', 'BatchAdd', 'BatchUpdate', 'BatchDelete', 'LoopAdd', 'LoopUpdate', 'LoopDelete'],
+        preProcess, postProcess, http_method, route, checker, procedure, node_name = process.env['NODE_NAME']
 
     /*common route*/
     _.each(routesDef,(val)=>{
@@ -96,6 +97,27 @@ module.exports = (app)=>{
                             method: 'DEL',
                             route: '/batch' + val.route,
                             procedure:batchHandler.batchDeleteProcessor
+                        })
+                        break
+                    case 'LoopAdd':
+                        app.defineAPI({
+                            method: 'POST',
+                            route: '/loop' + val.route,
+                            procedure:batchHandler.loopAddProcessor
+                        })
+                        break
+                    case 'LoopUpdate':
+                        app.defineAPI({
+                            method: 'PUT',
+                            route: '/loop' + val.route ,
+                            procedure:batchHandler.loopUpdateProcessor
+                        })
+                        break
+                    case 'LoopDelete':
+                        app.defineAPI({
+                            method: 'DEL',
+                            route: '/loop' + val.route,
+                            procedure:batchHandler.loopDeleteProcessor
                         })
                         break
                 }

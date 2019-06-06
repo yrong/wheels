@@ -10,9 +10,12 @@ const requestPostHandler = require('./requestPostHandler')
 const hooks = require('./index')
 
 const batchUpdate  = async(ctx,category,uuids,change_obj,removed)=>{
-    let cypher = `unwind {uuids} as uuid match (n:${category}) where n.uuid=uuid set `,script=``,old_obj, new_obj,objs=[]
-    for(let key in change_obj){
+    let cypher = `unwind {uuids} as uuid match (n:${category}) where n.uuid=uuid set `,script=``,old_obj, new_obj,objs=[],
+        stringified_change_obj = _.omit(requestHandler.objectFields2String(_.assign({category},change_obj)),'category')
+    for(let key in stringified_change_obj){
         cypher += `n.${key}={${key}},`
+    }
+    for(let key in change_obj){
         script += `ctx._source.${key}=params.${key};`
     }
     cypher = cypher.substr(0,cypher.length-1)
@@ -24,7 +27,7 @@ const batchUpdate  = async(ctx,category,uuids,change_obj,removed)=>{
         }
         cypher = cypher.substr(0,cypher.length-1)
     }
-    await cypherInvoker.executeCypher(ctx, cypher, _.assign({uuids},change_obj))
+    await cypherInvoker.executeCypher(ctx, cypher, _.assign({uuids},stringified_change_obj))
     let index = requestHandler.getIndexByCategory(category)
     if(index) {
         await search.batchUpdate(index, uuids, {script: {inline: script, params: change_obj}})
@@ -100,18 +103,20 @@ const batchDelete  = async(ctx,category,uuids)=>{
     }else{
         let needNotify = requestPostHandler.needNotify({category},ctx),old_obj,
             notifications = [],notification_url = common.getServiceApiUrl('notifier')
-        if(needNotify){
-            for(let uuid of uuids){
-                old_obj = await scirichon_cache.getItemByCategoryAndID(category, uuid)
-                if (!_.isEmpty(old_obj)){
-                    await scirichon_cache.delItem(old_obj)
+        for(let uuid of uuids) {
+            old_obj = await scirichon_cache.getItemByCategoryAndID(category, uuid)
+            if (!_.isEmpty(old_obj)) {
+                await scirichon_cache.delItem(old_obj)
+                if(needNotify) {
                     notification = {user:ctx[common.TokenUserName],source:process.env['NODE_NAME'],action:'DELETE'}
                     notification.type = category
                     notification.old = old_obj
                     notifications.push(notification)
                 }
             }
-            await common.apiInvoker('POST',notification_url,'/api/notifications/batch','',notifications)
+        }
+        if(needNotify&&notifications.length) {
+            await common.apiInvoker('POST', notification_url, '/api/notifications/batch', '', notifications)
         }
     }
 }
@@ -127,7 +132,7 @@ const batchAddProcessor = async (params,ctx)=>{
         items.push(item)
     }
     await batchAdd(ctx,category,items)
-    return _.map(items,(item)=>{return item.uuid})
+    return _.map(items,(item)=>{return {uuid:item.uuid}})
 }
 
 const batchUpdateProcessor = async (params,ctx)=>{
@@ -142,4 +147,64 @@ const batchDeleteProcessor = async (params,ctx)=>{
     return uuids
 }
 
-module.exports = {batchAdd,batchUpdate,batchAddProcessor,batchUpdateProcessor,batchDeleteProcessor}
+const loopAddProcessor = async (params,ctx)=>{
+    let entries = params.data.fields,item,result,results=[]
+    for(let entry of entries){
+        try{
+            schema.checkObject(params.data.category,entry)
+            item={category:params.data.category,uuid:entry.uuid,data:{category:params.data.category,fields:entry}}
+            item = await hooks.cudItem_preProcess(item,ctx)
+            result = []
+            for(let cypher of item.cypher){
+                result.push(await cypherInvoker.executeCypher(ctx,cypher,item))
+            }
+            result = await hooks.cudItem_postProcess(result,item,ctx)
+            results.push(result)
+        }catch(error){
+            result = entry
+            result.category = params.data.category
+            result.error = error.message
+            results.push(result)
+        }
+    }
+    return results
+}
+
+const loopUpdateProcessor = async (params,ctx)=>{
+    let fields = params.data.fields,category = params.data.category,uuids = params.data.uuids,results=[]
+    for(let uuid of uuids){
+        try{
+            item={category,uuid,data:{category,fields}}
+            item = await hooks.cudItem_preProcess(item,ctx)
+            result = []
+            for(let cypher of item.cypher){
+                result.push(await cypherInvoker.executeCypher(ctx,cypher,item))
+            }
+            result = await hooks.cudItem_postProcess(result,item,ctx)
+            results.push(result)
+        }catch(error){
+            result={category,uuid,error:error.message}
+            results.push(result)
+        }
+    }
+    return results
+}
+
+const loopDeleteProcessor = async (params,ctx)=>{
+    let category = params.data.category,uuids = params.data.uuids,results=[]
+    for(let uuid of uuids){
+        try{
+            item={category,uuid}
+            item = await hooks.cudItem_preProcess(item,ctx)
+            result = await cypherInvoker.executeCypher(ctx,item.cypher,item)
+            result = await hooks.cudItem_postProcess(result,item,ctx)
+            results.push(result)
+        }catch(error){
+            result={category,uuid,error:error.message}
+            results.push(result)
+        }
+    }
+    return results
+}
+
+module.exports = {batchAdd,batchUpdate,batchAddProcessor,batchUpdateProcessor,batchDeleteProcessor,loopAddProcessor,loopUpdateProcessor,loopDeleteProcessor}

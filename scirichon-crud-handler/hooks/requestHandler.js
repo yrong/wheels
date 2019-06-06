@@ -125,10 +125,6 @@ const checkReferenceAndSetNameField = async (params)=>{
     return params
 }
 
-const logCypher = (params)=>{
-    logger.debug(`cypher to executed:${JSON.stringify({cypher:params.cyphers||params.cypher,params:_.omit(params,['cypher','cyphers','data','fields_old','method','url','token'])},null,'\t')}`)
-}
-
 const checkIfUidReferencedByOthers = (uuid,items)=>{
     for(let item of items){
         item = stringFields2Object(item)
@@ -287,4 +283,4 @@ const handleRequest = async (params, ctx)=>{
 }
 
 
-module.exports = {getCategoryByUrl,handleRequest,logCypher,getIndexByCategory,generateUniqueNameFieldAndCompoundModel,stringFields2Object,legacyFormat,objectFields2String}
+module.exports = {getCategoryByUrl,handleRequest,getIndexByCategory,generateUniqueNameFieldAndCompoundModel,stringFields2Object,legacyFormat,objectFields2String}

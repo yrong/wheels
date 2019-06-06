@@ -36,7 +36,6 @@ module.exports = {
         if (ctx.method === 'POST'||ctx.method === 'PUT' || ctx.method === 'PATCH') {
             params.stringified_fields = requestHandler.objectFields2String(_.assign({},params.fields))
         }
-        requestHandler.logCypher(params)
         return params
     },
     cudItem_postProcess:async function (result,params,ctx) {
@@ -89,7 +88,6 @@ module.exports = {
         if(params.cypherQueryFile){
             params.cypher = fs.readFileSync(path.resolve('./cypher/'+params.cypherQueryFile + '.cyp'), "utf8")
         }
-        requestHandler.logCypher(params)
         return params
     },
     getCategoryInheritanceHierarchy:async function (params,ctx) {
