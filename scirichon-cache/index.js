@@ -1,12 +1,9 @@
 const _ = require('lodash')
-const rp = require('request-promise')
-const queryString = require('querystring')
-const RedisCache = require("node-cache-redis-fork")
+const RedisCache = require("node-cache-redis")
 const common = require('scirichon-common')
 const scirichon_schema = require('scirichon-json-schema')
 const uuid_validator = require('uuid-validate')
 const delimiter = common.Delimiter
-const config = require('config')
 const redis = require('redis')
 
 let cache,client,prefix,cache_loadUrl={}

@@ -1,8 +1,9 @@
 const Ajv = require('ajv')
 const _ = require('lodash')
-const ajv = new Ajv({ useDefaults: true })
+const ajv = new Ajv({ useDefaults: true,schemaId:'auto' })
 const Redis = require('redis')
 const Model = require('redis-crud-fork')
+const fs = require('fs')
 
 const initialize = (option)=>{
     if(!option.redisOption||!option.prefix){
@@ -15,8 +16,17 @@ const initialize = (option)=>{
     global._scirichonSchemaDereferenced = {}
 }
 
-const persitSchema = async (schema)=>{
-    await global._scirichonSchemaModel.insert(schema)
+const initSchemas = async (option)=>{
+    let json_schema_dir = `./schema`,files = fs.readdirSync(json_schema_dir),schma_obj
+    initialize(option)
+    for(let fileName of files){
+        if(fileName.endsWith('.json')){
+            schma_obj = JSON.parse(fs.readFileSync(json_schema_dir + '/' + fileName, 'utf8'))
+            checkSchema(schma_obj)
+            await global._scirichonSchemaModel.insert(schma_obj)
+        }
+    }
+    await loadSchemas(option)
 }
 
 const clearSchemas = async ()=>{
@@ -53,12 +63,10 @@ const dereferenceSchema = function (category) {
     return schema;
 }
 
-const loadSchema = async (schema, dereference=true, persistance=true)=>{
+const loadSchema = async (schema)=>{
     checkSchema(schema)
     ajv.removeSchema(schema.id)
     ajv.addSchema(schema)
-    if(persistance)
-        await persitSchema(schema)
     global._scirichonSchema[schema.id] = schema
     _.each(schema.allOf,(parent)=>{
         if(parent['$ref']){
@@ -67,19 +75,17 @@ const loadSchema = async (schema, dereference=true, persistance=true)=>{
             global._scirichonSchemaRelation[parent['$ref']]['children'].push(schema.id)
         }
     })
-    if(dereference)
-        global._scirichonSchemaDereferenced[schema.id]=dereferenceSchema(schema.id)
 }
 
 const loadSchemas = async (option)=>{
-    if(option)
+    if(option&&!global._scirichonSchemaModel)
         initialize(option)
     let schemas = await global._scirichonSchemaModel.findAll(),schema
     if(!schemas.length){
         throw new Error('no schemas found')
     }
     for(let schema of schemas){
-        await loadSchema(schema,false,false)
+        await loadSchema(schema)
     }
     for(let schema of schemas){
         schema = dereferenceSchema(schema.id)
@@ -246,8 +252,8 @@ const getApiRouteSchemas = ()=>{
 
 module.exports = {
     getSchema, getSchemas, getApiRouteSchemas, checkSchema, getAncestorSchema,
-    loadSchema, persitSchema, clearSchemas, loadSchemas,
+    loadSchema, clearSchemas, loadSchemas,
     getSchemaProperties, getSchemaObjectProperties, getSchemaRefProperties,
     getParentCategories, getRouteCategories, getAncestorCategory,
-    checkObject, initialize, getSchemaHierarchy
+    checkObject, initialize, getSchemaHierarchy,initSchemas
 }

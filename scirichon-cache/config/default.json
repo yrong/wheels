@@ -1,0 +1,21 @@
+{
+  "auth":{
+    "host":"localhost",
+    "port":3002,
+    "internalUsedToken":"qwe!@#",
+    "tokenFieldName":"token",
+    "userFieldName":"token_user",
+    "apiUrlPattern": "\\/api",
+    "ignoredUrlPattern": "\\/no_auth|\\/hidden"
+  },
+  "cmdb":{
+    "host":"localhost",
+    "port":3001
+  },
+  "redis": {
+    "host": "localhost",
+    "port": 6379,
+    "auth_pass": "admin",
+    "no_ready_check": true
+  }
+}

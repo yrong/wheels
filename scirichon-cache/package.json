@@ -1,17 +1,23 @@
 {
   "name": "scirichon-cache",
-  "version": "1.0.11-beta.5",
+  "version": "1.0.11-beta.7",
   "main": "index.js",
   "author": "Ronyang <yrong1997@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "test":"mocha"
+  },
   "dependencies": {
-    "config": "^1.25.1",
-    "lodash": "^4.17.4",
-    "request": "^2.81.0",
-    "request-promise": "^4.1.1",
-    "uuid-validate": "^0.0.2",
-    "node-cache-redis-fork":"^2.2.2",
-    "scirichon-common": "1.0.7-beta.2",
-    "scirichon-json-schema": "1.0.3-beta.1"
+    "config": "^3.1.0",
+    "lodash": "^4.17.11",
+    "node-cache-redis": "^2.9.0",
+    "scirichon-common": "1.0.7-beta.6",
+    "scirichon-json-schema": "1.0.3-beta.4",
+    "uuid-validate": "^0.0.3"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^3.4.1",
+    "uuid": "^3.3.2"
   }
 }

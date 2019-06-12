@@ -1,7 +1,7 @@
-const rp = require('request-promise')
 const queryString = require('querystring')
 const _ = require('lodash')
 const config = require('config')
+const axios = require('axios')
 
 const pruneEmpty = function(obj) {
     return function prune(current) {
@@ -29,22 +29,30 @@ const buildQueryCondition = (querys) =>{
     return {where:querys.filter,order:[[sortby,order]],offset:offset,limit:per_page,raw:true};
 }
 
-const InternalTokenId = config.get('auth.internalUsedToken')
-const TokenName = config.get('auth.tokenFieldName')
-const TokenUserName = config.get('auth.userFieldName')
+const getConfigWithDefaultValue = (configName,defaultVal)=>{
+    let field
+    try{
+        field = config.get(configName)
+    }catch(error){
+        field = defaultVal
+    }
+    return field
+}
 
 const Delimiter = '&&&'
 
-const apiInvoker = function(method,url,path,params,body,headers){
+const apiInvoker = async function (method, url, path, params, body, headers) {
     let options = {
-        method: method,
-        uri: url + path + (params?('?' + queryString.stringify(params)):''),
-        body:body,
-        json: true
-    },internal_token = {}
-    internal_token[TokenName]=InternalTokenId
-    options.headers = headers||internal_token
-    return rp(options)
+            method: method,
+            url: url + path + (params ? ('?' + queryString.stringify(params)) : ''),
+            data: body
+        }, internal_token = {},
+        tokenName = getConfigWithDefaultValue('auth.tokenFieldName', 'token'),
+        internalToken = getConfigWithDefaultValue('auth.internalUsedToken', 'qwe!@#')
+    internal_token[tokenName] = internalToken
+    options.headers = headers || internal_token
+    let response = await axios(options)
+    return response && response.data
 }
 
 class ScirichonError extends Error {
@@ -81,14 +89,18 @@ const getServiceApiUrl = (serviceName)=>{
 }
 
 const needCheck = (ctx)=>{
-    if(ctx.headers[TokenName]===InternalTokenId){
+    const tokenHeader = getConfigWithDefaultValue('auth.tokenFieldName','token')
+    const internalToken = getConfigWithDefaultValue('auth.internalUsedToken','qwe!@#')
+    const ignoredUrlPattern = getConfigWithDefaultValue('auth.ignoredUrlPattern',"\\/no_auth|\\/hidden")
+    const apiUrlPattern = getConfigWithDefaultValue('auth.apiUrlPattern',"\\/api")
+    if(ctx.headers[tokenHeader]===internalToken){
         return false
     }
-    let ignoredUrlPattern = config.get('auth.ignoredUrlPattern'),ignoredUrlExp = new RegExp(ignoredUrlPattern,"i")
+    const ignoredUrlExp = new RegExp(ignoredUrlPattern,"i")
     if(ctx.path.match(ignoredUrlExp)){
         return false
     }
-    let apiUrlPattern = config.get('auth.apiUrlPattern'), apiUrlExp = new RegExp(apiUrlPattern,"i");
+    const apiUrlExp = new RegExp(apiUrlPattern,"i");
     if(ctx.path.match(apiUrlExp)){
         return true
     }
@@ -96,4 +108,4 @@ const needCheck = (ctx)=>{
 }
 
 module.exports = {buildQueryCondition,apiInvoker,pruneEmpty,ScirichonError,ScirichonWarning,isLegacyUserId,buildCompoundKey,
-    InternalTokenId,TokenName,TokenUserName,Delimiter,getServiceApiUrl,needCheck}
+    getConfigWithDefaultValue,Delimiter,getServiceApiUrl,needCheck}
