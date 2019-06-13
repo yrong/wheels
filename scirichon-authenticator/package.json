@@ -1,0 +1,26 @@
+{
+  "name": "scirichon-authenticator",
+  "version": "1.0.0-beta.3",
+  "main": "index.js",
+  "author": "Ronyang <yrong1997@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "test_comment": "to run test you need start auth service and create users with specific roles as in test case",
+    "test":"mocha"
+  },
+  "dependencies": {
+    "acl-fork": "^0.4.12",
+    "lodash": "^4.17.11",
+    "redis": "^2.8.0",
+    "scirichon-common": "1.0.7-beta.6"
+  },
+  "devDependencies": {
+    "config": "^3.1.0",
+    "chai": "^4.2.0",
+    "mocha": "^3.4.1",
+    "supertest": "^4.0.2",
+    "koa": "^2.7.0",
+    "koa-router": "^7.4.0",
+    "koa-bodyparser": "^4.2.1"
+  }
+}
