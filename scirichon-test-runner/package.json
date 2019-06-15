@@ -1,6 +1,6 @@
 {
   "name": "scirichon-test-runner",
-  "version": "1.0.4-beta.2",
+  "version": "1.0.4-beta.5",
   "main": "index.js",
   "bin": {
     "loadtest": "runner.js"
@@ -8,10 +8,10 @@
   "author": "Ronyang <yrong1997@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "config": "^1.25.1",
-    "lodash": "^4.17.4",
-    "loadtest": "^3.0.3",
-    "scirichon-common": "1.0.7-beta.2",
-    "scirichon-json-schema": "1.0.3-beta.1"
+    "config": "^3.1.0",
+    "lodash": "^4.17.11",
+    "loadtest": "^3.0.7",
+    "scirichon-common": "1.0.7-beta.6",
+    "scirichon-json-schema": "1.0.3-beta.4"
   }
 }

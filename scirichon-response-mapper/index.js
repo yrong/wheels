@@ -107,6 +107,5 @@ const responseMapper = async (val, params, ctx) => {
     return val
 }
 
-const initialize = scirichon_cache.initialize
 
-module.exports = {responseMapper,initialize}
+module.exports = {responseMapper}

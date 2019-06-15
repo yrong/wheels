@@ -1,16 +1,24 @@
 {
   "name": "scirichon-search",
-  "version": "1.0.6-beta.10",
+  "version": "1.0.6-beta.11",
   "main": "index.js",
   "author": "Ronyang <yrong1997@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "test":"mocha"
+  },
   "dependencies": {
-    "config": "^1.25.1",
-    "elasticsearch": "^15.0.0",
-    "lodash": "^4.17.4",
-    "scirichon-common": "1.0.7-beta.2",
-    "scirichon-json-schema": "1.0.3-beta.1",
-    "scirichon-cache":"1.0.11-beta.5",
-    "scirichon-response-mapper":"1.0.7-beta.7"
+    "config": "^3.1.0",
+    "lodash": "^4.17.11",
+    "elasticsearch": "^16.1.1",
+    "scirichon-common": "1.0.7-beta.6",
+    "scirichon-json-schema": "1.0.3-beta.4",
+    "scirichon-cache":"1.0.11-beta.7",
+    "scirichon-response-mapper":"1.0.7-beta.8"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^3.4.1",
+    "uuid": "^3.3.2"
   }
 }

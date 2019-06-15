@@ -1,0 +1,11 @@
+{
+  "auth":{
+    "host":"localhost",
+    "port":3002,
+    "internalUsedToken":"qwe!@#",
+    "tokenFieldName":"token",
+    "userFieldName":"token_user",
+    "apiUrlPattern": "\\/api",
+    "ignoredUrlPattern": "\\/no_auth|\\/hidden"
+  }
+}

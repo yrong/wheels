@@ -1,11 +1,9 @@
-#!/usr/bin/env node
-
 const fs = require('fs')
 const config = require('config')
 const neo4j = require('neo4j-driver').v1
 const neo4jConfig = config.get('neo4j')
 const neo4jDriver = neo4j.driver("bolt://"+(process.env['NEO4J_HOST']||neo4jConfig.host)+":"+neo4jConfig.port, neo4j.auth.basic(process.env['NEO4J_USER']||neo4jConfig.user, process.env['NEO4J_PASSWD']||neo4jConfig.password))
-const {parse} = require('parse-neo4j-fork')
+const {parse} = require('parse-neo4j')
 const _ = require('lodash')
 const elasticsearch = require('elasticsearch')
 const esConfig = config.get('elasticsearch')
@@ -34,33 +32,33 @@ const executeCypher = (cql,params)=>{
 
 const initElasticSearchSchema = async ()=>{
     let templateMapping =
-    {
-        "mappings": {
-            "doc": {
-                "dynamic_templates": [
-                    {
-                        "string_as_date": {
-                            "match_pattern": "regex",
-                            "match":   ".*_date$|.*_time$|created|lastUpdated",
-                            "mapping": {
-                                "type": "date"
+        {
+            "mappings": {
+                "doc": {
+                    "dynamic_templates": [
+                        {
+                            "string_as_date": {
+                                "match_pattern": "regex",
+                                "match":   ".*_date$|.*_time$|created|lastUpdated",
+                                "mapping": {
+                                    "type": "date"
+                                }
+                            }
+                        },
+                        {
+                            "string_as_keyword": {
+                                "match_mapping_type": "string",
+                                "unmatch": "*_pinyin",
+                                "mapping": {
+                                    "type": "keyword"
+                                }
                             }
                         }
-                    },
-                    {
-                        "string_as_keyword": {
-                            "match_mapping_type": "string",
-                            "unmatch": "*_pinyin",
-                            "mapping": {
-                                "type": "keyword"
-                            }
-                        }
-                    }
-                ]
+                    ]
+                }
             }
         }
-    }
-    if(process.env['PINYIN']==="1"){
+    if(process.env['PINYIN']==1){
         templateMapping.settings = {
             "analysis" : {
                 "analyzer" : {
@@ -88,7 +86,7 @@ const initElasticSearchSchema = async ()=>{
             }
         })
     }
-    let schemas = await scirichonSchema.loadSchemas()
+    await scirichonSchema.loadSchemas()
     let route_schemas = scirichonSchema.getApiRouteSchemas()
     for(let route_schema of route_schemas){
         if(route_schema.search&&route_schema.search.index){
@@ -132,29 +130,17 @@ const initNeo4jConstraints = async ()=>{
 }
 
 const initJsonSchema = async ()=>{
-    let json_schema_dir = `./schema`
-    let files = fs.readdirSync(json_schema_dir),schma_obj,
-        redisOption = config.get('redis')
-    scirichonSchema.initialize({redisOption,prefix:process.env['SCHEMA_TYPE']})
-    for(let fileName of files){
-        if(fileName.endsWith('.json')){
-            schma_obj = JSON.parse(fs.readFileSync(json_schema_dir + '/' + fileName, 'utf8'))
-            scirichonSchema.checkSchema(schma_obj)
-            await scirichonSchema.persitSchema(schma_obj)
-        }
-    }
-    await scirichonSchema.loadSchemas()
+    const option = {redisOption:config.get('redis'),prefix:process.env['SCHEMA_TYPE']}
+    scirichonSchema.initialize(option)
+    await scirichonSchema.initSchemas(option)
     console.log("load schema to redis success!")
 }
 
 const initialize = async ()=>{
     await initJsonSchema()
     await initNeo4jConstraints()
-    if(process.env['INIT_ES']==="1")
-        await initElasticSearchSchema()
+    await initElasticSearchSchema()
 }
 
-initialize().then((schemas)=>{
-    process.exit(0)
-}).catch(err=>console.log(err.stack||err))
+module.exports = {initialize}
 

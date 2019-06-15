@@ -1,0 +1,22 @@
+{
+  "neo4j": {
+    "host": "localhost",
+    "port": 7687,
+    "user": "neo4j",
+    "password": "neo4j"
+  },
+  "elasticsearch":{
+    "host": "localhost",
+    "port": 9200,
+    "user":"elastic",
+    "password":"elastic",
+    "mode": "strict",
+    "ignoreAggrMetaFields": false
+  },
+  "redis": {
+    "host": "localhost",
+    "port": 6379,
+    "auth_pass": "admin",
+    "no_ready_check": true
+  }
+}

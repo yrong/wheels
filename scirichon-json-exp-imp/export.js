@@ -34,8 +34,10 @@ const exportItems = async ()=>{
     await schema.loadSchemas({redisOption,prefix:schema_type})
     routes = schema.getApiRouteSchemas()
     for(route of routes){
-        exported.push(route.id)
-        await exportItemsByCategory(route,exportDir)
+        if(route.service===process.env['NODE_NAME']){
+            exported.push(route.id)
+            await exportItemsByCategory(route,exportDir)
+        }
     }
     return {directory: exportDir,category:exported}
 }

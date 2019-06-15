@@ -1,17 +1,25 @@
 {
   "name": "scirichon-json-schema-init",
-  "version": "1.0.5-beta.2",
+  "version": "1.0.5-beta.7",
   "bin": {
-    "initSchema": "index.js"
+    "initSchema": "init.js"
   },
+  "main": "index.js",
   "author": "Ronyang <yrong1997@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "test":"SCHEMA_TYPE=test_schema mocha"
+  },
   "dependencies": {
-    "config": "^1.25.1",
-    "elasticsearch": "^15.0.0",
-    "lodash": "^4.17.4",
-    "neo4j-driver": "^1.5.0",
-    "parse-neo4j-fork": "^0.6.10",
-    "scirichon-json-schema": "1.0.3-beta.1"
+    "config": "^3.1.0",
+    "elasticsearch": "^16.1.1",
+    "lodash": "^4.17.11",
+    "neo4j-driver": "^1.7.5",
+    "parse-neo4j": "^0.6.11",
+    "scirichon-json-schema": "1.0.3-beta.4"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^3.4.1"
   }
 }

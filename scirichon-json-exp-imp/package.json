@@ -1,6 +1,6 @@
 {
   "name": "scirichon-json-exp-imp",
-  "version": "1.0.5-beta.12",
+  "version": "1.0.5-beta.14",
   "bin": {
     "json-export": "export.js",
     "json-import": "import.js"
@@ -8,19 +8,17 @@
   "author": "Ronyang <yrong1997@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "config": "^1.25.1",
+    "config": "^3.1.0",
+    "lodash": "^4.17.11",
     "jsonfile": "^2.4.0",
-    "jsonpath": "^1.0",
-    "lodash": "^4.17.4",
+    "jsonpath": "^1.0.2",
     "mkdirp": "^0.5.1",
-    "moment": "^2.13.0",
-    "request": "^2.81.0",
-    "request-promise": "^4.1.1",
-    "uuid": "^3.0.0",
-    "uuid-validate": "^0.0.2",
-    "scirichon-common": "1.0.7-beta.2",
-    "scirichon-json-schema": "1.0.3-beta.1",
-    "scirichon-cache": "1.0.11-beta.5",
-    "scirichon-search": "1.0.6-beta.10"
+    "moment": "^2.24.0",
+    "uuid": "^3.3.2",
+    "uuid-validate": "^0.0.3",
+    "scirichon-common": "1.0.7-beta.6",
+    "scirichon-json-schema": "1.0.3-beta.4",
+    "scirichon-cache": "1.0.11-beta.7",
+    "scirichon-search": "1.0.6-beta.11"
   }
 }

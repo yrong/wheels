@@ -1,0 +1,21 @@
+{
+  "perPageSize":2000,
+  "cmdb":{
+    "host":"localhost",
+    "port":3001
+  },
+  "elasticsearch":{
+    "host": "localhost",
+    "port": 9200,
+    "user":"elastic",
+    "password":"elastic",
+    "mode": "strict",
+    "ignoreAggrMetaFields": false
+  },
+  "redis": {
+    "host": "localhost",
+    "port": 6379,
+    "auth_pass": "admin",
+    "no_ready_check": true
+  }
+}
