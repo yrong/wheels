@@ -17,4 +17,9 @@ mkdocs.yml
 .editorconfig
 .travis.yml
 .idea
+logs
+routes
+schema
+middlewares
+config
 
