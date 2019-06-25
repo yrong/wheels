@@ -1153,9 +1153,9 @@ koa-is-json@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/koa-is-json/-/koa-is-json-1.0.0.tgz#273c07edcdcb8df6a2c1ab7d59ee76491451ec14"
 
-koa-neo4j@^1.4.2:
-  version "1.4.2"
-  resolved "https://registry.npmjs.org/koa-neo4j/-/koa-neo4j-1.4.2.tgz#54b6f5d78631a3a46d41178493a701e8ac5d7515"
+koa-neo4j@^1.5.1:
+  version "1.5.1"
+  resolved "https://registry.npmjs.org/koa-neo4j/-/koa-neo4j-1.5.1.tgz#962bd5035b1e9848fb61a76322ca9bfac2a3186c"
   dependencies:
     chai "^3.5.0"
     chalk "^2.4.2"

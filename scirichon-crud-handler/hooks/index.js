@@ -15,6 +15,7 @@ const requestPostHandler = require('./requestPostHandler')
 const cache = require('scirichon-cache')
 const search = require('scirichon-search')
 const uuid = require('uuid')
+const config = require('config')
 
 module.exports = {
   cypherInvoker,
@@ -58,7 +59,7 @@ module.exports = {
         await requestPostHandler.addNotification(params, ctx)
       } catch (e) {
         logger.error(e.stack || e)
-        if (params.globalTransaction) {
+        if (config.get('globalTransaction')) {
           throw new ScirichonError(String(e))
         } else {
           throw new ScirichonWarning(String(e))

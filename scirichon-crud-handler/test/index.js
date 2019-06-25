@@ -11,11 +11,6 @@ describe('scirichon-crud-handler', () => {
 
   const internalToken = common.getConfigWithDefaultValue('auth.internalUsedToken', 'internal')
 
-  const wait = (timeout = 100) => {
-    return new Promise((resolve, reject) => {
-      setTimeout(resolve, timeout)
-    })
-  }
 
   before(async () => {
     app = await crudHandler.initApp()
@@ -78,7 +73,6 @@ describe('scirichon-crud-handler', () => {
   })
 
   it('get physicalServer', async () => {
-    await wait()
     const response = await request.get(`/api/cfgItems/${physicalServer.uuid}`).set(tokenHeaderName, internalToken)
     assert.equal(response.body.data.model, 'b10')
     assert.equal(response.body.data.it_service[0].name, 'email')
@@ -92,7 +86,6 @@ describe('scirichon-crud-handler', () => {
   })
 
   it('physicalServer model changed', async () => {
-    await wait()
     let response = await request.get(`/api/cfgItems/${physicalServer.uuid}`).set(tokenHeaderName, internalToken)
     assert.equal(response.statusCode, 200)
     assert.equal(response.body.data.model, 'b11')
@@ -101,7 +94,6 @@ describe('scirichon-crud-handler', () => {
   it('delete physicalServer', async () => {
     let response = await request.del(`/api/cfgItems/${physicalServer.uuid}`).set(tokenHeaderName, internalToken)
     assert.equal(response.statusCode, 200)
-    await wait()
     await request.get(`/api/cfgItems/${physicalServer.uuid}`).set(tokenHeaderName, internalToken)
     response = await request.get(`/api/cfgItems/${physicalServer.uuid}`).set(tokenHeaderName, internalToken)
     assert.deepEqual(response.body, {})
