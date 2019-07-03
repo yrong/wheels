@@ -4,9 +4,10 @@ const schema = require('scirichon-json-schema')
 const scirichon_cache = require('scirichon-cache')
 const search = require('scirichon-search')
 const requestHandler = require('./requestHandler')
+const config = require('config')
 
 const needNotify = (params, ctx) => {
-  if (ctx.headers[common.TokenName] === common.InternalTokenId) { return false }
+  if (ctx.headers[config.get('auth.tokenFieldName')] === config.get('auth.internalUsedToken')) { return false }
   if (params.procedure && params.procedure.ignoreNotification) { return false }
   let schema_obj = schema.getAncestorSchema(params.category)
   if (schema_obj && schema_obj.notification) { return true }
@@ -14,7 +15,7 @@ const needNotify = (params, ctx) => {
 
 const addNotification = async (params, ctx) => {
   if (needNotify(params, ctx)) {
-    let notification = { type: params.category, user: ctx[common.TokenUserName], source: process.env['NODE_NAME'] }
+    let notification = { type: params.category, user: ctx[config.get('auth.userFieldName')], source: process.env['NODE_NAME'] }
     if (ctx.method === 'POST') {
       notification.action = 'CREATE'
       notification.new = params.fields

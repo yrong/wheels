@@ -99,8 +99,8 @@ describe('scirichon-crud-handler', () => {
     assert.deepEqual(response.body, {})
   })
 
-  it('add physicalServer with wrong parameter test_date(must be timestamp not string) failed', async () => {
-    let bakServer = Object.assign({}, physicalServer, { model: 'b12', test_date: 'error', name: 'bak', uuid: uuid.v1(), ip_address: ['192.168.0.107'] })
+  it('add physicalServer with wrong parameter test_date(must be timestamp not empty) failed', async () => {
+    let bakServer = Object.assign({}, physicalServer, { model: 'b12', test_date: '', name: 'bak', uuid: uuid.v1(), ip_address: ['192.168.0.107'] })
     let response = await request.post(`/api/cfgItems`).send(bakServer).set(tokenHeaderName, internalToken)
     assert.equal(response.statusCode, 501)
     response = await request.get(`/api/cfgItems/${bakServer.uuid}`).set(tokenHeaderName, internalToken)
@@ -148,5 +148,11 @@ describe('scirichon-crud-handler', () => {
     assert.equal(response.statusCode, 200)
     response = await request.get(`/api/cfgItems/${physicalServers[0].uuid}`).set(tokenHeaderName, internalToken)
     assert.equal(response.body.data.model, 'b15')
+  })
+
+  it('batch delete physicalServer', async () => {
+    const data = { data: { category: 'PhysicalServer', uuids: _.map(physicalServers, (physicalServer) => physicalServer.uuid) } }
+    let response = await request.del(`/batch/api/cfgItems`).send(data).set(tokenHeaderName, internalToken)
+    assert.equal(response.statusCode, 200)
   })
 })

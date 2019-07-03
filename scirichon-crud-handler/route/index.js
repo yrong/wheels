@@ -86,21 +86,21 @@ module.exports = (app) => {
             app.defineAPI({
               method: 'POST',
               route: '/batch' + val.route,
-              procedure: batchHandler.batchAddProcessor
+              procedure: batchHandler.batchProcessor
             })
             break
           case 'BatchUpdate':
             app.defineAPI({
               method: 'PUT',
               route: '/batch' + val.route,
-              procedure: batchHandler.batchUpdateProcessor
+              procedure: batchHandler.batchProcessor
             })
             break
           case 'BatchDelete':
             app.defineAPI({
               method: 'DEL',
               route: '/batch' + val.route,
-              procedure: batchHandler.batchDeleteProcessor
+              procedure: batchHandler.batchProcessor
             })
             break
           case 'LoopAdd':

@@ -49,7 +49,9 @@ module.exports = {
         params = await customizedHandler.postProcess(params, ctx)
       }
     }
-    if ((ctx.method === 'POST' || ctx.method === 'PUT' || ctx.method === 'PATCH' || ctx.method === 'DELETE') && ctx.fromBatch !== true) {
+    if (ctx.batch === true) {
+      return params
+    } else {
       if (ctx.method === 'DELETE' && (!result || (result.length !== 1))) {
         throw new ScirichonWarning('no record found')
       }
@@ -65,8 +67,8 @@ module.exports = {
           throw new ScirichonWarning(String(e))
         }
       }
+      return { uuid: params.uuid } || {}
     }
-    return { uuid: params.uuid } || {}
   },
   queryItems_preProcess: async function (params, ctx) {
     params = await requestHandler.handleRequest(params, ctx)
