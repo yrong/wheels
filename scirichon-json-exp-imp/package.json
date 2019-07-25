@@ -1,6 +1,6 @@
 {
   "name": "scirichon-json-exp-imp",
-  "version": "1.0.5-beta.14",
+  "version": "1.0.5-beta.15",
   "bin": {
     "json-export": "export.js",
     "json-import": "import.js"
@@ -19,6 +19,6 @@
     "scirichon-common": "1.0.7-beta.6",
     "scirichon-json-schema": "1.0.3-beta.4",
     "scirichon-cache": "1.0.11-beta.7",
-    "scirichon-search": "1.0.6-beta.11"
+    "scirichon-search": "1.0.6-beta.12"
   }
 }

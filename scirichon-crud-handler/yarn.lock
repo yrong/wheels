@@ -8,6 +8,21 @@
   dependencies:
     regenerator-runtime "^0.13.2"
 
+"@types/events@*":
+  version "3.0.0"
+  resolved "https://registry.npmjs.org/@types/events/-/events-3.0.0.tgz#2862f3f58a9a7f7c3e78d79f130dd4d71c25c2a7"
+
+"@types/formidable@^1.0.31":
+  version "1.0.31"
+  resolved "https://registry.npmjs.org/@types/formidable/-/formidable-1.0.31.tgz#274f9dc2d0a1a9ce1feef48c24ca0859e7ec947b"
+  dependencies:
+    "@types/events" "*"
+    "@types/node" "*"
+
+"@types/node@*":
+  version "12.6.8"
+  resolved "https://registry.npmjs.org/@types/node/-/node-12.6.8.tgz#e469b4bf9d1c9832aee4907ba8a051494357c12c"
+
 accepts@^1.3.5:
   version "1.3.7"
   resolved "https://registry.npmjs.org/accepts/-/accepts-1.3.7.tgz#531bc726517a3b2b41f850021c6cc15eaab507cd"
@@ -247,6 +262,15 @@ cli-cursor@^2.1.0:
 cli-width@^2.0.0:
   version "2.2.0"
   resolved "https://registry.npmjs.org/cli-width/-/cli-width-2.2.0.tgz#ff19ede8a9a5e579324147b0c11f0fbcbabed639"
+
+co-body@^5.1.1:
+  version "5.2.0"
+  resolved "https://registry.npmjs.org/co-body/-/co-body-5.2.0.tgz#5a0a658c46029131e0e3a306f67647302f71c124"
+  dependencies:
+    inflation "^2.0.0"
+    qs "^6.4.0"
+    raw-body "^2.2.0"
+    type-is "^1.6.14"
 
 co-body@^6.0.0:
   version "6.0.0"
@@ -767,7 +791,7 @@ form-data@^2.3.1:
     combined-stream "^1.0.6"
     mime-types "^2.1.12"
 
-formidable@^1.2.0:
+formidable@^1.1.1, formidable@^1.2.0:
   version "1.2.1"
   resolved "https://registry.npmjs.org/formidable/-/formidable-1.2.1.tgz#70fb7ca0290ee6ff961090415f4b3df3d2082659"
 
@@ -898,6 +922,16 @@ http-errors@1.7.2, http-errors@^1.6.3, http-errors@~1.7.2:
     statuses ">= 1.5.0 < 2"
     toidentifier "1.0.0"
 
+http-errors@1.7.3:
+  version "1.7.3"
+  resolved "https://registry.npmjs.org/http-errors/-/http-errors-1.7.3.tgz#6c619e4f9c60308c38519498c14fbb10aacebb06"
+  dependencies:
+    depd "~1.1.2"
+    inherits "2.0.4"
+    setprototypeof "1.1.1"
+    statuses ">= 1.5.0 < 2"
+    toidentifier "1.0.0"
+
 http-errors@^1.3.1:
   version "1.6.3"
   resolved "https://registry.npmjs.org/http-errors/-/http-errors-1.6.3.tgz#8b55680bb4be283a0b5bf4ea2e38580be1d9320d"
@@ -945,6 +979,10 @@ inflight@^1.0.4:
 inherits@2, inherits@2.0.3, inherits@~2.0.3:
   version "2.0.3"
   resolved "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz#633c2c83e3da42a502f52466022480f4208261de"
+
+inherits@2.0.4:
+  version "2.0.4"
+  resolved "https://registry.npmjs.org/inherits/-/inherits-2.0.4.tgz#0fa2c64f932917c3433a0ded55363aae37416b7c"
 
 inquirer@^5.2.0:
   version "5.2.0"
@@ -1124,6 +1162,14 @@ kcors@^2.2.2:
 keygrip@~1.0.3:
   version "1.0.3"
   resolved "https://registry.npmjs.org/keygrip/-/keygrip-1.0.3.tgz#399d709f0aed2bab0a059e0cdd3a5023a053e1dc"
+
+koa-body@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.npmjs.org/koa-body/-/koa-body-4.1.0.tgz#99295ee2e9543884e5730ae696780930b3821c44"
+  dependencies:
+    "@types/formidable" "^1.0.31"
+    co-body "^5.1.1"
+    formidable "^1.1.1"
 
 koa-bodyparser@^4.2.1:
   version "4.2.1"
@@ -1713,9 +1759,18 @@ punycode@^2.1.0:
   version "2.1.0"
   resolved "https://registry.npmjs.org/punycode/-/punycode-2.1.0.tgz#5f863edc89b96db09074bad7947bf09056ca4e7d"
 
-qs@^6.5.1, qs@^6.5.2:
+qs@^6.4.0, qs@^6.5.1, qs@^6.5.2:
   version "6.7.0"
   resolved "https://registry.npmjs.org/qs/-/qs-6.7.0.tgz#41dc1a015e3d581f1621776be31afb2876a9b1bc"
+
+raw-body@^2.2.0:
+  version "2.4.1"
+  resolved "https://registry.npmjs.org/raw-body/-/raw-body-2.4.1.tgz#30ac82f98bb5ae8c152e67149dac8d55153b168c"
+  dependencies:
+    bytes "3.1.0"
+    http-errors "1.7.3"
+    iconv-lite "0.4.24"
+    unpipe "1.0.0"
 
 raw-body@^2.3.3:
   version "2.4.0"
@@ -1895,9 +1950,9 @@ scirichon-common@1.0.7-beta.6:
     config "^3.1.0"
     lodash "^4.17.11"
 
-scirichon-json-exp-imp@1.0.5-beta.14:
-  version "1.0.5-beta.14"
-  resolved "https://registry.npmjs.org/scirichon-json-exp-imp/-/scirichon-json-exp-imp-1.0.5-beta.14.tgz#d4f5551463c3ae5558c019f89bc61c5d29f0ef06"
+scirichon-json-exp-imp@1.0.5-beta.15:
+  version "1.0.5-beta.15"
+  resolved "https://registry.npmjs.org/scirichon-json-exp-imp/-/scirichon-json-exp-imp-1.0.5-beta.15.tgz#a268598f84d7bc74e3462606de9b509d46824e64"
   dependencies:
     config "^3.1.0"
     jsonfile "^2.4.0"
@@ -1908,7 +1963,7 @@ scirichon-json-exp-imp@1.0.5-beta.14:
     scirichon-cache "1.0.11-beta.7"
     scirichon-common "1.0.7-beta.6"
     scirichon-json-schema "1.0.3-beta.4"
-    scirichon-search "1.0.6-beta.11"
+    scirichon-search "1.0.6-beta.12"
     uuid "^3.3.2"
     uuid-validate "^0.0.3"
 
@@ -1948,9 +2003,9 @@ scirichon-response-wrapper@1.0.2-beta.3:
     lodash "^4.17.11"
     log4js-wrapper-advanced "^1.0.5"
 
-scirichon-search@1.0.6-beta.11:
-  version "1.0.6-beta.11"
-  resolved "https://registry.npmjs.org/scirichon-search/-/scirichon-search-1.0.6-beta.11.tgz#432610e6c6f55fe5ef2c42a43bdef58c3caf4d4e"
+scirichon-search@1.0.6-beta.12:
+  version "1.0.6-beta.12"
+  resolved "https://registry.npmjs.org/scirichon-search/-/scirichon-search-1.0.6-beta.12.tgz#1bd6f02b5a5710c86ae3b2869aac8a2eb6073479"
   dependencies:
     config "^3.1.0"
     elasticsearch "^16.1.1"
@@ -2210,7 +2265,7 @@ type-detect@^4.0.0, type-detect@^4.0.5:
   version "4.0.8"
   resolved "https://registry.npmjs.org/type-detect/-/type-detect-4.0.8.tgz#7646fb5f18871cfbb7749e69bd39a6388eb7450c"
 
-type-is@^1.6.16:
+type-is@^1.6.14, type-is@^1.6.16:
   version "1.6.18"
   resolved "https://registry.npmjs.org/type-is/-/type-is-1.6.18.tgz#4e552cd05df09467dcbc4ef739de89f2cf37c131"
   dependencies:

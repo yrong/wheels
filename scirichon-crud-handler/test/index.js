@@ -14,6 +14,10 @@ describe('scirichon-crud-handler', () => {
 
   before(async () => {
     app = await crudHandler.initApp()
+    app.router.post('/upload', async(ctx, next) => {
+      console.log('files: ', ctx.request.files);
+      ctx.body = {}
+    })
     await new Promise((resolve, reject) => {
       app.server.listen(() => {
         request = supertest(app.server)
@@ -153,6 +157,12 @@ describe('scirichon-crud-handler', () => {
   it('batch delete physicalServer', async () => {
     const data = { data: { category: 'PhysicalServer', uuids: _.map(physicalServers, (physicalServer) => physicalServer.uuid) } }
     let response = await request.del(`/batch/api/cfgItems`).send(data).set(tokenHeaderName, internalToken)
+    assert.equal(response.statusCode, 200)
+  })
+
+  it('upload file', async () => {
+    const data = { data: { category: 'PhysicalServer', uuids: _.map(physicalServers, (physicalServer) => physicalServer.uuid) } }
+    let response = await request.post(`/upload`).set(tokenHeaderName, internalToken).attach('file', 'package.json')
     assert.equal(response.statusCode, 200)
   })
 })

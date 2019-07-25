@@ -6,6 +6,7 @@ const es_config = config.get('elasticsearch')
 const search = require('scirichon-search')
 const hooks = require('../hooks')
 const batchHandler = require('../batchHandler')
+const compose = require('koa-compose')
 
 const schema_checker = (params) => {
   schema.checkObject((params.data && params.data.category) || params.category, (params.data && params.data.fields) || params)
@@ -201,6 +202,12 @@ module.exports = (app) => {
     route: '/api/joinSearchByEql',
     procedure: search.joinSearchItem
   })
+
+  app.use(compose(
+    [
+      app.router.routes(),
+      app.router.allowedMethods()
+    ]))
 
   return app
 }

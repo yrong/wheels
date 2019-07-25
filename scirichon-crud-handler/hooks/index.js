@@ -56,9 +56,7 @@ module.exports = {
         throw new ScirichonWarning('no record found')
       }
       try {
-        await requestPostHandler.updateCache(params, ctx)
         await requestPostHandler.updateSearch(params, ctx)
-        await requestPostHandler.addNotification(params, ctx)
       } catch (e) {
         logger.error(e.stack || e)
         if (config.get('globalTransaction')) {
@@ -66,6 +64,10 @@ module.exports = {
         } else {
           throw new ScirichonWarning(String(e))
         }
+      } try {
+        await Promise.all([requestPostHandler.updateCache(params, ctx), requestPostHandler.addNotification(params, ctx)])
+      } catch (e) {
+        logger.error(e.stack || e)
       }
       return { uuid: params.uuid } || {}
     }

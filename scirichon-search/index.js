@@ -5,7 +5,8 @@ const esConfig = config.get('elasticsearch')
 const client = new elasticsearch.Client({
     host: (process.env['ES_HOST']||esConfig.host) + ":" + esConfig.port,
     httpAuth:esConfig.user +":" + esConfig.password,
-    requestTimeout: esConfig.requestTimeout
+    requestTimeout: esConfig.requestTimeout,
+    apiVersion: '5.6'
 })
 const esMapper = require('./mapper')
 const docType = 'doc'
