@@ -1,0 +1,17 @@
+{
+  "id": "Department",
+  "type": "object",
+  "service":"cmdb",
+  "route":"/api/departments",
+  "properties": {
+    "parent":{
+      "type": "string",
+      "schema":"Department",
+      "relationship":{"name":"MemberOf"}
+    }
+  },
+  "required": ["name"],
+  "uniqueKeys":["name"],
+  "search":{"index":"department"},
+  "notification":true
+}

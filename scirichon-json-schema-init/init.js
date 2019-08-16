@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-const init_schema = require('./index')
+const init = require('./index')
 
-init_schema.initialize()
-    .then((schemas) => {
-        console.log("api server started")
+init.initialize()
+    .then(async (schemas) => {
+        process.exit(0)
     }).catch(err => console.log(err.stack || err))
 
 process.on('uncaughtException', (err) => {
