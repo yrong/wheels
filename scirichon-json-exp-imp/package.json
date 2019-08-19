@@ -1,6 +1,6 @@
 {
   "name": "scirichon-json-exp-imp",
-  "version": "1.0.5-beta.15",
+  "version": "1.0.5-beta.16",
   "bin": {
     "json-export": "export.js",
     "json-import": "import.js"

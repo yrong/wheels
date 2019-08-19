@@ -105,7 +105,7 @@ const promptInit = async ()=>{
             output: process.stdout
         });
         console.log('if es is not empty you need to run json-export first!')
-        rl.question('Data in es will be lost and continue to run!(y/n)', async (answer) => {
+        rl.question('Warning:data in es will be lost! Continue to run?(y/n)', async (answer) => {
             if(answer==='y'||answer==='Y'||answer==='yes'||answer==='YES'){
                 await initElasticSearchSchema()
             }
