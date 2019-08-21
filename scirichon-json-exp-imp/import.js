@@ -18,12 +18,18 @@ const isSchemaCrossed = (category1, category2)=>{
     return _.intersection(scirichonSchema.getParentCategories(category1),scirichonSchema.getParentCategories(category2)).length>0
 }
 
+const isSchemaSearchUpsert = (category)=>{
+    let schema = scirichonSchema.getSchema(category)
+    return schema&&schema.search&&schema.search.upsert
+}
+
 const getSortedCategories = ()=>{
     let schemas = scirichonSchema.getApiRouteSchemas(),sortedCategories
     for(let schema of schemas){
         setSchemaOrder(schema.id)
     }
     schemas = _.sortBy(schemas, ['order'])
+    schemas = _.filter(schemas,schema=>schema.service===process.env['NODE_NAME'])
     sortedCategories = _.map(schemas,(schema)=>schema.id)
     return sortedCategories
 }
@@ -112,18 +118,21 @@ const initializeComponents = async ()=>{
 
 const importItems = async ()=>{
     await initializeComponents()
-    let cypher, data_dir = process.env.IMPORT_FOLDER,importStrategy = process.env.IMPORT_STRATEGY||'api',
-        categories = [],result = {},filePath,errorFolder,errorFilePath,errorItems,items,schema_obj,index_name,objectFields
-    if(!data_dir)
-        throw new Error(`env 'IMPORT_FOLDER' not defined`)
+    let data_dir = process.env.IMPORT_FOLDER,importStrategy = process.env.IMPORT_STRATEGY||'api',
+        categories,result = {},errorFolder,errorFilePath,errorItems,items,files
+    if (!fs.existsSync(data_dir)) {
+        throw new Error(`${data_dir} not exist!`)
+    }
     categories = getSortedCategories()
     for(let category of categories){
-        filePath = path.join(data_dir,category + '.json')
+        files = fs.readdirSync(data_dir).filter((fn) => {
+            return fn.match(new RegExp(category+"\-\\d+\\.json"))
+        })
         errorFolder = path.join(data_dir,'exception')
         errorFilePath = path.join(errorFolder,category + '.json')
         errorItems = []
-        if(fs.existsSync(filePath)){
-            items = jsonfile.readFileSync(filePath)
+        for(let file of files){
+            items = jsonfile.readFileSync(path.join(data_dir,file))
             items = sortItemsDependentFirst(items)
             for (let item of items) {
                 if(!item.category)
@@ -134,7 +143,7 @@ const importItems = async ()=>{
                         await addItem(item.category||category, item)
                     }
                     else if(importStrategy === 'search'){
-                        if(category==='StatisticOrder'||category==='OrderHistory'){
+                        if(isSchemaSearchUpsert(category)){
                             await scirichonSearch.addOrUpdateItem(item,false,true)
                         }else{
                             await scirichonSearch.addOrUpdateItem(item)
@@ -152,8 +161,9 @@ const importItems = async ()=>{
                     fs.mkdirSync(errorFolder)
                 jsonfile.writeFileSync(errorFilePath, errorItems, {spaces: 2})
             }
+            result[category] = {errorItems}
+            console.log(`${file} imported`)
         }
-        result[category] = {errorItems}
     }
     return result
 }

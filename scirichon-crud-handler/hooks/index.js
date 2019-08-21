@@ -84,8 +84,8 @@ module.exports = {
       }
     } else {
       if (params.pagination) {
-        result = result[0]
-        if (result.results) { result.results = await responseHandler.responseMapper(result.results, params, ctx) }
+        result = result && result.length ? result[0] : undefined
+        if (result && result.results) { result.results = await responseHandler.responseMapper(result.results, params, ctx) }
       } else {
         result = await responseHandler.responseMapper(result, params, ctx)
       }

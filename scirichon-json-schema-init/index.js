@@ -5,10 +5,7 @@ const init_es = require('./init_es')
 const initialize = async ()=>{
     await init_schema.initialize()
     await init_neo4j.initialize()
-    if(process.env['ES_SKIP']==true) {
-    }else{
-        await init_es.initialize()
-    }
+    await init_es.initialize()
 }
 
 module.exports = {initialize}

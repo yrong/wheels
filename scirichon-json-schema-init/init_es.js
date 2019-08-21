@@ -11,8 +11,7 @@ const es_client = new elasticsearch.Client({
 const scirichonSchema = require('scirichon-json-schema')
 const readline = require('readline')
 
-
-const initElasticSearchSchema = async ()=>{
+const generateMapping = ()=>{
     let templateMapping =
         {
             "mappings": {
@@ -67,11 +66,17 @@ const initElasticSearchSchema = async ()=>{
                 }
             }
         })
+        return templateMapping
     }
+}
+
+
+const initElasticSearchSchema = async ()=>{
+    let templateMapping = generateMapping()
     let route_schemas = scirichonSchema.getApiRouteSchemas()
     let categories = process.env['ES_CATEGORIES']?process.env['ES_CATEGORIES'].split(','):_.map(route_schemas,(schema)=>schema.id)
     for(let route_schema of route_schemas){
-        if(route_schema.search&&route_schema.search.index&&categories.includes(route_schema.id)){
+        if(route_schema.service===process.env['NODE_NAME']&&route_schema.search&&route_schema.search.index&&categories.includes(route_schema.id)){
             await rebuildIndex(route_schema.search.index,templateMapping)
             console.log(`add ${route_schema.id} mapping in es success!`)
         }

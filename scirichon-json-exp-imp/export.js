@@ -10,16 +10,23 @@ const schema = require('scirichon-json-schema')
 const common = require('scirichon-common')
 
 const exportItemsByCategory = async(route_schema,exportDir)=>{
-    let base_url = common.getServiceApiUrl(route_schema.service)
-    let result = await common.apiInvoker('GET',base_url,route_schema.route,{original:true})
-    let items = result.data||result
-    if(items&&items.length){
-        items = _.map(items,(item)=>{
-            item = _.omit(item,'id')
-            item.category = item.category||route_schema.id
-            return item
-        })
-        jsonfile.writeFileSync(path.join(exportDir, `${route_schema.id}.json`), items, {spaces: 2})
+    let base_url = common.getServiceApiUrl(route_schema.service),result,items,total_page
+    result = await common.apiInvoker('GET',base_url,route_schema.route,{page:1})
+    if(result&&result.data&&result.data.count){
+        total_page = Math.ceil((result.data.count)/(config.get('perPageSize')))+1
+    }
+    for(let page = 1;page<total_page;page++){
+        result = await common.apiInvoker('GET',base_url,route_schema.route,{page,original:true})
+        items = result&&result.data&&result.data.results
+        if(items.length){
+            items = _.map(items,(item)=>{
+                item = _.omit(item,'id')
+                item.category = item.category||route_schema.id
+                return item
+            })
+            jsonfile.writeFileSync(path.join(exportDir, `${route_schema.id}-${page}.json`), items, {spaces: 2})
+            console.log(`page ${page} of ${route_schema.id} exported`)
+        }
     }
 }
 
