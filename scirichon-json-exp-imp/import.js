@@ -19,8 +19,13 @@ const isSchemaCrossed = (category1, category2)=>{
 }
 
 const isSchemaSearchUpsert = (category)=>{
-    let schema = scirichonSchema.getSchema(category)
-    return schema&&schema.search&&schema.search.upsert
+    let schema_obj = scirichonSchema.getAncestorSchema(category)
+    return schema_obj&&schema_obj.search&&schema_obj.search.upsert
+}
+
+const getSchemaIndex = (category)=>{
+    let schema_obj = scirichonSchema.getAncestorSchema(category)
+    return schema_obj&&schema_obj.search&&schema_obj.search.index
 }
 
 const getSortedCategories = ()=>{
@@ -62,7 +67,7 @@ const setSchemaOrder = (category)=>{
 const sortItemsDependentFirst = (items)=>{
     if(!items||items.length==0)
         return items
-    let dependent_items = [],refProperties = scirichonSchema.getSchemaRefProperties(items[0].category),propertyVal
+    let dependent_items = [],dependent_ids = [],refProperties = scirichonSchema.getSchemaRefProperties(items[0].category),propertyVal,other_items
     for (let item of items){
         let selfReference=false
         for(let refProperty of refProperties){
@@ -74,27 +79,25 @@ const sortItemsDependentFirst = (items)=>{
                 }
             }
         }
-        if(!selfReference)
+        if(!selfReference){
             dependent_items.push(item)
-    }
-    let other_items = []
-    for (let item of items){
-        let found = false
-        for (let dependent_item of dependent_items){
-            if(item.uuid === dependent_item.uuid){
-                found = true
-                break
-            }
+            dependent_ids.push(item.uuid)
         }
-        if(!found)
-            other_items.push(item)
     }
+    other_items = _.filter(items,(item)=>{
+        return !_.includes(dependent_ids,item.uuid)
+    })
     return [...dependent_items,...other_items]
 }
 
-const itemPreprocess = (item)=>{
-    return common.pruneEmpty(item)
+const itemsPreprocess = (items,category)=>{
+    return _.each(items,(item)=>{
+        if (!item.category)
+            item.category = category
+        return common.pruneEmpty(item)
+    })
 }
+
 
 const addItem = async (category,item,update)=>{
     let category_schema = scirichonSchema.getAncestorSchema(category),method='POST',uri
@@ -116,54 +119,62 @@ const initializeComponents = async ()=>{
     await scirichonCache.initialize(schema_option)
 }
 
-const importItems = async ()=>{
+const importItems = async () => {
     await initializeComponents()
-    let data_dir = process.env.IMPORT_FOLDER,importStrategy = process.env.IMPORT_STRATEGY||'api',
-        categories,result = {},errorFolder,errorFilePath,errorItems,items,files
+    let data_dir = process.env.IMPORT_FOLDER, importStrategy = process.env.IMPORT_STRATEGY || 'api',
+        categories, result = {}, errorFolder, errorFilePath, errorItems, items, files, index
     if (!fs.existsSync(data_dir)) {
         throw new Error(`${data_dir} not exist!`)
     }
     categories = getSortedCategories()
-    for(let category of categories){
+    for (let category of categories) {
         files = fs.readdirSync(data_dir).filter((fn) => {
-            return fn.match(new RegExp(category+"\-\\d+\\.json"))
+            return fn.match(new RegExp(category + "\-\\d+\\.json"))
         })
-        errorFolder = path.join(data_dir,'exception')
-        errorFilePath = path.join(errorFolder,category + '.json')
+        files = files.sort((a, b) => {
+            return fs.statSync(path.join(data_dir, a)).mtime.getTime() -
+                fs.statSync(path.join(data_dir, b)).mtime.getTime();
+        })
+        errorFolder = path.join(data_dir, 'exception')
+        errorFilePath = path.join(errorFolder, category + '.json')
         errorItems = []
-        for(let file of files){
-            items = jsonfile.readFileSync(path.join(data_dir,file))
+        for (let file of files) {
+            items = jsonfile.readFileSync(path.join(data_dir, file))
             items = sortItemsDependentFirst(items)
-            for (let item of items) {
-                if(!item.category)
-                    item.category = category
-                try {
-                    item = itemPreprocess(item)
-                    if(importStrategy === 'api'){
-                        await addItem(item.category||category, item)
+            items = itemsPreprocess(items, category)
+            if (importStrategy === 'api') {
+                for (let item of items) {
+                    try {
+                        await addItem(item.category, item)
+                    } catch (error) {
+                        item.error = String(error)
+                        errorItems.push(item)
                     }
-                    else if(importStrategy === 'search'){
-                        if(isSchemaSearchUpsert(category)){
-                            await scirichonSearch.addOrUpdateItem(item,false,true)
-                        }else{
-                            await scirichonSearch.addOrUpdateItem(item)
+                }
+            } else if (importStrategy === 'search') {
+                try {
+                    index = getSchemaIndex(category)
+                    if (index) {
+                        if (isSchemaSearchUpsert(category)) {
+                            await scirichonSearch.batchCreate(index, items, true)
+                        } else {
+                            await scirichonSearch.batchCreate(index, items, false)
                         }
                     }
-                    else
-                        throw new Error('unknown importStrategy')
-                }catch(error){
-                    item.error = String(error)
-                    errorItems.push(item)
+                } catch (error) {
+                    console.error(error)
                 }
+            } else {
+                throw new Error('unknown importStrategy')
             }
-            if(errorItems.length){
-                if (!fs.existsSync(errorFolder))
-                    fs.mkdirSync(errorFolder)
-                jsonfile.writeFileSync(errorFilePath, errorItems, {spaces: 2})
-            }
-            result[category] = {errorItems}
             console.log(`${file} imported`)
         }
+        if (errorItems.length) {
+            if (!fs.existsSync(errorFolder))
+                fs.mkdirSync(errorFolder)
+            jsonfile.writeFileSync(errorFilePath, errorItems, {spaces: 2})
+        }
+        result[category] = {errorItems}
     }
     return result
 }

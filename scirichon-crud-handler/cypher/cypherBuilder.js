@@ -27,9 +27,8 @@ const generateDelNodeCyphers = (params) => {
     return n`]
 }
 
-const generateDelAllCypher = (params) =>
-  `MATCH (n)
-    WHERE NOT n:User and NOT n:Role and NOT n:Department
+const generateDelNodesByCategoryCypher = (category) =>
+  `MATCH (n:${category})
     DETACH
     DELETE n`
 
@@ -198,7 +197,7 @@ module.exports = {
   },
   generateQueryNodeCypher,
   generateSequence,
-  generateDelAllCypher,
+  generateDelNodesByCategoryCypher,
   generateQueryNodeWithRelationCypher,
   generateQueryItemByCategoryCypher,
   generateQueryInheritHierarchyCypher,

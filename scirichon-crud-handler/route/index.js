@@ -72,7 +72,8 @@ module.exports = (app) => {
               method: 'GET',
               route: val.route + '/:uuid',
               preProcess: hooks.queryItems_preProcess,
-              postProcess: hooks.queryItems_postProcess
+              postProcess: hooks.queryItems_postProcess,
+              timeout
             })
             break
           case 'FindAll':
@@ -80,7 +81,8 @@ module.exports = (app) => {
               method: 'GET',
               route: val.route,
               preProcess: hooks.queryItems_preProcess,
-              postProcess: hooks.queryItems_postProcess
+              postProcess: hooks.queryItems_postProcess,
+              timeout
             })
             break
           case 'BatchAdd':
@@ -142,7 +144,8 @@ module.exports = (app) => {
     method: 'POST',
     route: '/api/searchByCypher',
     preProcess: hooks.customizedQueryItems_preProcess,
-    postProcess: hooks.queryItems_postProcess
+    postProcess: hooks.queryItems_postProcess,
+    timeout
   })
 
   /* get schema */

@@ -172,12 +172,12 @@ module.exports = {
     return result
   },
   clean: async function (params, ctx) {
-    await cypherInvoker.executeCypher(ctx, cypherBuilder.generateDelAllCypher(params), params)
     await cache.flushAll()
     let route_schemas = schema.getApiRouteSchemas()
     for (let route_schema of route_schemas) {
-      if (route_schema.search && route_schema.search.index) {
-        if (route_schema.service === process.env['NODE_NAME']) {
+      if (route_schema.service === process.env['NODE_NAME']) {
+        await cypherInvoker.executeCypher(ctx, cypherBuilder.generateDelNodesByCategoryCypher(route_schema.id), params)
+        if (route_schema.search && route_schema.search.index) {
           await search.deleteAll(route_schema.search.index)
         }
       }
