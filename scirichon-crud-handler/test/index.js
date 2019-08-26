@@ -4,6 +4,8 @@ const _ = require('lodash')
 const supertest = require('supertest')
 const common = require('scirichon-common')
 const crudHandler = require('../index')
+const config = require('config')
+const scirichonCache = require('scirichon-cache')
 
 describe('scirichon-crud-handler', () => {
   let app, request, it_service, os, physicalServer, physicalServers
@@ -19,7 +21,7 @@ describe('scirichon-crud-handler', () => {
       ctx.body = {}
     })
     await new Promise((resolve, reject) => {
-      app.server.listen(() => {
+      app.server.listen(config.get(`${process.env['NODE_NAME']}.port`),() => {
         request = supertest(app.server)
         request.del(`/hidden/clean`).set(tokenHeaderName, internalToken).then(resolve)
       })
@@ -77,6 +79,7 @@ describe('scirichon-crud-handler', () => {
   })
 
   it('get physicalServer', async () => {
+    await scirichonCache.flushAll()
     const response = await request.get(`/api/cfgItems/${physicalServer.uuid}`).set(tokenHeaderName, internalToken)
     assert.equal(response.body.data.model, 'b10')
     assert.equal(response.body.data.it_service[0].name, 'email')

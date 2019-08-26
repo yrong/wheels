@@ -66,8 +66,8 @@ const generateMapping = ()=>{
                 }
             }
         })
-        return templateMapping
     }
+    return templateMapping
 }
 
 

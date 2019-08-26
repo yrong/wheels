@@ -20,7 +20,9 @@ if (config.get('checkLicense')) {
  * scirichon middlewares
  */
 module.exports = (app) => {
-  app.use(cors())
+  if (config.get('enableCors')) {
+    app.use(cors())
+  }
   app.use(body({
     jsonLimit: '10mb',
     formLimit: '10mb',
@@ -34,13 +36,17 @@ module.exports = (app) => {
       ctx.throw(400, `cannot parse request body, ${JSON.stringify(error)}`)
     }
   }))
-  app.use(responseWrapper())
-  const redisOption = config.get('redis')
-  const auth_url = scirichonCommon.getServiceApiUrl('auth')
-  const license_middleware = license_helper.license_middleware
+  if (config.get('wrapResponse')) {
+    app.use(responseWrapper())
+  }
   if (config.get('checkLicense')) {
+    const license_middleware = license_helper.license_middleware
     app.use(license_middleware({ path: lincense_file }))
   }
-  app.use(authenticator.checkToken({ check_token_url: `${auth_url}/auth/check` }))
-  app.use(authenticator.checkAcl({ redisOption }))
+  if (config.get('checkAuth')) {
+    const redisOption = config.get('redis')
+    const auth_url = scirichonCommon.getServiceApiUrl('auth')
+    app.use(authenticator.checkToken({ check_token_url: `${auth_url}/auth/check` }))
+    app.use(authenticator.checkAcl({ redisOption }))
+  }
 }

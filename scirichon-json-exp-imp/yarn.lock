@@ -319,17 +319,16 @@ retry-as-promised@^2.2.0:
     bluebird "^3.4.6"
     debug "^2.6.9"
 
-scirichon-cache@1.0.11-beta.7:
-  version "1.0.11-beta.7"
-  resolved "https://registry.npmjs.org/scirichon-cache/-/scirichon-cache-1.0.11-beta.7.tgz#f0d286f1375c71fe0091f635baad000884815242"
-  integrity sha512-aTwDav9ytM11GHYOtbX63uBOQlX6kHCY6xVX7UEsa9/w9ISd3OPXx2FxyRFu7qVQ4Z9AE3DFXjmXfKPt+8AsIg==
+scirichon-cache@1.0.11-beta.8:
+  version "1.0.11-beta.8"
+  resolved "https://registry.npmjs.org/scirichon-cache/-/scirichon-cache-1.0.11-beta.8.tgz#a9381ce0642dec964395c0ed1fc7ac46a27866af"
+  integrity sha512-l76li3VQgVGvDoyOiLpBtfa3ITVpLqXzLy6BgxS4qpt3kqLlnSgU0HCl8ZXVbtSiBPcmPXTHDfN6SuUKn4fGyA==
   dependencies:
     config "^3.1.0"
     lodash "^4.17.11"
     node-cache-redis "^2.9.0"
     scirichon-common "1.0.7-beta.6"
     scirichon-json-schema "1.0.3-beta.4"
-    uuid-validate "^0.0.3"
 
 scirichon-common@1.0.7-beta.6:
   version "1.0.7-beta.6"
@@ -350,28 +349,28 @@ scirichon-json-schema@1.0.3-beta.4:
     redis "^2.8.0"
     redis-crud-fork "^1.0.2"
 
-scirichon-response-mapper@1.0.7-beta.8:
-  version "1.0.7-beta.8"
-  resolved "https://registry.npmjs.org/scirichon-response-mapper/-/scirichon-response-mapper-1.0.7-beta.8.tgz#e4ca98f4ef04a53fb4dfdb25964504e3eca3160f"
-  integrity sha512-6LLY7IAIwWloBe5pbvet1T1W9MQqQku+DVLQewhj7YYaqfPQUmrCe4IWHsBKXs3cObzGePzVYjZsG88qpKWSqQ==
+scirichon-response-mapper@1.0.7-beta.9:
+  version "1.0.7-beta.9"
+  resolved "https://registry.npmjs.org/scirichon-response-mapper/-/scirichon-response-mapper-1.0.7-beta.9.tgz#43e7d34659d0e395b488b9ff2216f8acc516195b"
+  integrity sha512-5qPDYBg7Mqb1GyHtCaEL9PM13hHLqOrJs91icK3WmhYivDSJzkUFxd16ilxJMENB+Pr9QllGbSbcKcywKQyWHQ==
   dependencies:
     lodash "^4.17.11"
-    scirichon-cache "1.0.11-beta.7"
+    scirichon-cache "1.0.11-beta.8"
     scirichon-common "1.0.7-beta.6"
     scirichon-json-schema "1.0.3-beta.4"
 
-scirichon-search@1.0.6-beta.12:
-  version "1.0.6-beta.12"
-  resolved "https://registry.npmjs.org/scirichon-search/-/scirichon-search-1.0.6-beta.12.tgz#1bd6f02b5a5710c86ae3b2869aac8a2eb6073479"
-  integrity sha512-l5ofpM2LTGizr5o9HRF6/F1wyOz7zsLlECgNczIUuoubci7ke2zqLRw7FdgM2nzq+d5bj/WcMQ7j5mDCXE507w==
+scirichon-search@1.0.6-beta.13:
+  version "1.0.6-beta.13"
+  resolved "https://registry.npmjs.org/scirichon-search/-/scirichon-search-1.0.6-beta.13.tgz#8f176390753743147f3394ed4d13ee93411bdb32"
+  integrity sha512-+CPMtZ59jBwNmu6YPd51lhp2taA0WLutZSlkptJmT8+9sdqfmp28BqiWA5x7kg19r4fmyg97HpJyo6uFSFXnig==
   dependencies:
     config "^3.1.0"
     elasticsearch "^16.1.1"
     lodash "^4.17.11"
-    scirichon-cache "1.0.11-beta.7"
+    scirichon-cache "1.0.11-beta.8"
     scirichon-common "1.0.7-beta.6"
     scirichon-json-schema "1.0.3-beta.4"
-    scirichon-response-mapper "1.0.7-beta.8"
+    scirichon-response-mapper "1.0.7-beta.9"
 
 source-map@~0.6.1:
   version "0.6.1"
@@ -410,11 +409,6 @@ uri-js@^4.2.2:
   integrity sha512-KY9Frmirql91X2Qgjry0Wd4Y+YTdrdZheS8TFwvkbLWf/G5KNJDCh6pKL5OZctEW4+0Baa5idK2ZQuELRwPznQ==
   dependencies:
     punycode "^2.1.0"
-
-uuid-validate@^0.0.3:
-  version "0.0.3"
-  resolved "https://registry.npmjs.org/uuid-validate/-/uuid-validate-0.0.3.tgz#e30617f75dc742a0e4f95012a11540faf9d39ab4"
-  integrity sha512-Fykw5U4eZESbq739BeLvEBFRuJODfrlmjx5eJux7W817LjRaq4b7/i4t2zxQmhcX+fAj4nMfRdTzO4tmwLKn0w==
 
 uuid@^3.3.2:
   version "3.3.2"

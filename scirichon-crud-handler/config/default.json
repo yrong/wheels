@@ -1,9 +1,11 @@
 {
   "perPageSize":2000,
   "wrapResponse": true,
+  "enableCors": false,
   "additionalPropertyCheck":false,
   "preImportReference":true,
   "checkLicense": false,
+  "checkAuth": true,
   "globalTransaction": true,
   "logger":{
     "defaultLevel":"trace"

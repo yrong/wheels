@@ -2,7 +2,6 @@ const _ = require('lodash')
 const RedisCache = require("node-cache-redis")
 const common = require('scirichon-common')
 const scirichon_schema = require('scirichon-json-schema')
-const uuid_validator = require('uuid-validate')
 const delimiter = common.Delimiter
 const redis = require('redis')
 
@@ -88,7 +87,7 @@ const loadAll = async ()=>{
         try{
             result = await common.apiInvoker('GET',load_url,'',{'original':true})
         }catch(err){
-            console.log(`load err:${err.stack||err}`)
+            console.log(`load err:` + err)
         }
         result = result.data||result
         if(result&&result.length){
@@ -102,19 +101,20 @@ const loadAll = async ()=>{
 
 const loadOne = async (category,uuid)=>{
     let item,load_url
-    if(uuid_validator(uuid)||(common.isLegacyUserId(category,uuid))||category==='Role'){
-        load_url = cache_loadUrl[category]
-        try{
-            item = await common.apiInvoker('GET',load_url,`/${uuid}`,{'original':true})
-        }catch(err){
-            console.log(`load err:${err.stack||err}`)
-        }
-        if(item){
-            item = item.data||item
-            if(!_.isEmpty(item)){
-                item.category = category
-                item = await addItem(item)
-            }
+    load_url = cache_loadUrl[category]
+    if(!load_url){
+        console.error(`missing load_url for ${category}`)
+    }
+    try{
+        item = await common.apiInvoker('GET',load_url,`/${uuid}`,{'original':true})
+    }catch(err){
+        console.error(`load ${category} ${uuid} err:` + err)
+    }
+    if(item){
+        item = item.data||item
+        if(!_.isEmpty(item)){
+            item.category = category
+            item = await addItem(item)
         }
     }
     return item

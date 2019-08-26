@@ -394,10 +394,6 @@ uri-js@^4.2.2:
   dependencies:
     punycode "^2.1.0"
 
-uuid-validate@^0.0.3:
-  version "0.0.3"
-  resolved "https://registry.npmjs.org/uuid-validate/-/uuid-validate-0.0.3.tgz#e30617f75dc742a0e4f95012a11540faf9d39ab4"
-
 uuid@^3.3.2:
   version "3.3.2"
   resolved "https://registry.npmjs.org/uuid/-/uuid-3.3.2.tgz#1b4af4955eb3077c501c23872fc6513811587131"
