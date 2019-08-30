@@ -8,7 +8,7 @@ const uuid = require('uuid')
 
 describe("scirichon-cache", () => {
 
-    const prefix = "test-cache";
+    const prefix = process.env['SCHEMA_TYPE']||"scirichon-test";
     const redisOption = config.get('redis')
     const option = {redisOption,prefix}
 
@@ -20,7 +20,7 @@ describe("scirichon-cache", () => {
     after(async () => {
         await schema.clearSchemas()
         await cache.flushAll()
-        await search.deleteAll('cmdb')
+        await search.deleteAll('cmdb,it_service')
     })
 
     beforeEach(async() => {
@@ -28,14 +28,16 @@ describe("scirichon-cache", () => {
     })
 
     it("add and get", async() => {
-        let it_service = {name:"email"}
+        let it_service_name = 'email'
+        let it_service = {name:it_service_name}
         it_service.uuid = uuid.v1()
-        it_service.unique_name = it_service.name
+        it_service.unique_name = it_service_name
         it_service.category='ITService'
         await cache.addItem(it_service)
         await search.addOrUpdateItem(it_service)
+        let physicalServer_name = 'AS-2285'
         let physicalServer = {
-            "name": "AS-2285-BAK",
+            "name": physicalServer_name,
             "it_service": [it_service.uuid],
             "ip_address": ["192.168.0.108"],
             "technical_support_info": "010-123456",
@@ -70,9 +72,28 @@ describe("scirichon-cache", () => {
                         { "product_date" : {"order" : "desc"}}]
                 },
             "page":1,
-            "per_page":1
+            "per_page":1,
+            "_source": ['uuid']
         }
-        const result = await search.searchItem(query)
-        assert.equal(result.count,1)
+        let result = await search.searchItem(query)
+        assert.equal(result.results[0].uuid,physicalServer.uuid)
+
+        const join_query = {
+            "category":"ConfigurationItem",
+            "refBody":
+                {
+                    "query": {
+                        "bool":{
+                            "must":[
+                                {"match":{"name":it_service_name}}
+                            ]
+                        }
+                    }
+                },
+            "refAttr":'it_service',
+            "_source": ['uuid']
+        }
+        result = await search.joinSearchItem(join_query)
+        assert.equal(result.results[0].uuid,physicalServer.uuid)
     });
 })

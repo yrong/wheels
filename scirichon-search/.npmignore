@@ -17,4 +17,6 @@ mkdocs.yml
 .editorconfig
 .travis.yml
 .idea
+config
+schema
 
