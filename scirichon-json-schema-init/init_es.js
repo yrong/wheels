@@ -75,32 +75,21 @@ const initElasticSearchSchema = async ()=>{
     let templateMapping = generateMapping()
     let route_schemas = scirichonSchema.getApiRouteSchemas()
     let categories = process.env['ES_CATEGORIES']?process.env['ES_CATEGORIES'].split(','):_.map(route_schemas,(schema)=>schema.id)
-    for(let route_schema of route_schemas){
-        if(route_schema.service===process.env['NODE_NAME']&&route_schema.search&&route_schema.search.index&&categories.includes(route_schema.id)){
-            await rebuildIndex(route_schema.search.index,templateMapping)
-            console.log(`add ${route_schema.id} mapping in es success!`)
+    for(let schema of route_schemas){
+        if(schema.service===process.env['NODE_NAME']&&schema.search&&schema.search.index&&categories.includes(schema.id)){
+            await rebuildIndex(schema,templateMapping)
+            console.log(`add ${schema.id} mapping in es success!`)
         }
     }
 }
 
-const rebuildIndex = (index,defaultMapping)=>{
-    let mappingFile = `./search/${index}.json`
-    return new Promise((resolve,reject)=>{
-        es_client.indices.delete({index:[index]},(err)=>{
-            let mappingBody = fs.existsSync(mappingFile)?JSON.parse(fs.readFileSync(mappingFile, 'utf8')):defaultMapping
-            es_client.indices.create({
-                index: index,
-                body: mappingBody
-            }, (err) => {
-                if (err) {
-                    console.log(err.stack || err)
-                }
-                else {
-                    resolve()
-                }
-            })
-        })
-    })
+const rebuildIndex = async (schema,defaultMapping)=>{
+    let index=schema.search.index,category=schema.id
+    await es_client.indices.delete({index:[index]})
+    await es_client.indices.create({index: index, body: defaultMapping})
+    if(schema.search.mapping){
+        await es_client.indices.putMapping({index,type:'doc',body:schema.search.mapping})
+    }
 }
 
 const promptInit = async ()=>{

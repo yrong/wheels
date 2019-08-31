@@ -8,5 +8,5 @@ init.initialize()
     }).catch(err => console.log(err.stack || err))
 
 process.on('uncaughtException', (err) => {
-    logger.error(`Caught exception: ${err}`)
+    console.error(`Caught exception: ${err}`)
 })

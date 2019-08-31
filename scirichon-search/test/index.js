@@ -48,7 +48,8 @@ describe("scirichon-cache", () => {
             "retirement_date": "2017-02-11",
             "management_ip": ["192.168.0.108"],
             "monitored": true,
-            "asset_id": "test"
+            "asset_id": "test",
+            "test_expiration_date": 1511936480773
         }
         physicalServer.uuid = uuid.v1()
         physicalServer.unique_name = physicalServer.name

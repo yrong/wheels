@@ -4,7 +4,7 @@ const assert = require('chai').assert
 
 describe("scirichon-json-schema", () => {
 
-    const prefix = process.env['SCHEMA_TYPE']||"test-schema";
+    const prefix = process.env['SCHEMA_TYPE']||"scirichon-test";
     const redisOption = {
         host: process.env.REDIS_HOST || "127.0.0.1",
         auth_pass: process.env.REDIS_AUTH  || "admin"

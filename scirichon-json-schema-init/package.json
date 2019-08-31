@@ -1,6 +1,6 @@
 {
   "name": "scirichon-json-schema-init",
-  "version": "1.0.5-beta.13",
+  "version": "1.0.5-beta.15",
   "bin": {
     "initSchema": "init.js"
   },
@@ -8,7 +8,7 @@
   "author": "Ronyang <yrong1997@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "test":"NODE_NAME=cmdb SCHEMA_TYPE=test_schema mocha --timeout 10000"
+    "test":"NODE_NAME=test SCHEMA_TYPE=scirichon-test mocha --timeout 10000"
   },
   "dependencies": {
     "config": "^3.1.0",

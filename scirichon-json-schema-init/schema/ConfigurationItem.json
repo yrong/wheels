@@ -50,7 +50,16 @@
   "required": ["name"],
   "service":"cmdb",
   "route": "/api/cfgItems",
-  "search":{"index":"cmdb"},
+  "search":{
+    "index":"cmdb",
+    "mapping": {
+      "properties": {
+        "test_expiration_date": {
+          "type": "long"
+        }
+      }
+    }
+  },
   "uniqueKeys":["name","ip_address"],
   "notification":true
 }
