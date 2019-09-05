@@ -9,7 +9,7 @@ const mapper = require('../index')
 
 describe("scirichon-response-mapper", () => {
 
-    const prefix = "test-cache";
+    const prefix = process.env['SCHEMA_TYPE']||"scirichon-test";
     const redisOption = config.get('redis')
     const option = {redisOption,prefix}
 

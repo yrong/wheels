@@ -7,7 +7,7 @@ const uuid = require('uuid')
 
 describe("scirichon-cache", () => {
 
-    const prefix = "test-cache";
+    const prefix = process.env['SCHEMA_TYPE']||"scirichon-test";
     const redisOption = config.get('redis')
     const option = {redisOption,prefix}
 
@@ -28,16 +28,16 @@ describe("scirichon-cache", () => {
     it("add and get", async() => {
         let obj = {
             "name": "AS-2285-BAK",
-            "it_service": ["{{service_email_id}}", "{{service_pop3_id}}"],
+            "it_service": [uuid.v1()],
             "ip_address": ["192.168.0.108"],
             "technical_support_info": "010-123456",
-            "operating_system": "{{ubuntu_os_id}}",
+            "operating_system": uuid.v1(),
             "storage_info": "hp-disk1",
             "model": "b10",
             "product_date": "2016-10-11",
             "warranty_expiration_date": "2016-11-11",
             "retirement_date": "2017-02-11",
-            "asset_location": {"status": "on_shelf", "shelf": "{{shelf_id}}", "label": "label", "other": "other"},
+            "asset_location": {"status": "on_shelf", "shelf": uuid.v1(), "label": "label", "other": "other"},
             "management_ip": ["192.168.0.108"],
             "monitored": true,
             "asset_id": "test"
@@ -48,6 +48,7 @@ describe("scirichon-cache", () => {
         await cache.addItem(obj)
         let result1 = await cache.getItemByCategoryAndUniqueName(obj.category,obj.name)
         let result2 = await cache.getItemByCategoryAndID(obj.category,obj.uuid)
+        assert.isUndefined(result1.technical_support_info)
         assert.deepEqual(result1,result2)
     });
 })
