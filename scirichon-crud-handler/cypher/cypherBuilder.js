@@ -83,7 +83,7 @@ const generateQueryItemWithMembersCypher = (label) => {
  * query node and relations
  */
 const generateQueryNodeWithRelationCypher = (params) => {
-  return `MATCH (n{uuid: {uuid}})
+  return `MATCH (n:${params.category}{uuid: {uuid}})
     OPTIONAL MATCH (n)-[]-(c)
     WITH n as self,collect(c) as items
     RETURN self,items`

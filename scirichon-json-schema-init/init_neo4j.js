@@ -22,7 +22,7 @@ const executeCypher = (cql,params)=>{
     })
 }
 
-const initNeo4jConstraints = async ()=>{
+const initNeo4j = async ()=>{
     const schemas = scirichonSchema.getSchemas()
     for(let category of _.keys(schemas)){
         let uniqueKeys = schemas[category].uniqueKeys
@@ -32,15 +32,16 @@ const initNeo4jConstraints = async ()=>{
             }
         }
         await executeCypher(`CREATE CONSTRAINT ON (n:${category}) ASSERT n.unique_name IS UNIQUE`)
+        await executeCypher(`CREATE INDEX ON :${category}(uuid)`)
     }
-    console.log("add constraint in neo4j success!")
+    console.log("init schema in neo4j success!")
 }
 
 
 const initialize = async ()=>{
     const option = {redisOption:config.get('redis'),prefix:process.env['SCHEMA_TYPE']}
     await scirichonSchema.loadSchemas(option)
-    await initNeo4jConstraints()
+    await initNeo4j()
 }
 
 module.exports = {initialize}

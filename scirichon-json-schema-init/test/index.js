@@ -23,6 +23,7 @@ describe("scirichon-json-schema-init", () => {
         assert.equal(objectProperties.length,5)
         let ancestorCategory = schema.getAncestorCategory('PhysicalServer')
         assert.equal(ancestorCategory,'ConfigurationItem')
+        console.log(schema.getRouteCategories())
         assert.equal(schema.getRouteCategories().length,2)
     });
 })
