@@ -85,7 +85,11 @@ const initElasticSearchSchema = async ()=>{
 
 const rebuildIndex = async (schema,defaultMapping)=>{
     let index=schema.search.index,category=schema.id
-    await es_client.indices.delete({index:[index]})
+    try{
+        await es_client.indices.delete({index:[index]})
+    }catch(error){
+
+    }
     await es_client.indices.create({index: index, body: defaultMapping})
     if(schema.search.mapping){
         await es_client.indices.putMapping({index,type:'doc',body:schema.search.mapping})
