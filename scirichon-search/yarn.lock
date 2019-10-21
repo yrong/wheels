@@ -405,16 +405,16 @@ retry-as-promised@^2.2.0:
     bluebird "^3.4.6"
     debug "^2.6.9"
 
-scirichon-cache@1.0.11-beta.7:
-  version "1.0.11-beta.7"
-  resolved "https://registry.npmjs.org/scirichon-cache/-/scirichon-cache-1.0.11-beta.7.tgz#f0d286f1375c71fe0091f635baad000884815242"
+scirichon-cache@1.0.11-beta.8:
+  version "1.0.11-beta.8"
+  resolved "https://registry.npmjs.org/scirichon-cache/-/scirichon-cache-1.0.11-beta.8.tgz#a9381ce0642dec964395c0ed1fc7ac46a27866af"
+  integrity sha512-l76li3VQgVGvDoyOiLpBtfa3ITVpLqXzLy6BgxS4qpt3kqLlnSgU0HCl8ZXVbtSiBPcmPXTHDfN6SuUKn4fGyA==
   dependencies:
     config "^3.1.0"
     lodash "^4.17.11"
     node-cache-redis "^2.9.0"
     scirichon-common "1.0.7-beta.6"
     scirichon-json-schema "1.0.3-beta.4"
-    uuid-validate "^0.0.3"
 
 scirichon-common@1.0.7-beta.6:
   version "1.0.7-beta.6"
@@ -433,12 +433,13 @@ scirichon-json-schema@1.0.3-beta.4:
     redis "^2.8.0"
     redis-crud-fork "^1.0.2"
 
-scirichon-response-mapper@1.0.7-beta.8:
-  version "1.0.7-beta.8"
-  resolved "https://registry.npmjs.org/scirichon-response-mapper/-/scirichon-response-mapper-1.0.7-beta.8.tgz#e4ca98f4ef04a53fb4dfdb25964504e3eca3160f"
+scirichon-response-mapper@1.0.7-beta.9:
+  version "1.0.7-beta.9"
+  resolved "https://registry.npmjs.org/scirichon-response-mapper/-/scirichon-response-mapper-1.0.7-beta.9.tgz#43e7d34659d0e395b488b9ff2216f8acc516195b"
+  integrity sha512-5qPDYBg7Mqb1GyHtCaEL9PM13hHLqOrJs91icK3WmhYivDSJzkUFxd16ilxJMENB+Pr9QllGbSbcKcywKQyWHQ==
   dependencies:
     lodash "^4.17.11"
-    scirichon-cache "1.0.11-beta.7"
+    scirichon-cache "1.0.11-beta.8"
     scirichon-common "1.0.7-beta.6"
     scirichon-json-schema "1.0.3-beta.4"
 
@@ -467,10 +468,6 @@ uri-js@^4.2.2:
   resolved "https://registry.npmjs.org/uri-js/-/uri-js-4.2.2.tgz#94c540e1ff772956e2299507c010aea6c8838eb0"
   dependencies:
     punycode "^2.1.0"
-
-uuid-validate@^0.0.3:
-  version "0.0.3"
-  resolved "https://registry.npmjs.org/uuid-validate/-/uuid-validate-0.0.3.tgz#e30617f75dc742a0e4f95012a11540faf9d39ab4"
 
 uuid@^3.3.2:
   version "3.3.2"

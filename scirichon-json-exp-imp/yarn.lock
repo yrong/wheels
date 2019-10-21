@@ -359,10 +359,10 @@ scirichon-response-mapper@1.0.7-beta.9:
     scirichon-common "1.0.7-beta.6"
     scirichon-json-schema "1.0.3-beta.4"
 
-scirichon-search@1.0.6-beta.13:
-  version "1.0.6-beta.13"
-  resolved "https://registry.npmjs.org/scirichon-search/-/scirichon-search-1.0.6-beta.13.tgz#8f176390753743147f3394ed4d13ee93411bdb32"
-  integrity sha512-+CPMtZ59jBwNmu6YPd51lhp2taA0WLutZSlkptJmT8+9sdqfmp28BqiWA5x7kg19r4fmyg97HpJyo6uFSFXnig==
+scirichon-search@1.0.6-beta.15:
+  version "1.0.6-beta.15"
+  resolved "https://registry.npmjs.org/scirichon-search/-/scirichon-search-1.0.6-beta.15.tgz#ec23cfa7b055c8a0ff3e1c68889ed94b1d549279"
+  integrity sha512-9VxC06edRkxm0mFcTkUH2yINMwUJ1WnPRbrAUAW/AbUMU6gXqvHnURlrNpKLL/86ynLMHNMIiwAHzx5tLENEEg==
   dependencies:
     config "^3.1.0"
     elasticsearch "^16.1.1"

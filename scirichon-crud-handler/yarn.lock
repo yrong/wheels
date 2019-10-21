@@ -1950,10 +1950,10 @@ scirichon-common@1.0.7-beta.6:
     config "^3.1.0"
     lodash "^4.17.11"
 
-scirichon-json-exp-imp@1.0.5-beta.21:
-  version "1.0.5-beta.21"
-  resolved "https://registry.npmjs.org/scirichon-json-exp-imp/-/scirichon-json-exp-imp-1.0.5-beta.21.tgz#82902453e86d22c5d8c7c493033a4efc2ac93e37"
-  integrity sha512-gA0pecfTGC/aN8sKqdHBusm3oNRDOiToutsdPtL2kH+3YhXkX5o5rgLzoAVTgmVsLq6zkV0LzXx+/3gwkW/dmg==
+scirichon-json-exp-imp@1.0.5-beta.24:
+  version "1.0.5-beta.24"
+  resolved "https://registry.npmjs.org/scirichon-json-exp-imp/-/scirichon-json-exp-imp-1.0.5-beta.24.tgz#6ad73db633315eb2651fd5259378a1c8adc34790"
+  integrity sha512-bR58pKeSkdYAgrYneVIlIUbVz8b+ph3fxMDvh3Thrm5aGuyBeN0dpbqGy/9p4L3umP/8p5jytRgyI92bZZvIlA==
   dependencies:
     config "^3.1.0"
     jsonfile "^2.4.0"
@@ -1964,13 +1964,13 @@ scirichon-json-exp-imp@1.0.5-beta.21:
     scirichon-cache "1.0.11-beta.8"
     scirichon-common "1.0.7-beta.6"
     scirichon-json-schema "1.0.3-beta.4"
-    scirichon-search "1.0.6-beta.13"
+    scirichon-search "1.0.6-beta.15"
     uuid "^3.3.2"
 
-scirichon-json-schema-init@1.0.5-beta.12:
-  version "1.0.5-beta.12"
-  resolved "https://registry.npmjs.org/scirichon-json-schema-init/-/scirichon-json-schema-init-1.0.5-beta.12.tgz#dc9bd9df53d3dd74f1b037f579b3ca4cc350340a"
-  integrity sha512-LpbFQXLvqlx1RhC/+vK6odeFrJ9/2rldviy+XcJ/VMcnmhLL4ci32L6liBXyYsaRjr9i3JOPs56mKVSKyh+zww==
+scirichon-json-schema-init@1.0.5-beta.17:
+  version "1.0.5-beta.17"
+  resolved "https://registry.npmjs.org/scirichon-json-schema-init/-/scirichon-json-schema-init-1.0.5-beta.17.tgz#e2de95fb5c2e5af4e605a45097fae1e5d10d9a60"
+  integrity sha512-O/hqkBqktANgXVCGAmBFNL1/tgj9rRCN6M+/WBMgL5V9qAYfjWrWJUSWdjJXpnyEFd5xxpYVibbKQSag9WSI+Q==
   dependencies:
     config "^3.1.0"
     elasticsearch "^16.1.1"
@@ -2005,10 +2005,10 @@ scirichon-response-wrapper@1.0.2-beta.3:
     lodash "^4.17.11"
     log4js-wrapper-advanced "^1.0.5"
 
-scirichon-search@1.0.6-beta.13:
-  version "1.0.6-beta.13"
-  resolved "https://registry.npmjs.org/scirichon-search/-/scirichon-search-1.0.6-beta.13.tgz#8f176390753743147f3394ed4d13ee93411bdb32"
-  integrity sha512-+CPMtZ59jBwNmu6YPd51lhp2taA0WLutZSlkptJmT8+9sdqfmp28BqiWA5x7kg19r4fmyg97HpJyo6uFSFXnig==
+scirichon-search@1.0.6-beta.15:
+  version "1.0.6-beta.15"
+  resolved "https://registry.npmjs.org/scirichon-search/-/scirichon-search-1.0.6-beta.15.tgz#ec23cfa7b055c8a0ff3e1c68889ed94b1d549279"
+  integrity sha512-9VxC06edRkxm0mFcTkUH2yINMwUJ1WnPRbrAUAW/AbUMU6gXqvHnURlrNpKLL/86ynLMHNMIiwAHzx5tLENEEg==
   dependencies:
     config "^3.1.0"
     elasticsearch "^16.1.1"

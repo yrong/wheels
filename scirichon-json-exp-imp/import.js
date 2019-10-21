@@ -151,23 +151,31 @@ const importItems = async () => {
                         errorItems.push(item)
                     }
                 }
+                console.log(`${file} imported`)
             } else if (importStrategy === 'search') {
                 try {
                     index = getSchemaIndex(category)
                     if (index) {
+                        let bulkResult,errors
                         if (isSchemaSearchUpsert(category)) {
-                            await scirichonSearch.batchCreate(index, items, true)
+                            bulkResult = await scirichonSearch.batchCreate(index, items, true)
                         } else {
-                            await scirichonSearch.batchCreate(index, items, false)
+                            bulkResult = await scirichonSearch.batchCreate(index, items, false)
                         }
+                        if(bulkResult.errors){
+                            errors = _.filter(bulkResult.items,(item)=>{
+                                return item&&item.index&&item.index.status>=400
+                            })
+                            errorItems.push({file,errors})
+                        }
+                        console.log(`${file} imported`)
                     }
                 } catch (error) {
-                    console.error(error)
+                    errorItems.push({file,error})
                 }
             } else {
                 throw new Error('unknown importStrategy')
             }
-            console.log(`${file} imported`)
         }
         if (errorItems.length) {
             if (!fs.existsSync(errorFolder))
