@@ -46,3 +46,6 @@
 [submodule "koa-neo4j"]
 	path = koa-neo4j
 	url = https://github.com/yrong/koa-neo4j
+[submodule "koa-swagger-decorator"]
+	path = koa-swagger-decorator
+	url = https://github.com/yrong/koa-swagger-decorator
