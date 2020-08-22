@@ -4,8 +4,8 @@ const init_es = require('./init_es')
 
 const initialize = async ()=>{
     await init_schema.initialize()
-    await init_neo4j.initialize()
     await init_es.initialize()
+    await init_neo4j.initialize()
 }
 
 module.exports = {initialize}

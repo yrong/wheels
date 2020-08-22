@@ -1,7 +1,7 @@
 const config = require('config')
-const neo4j = require('neo4j-driver').v1
+const neo4j = require('neo4j-driver')
 const neo4jConfig = config.get('neo4j')
-const neo4jDriver = neo4j.driver("bolt://"+(process.env['NEO4J_HOST']||neo4jConfig.host)+":"+neo4jConfig.port, neo4j.auth.basic(process.env['NEO4J_USER']||neo4jConfig.user, process.env['NEO4J_PASSWD']||neo4jConfig.password))
+const neo4jDriver = neo4j.driver("neo4j://"+(process.env['NEO4J_HOST']||neo4jConfig.host)+":"+neo4jConfig.port, neo4j.auth.basic(process.env['NEO4J_USER']||neo4jConfig.user, process.env['NEO4J_PASSWD']||neo4jConfig.password))
 const {parse} = require('parse-neo4j')
 const _ = require('lodash')
 const scirichonSchema = require('scirichon-json-schema')
@@ -41,7 +41,11 @@ const initNeo4j = async ()=>{
 const initialize = async ()=>{
     const option = {redisOption:config.get('redis'),prefix:process.env['SCHEMA_TYPE']}
     await scirichonSchema.loadSchemas(option)
-    await initNeo4j()
+    try{
+        await initNeo4j()
+    }catch(err){
+        console.log(err)
+    }
 }
 
 module.exports = {initialize}

@@ -1,11 +1,13 @@
-const fs = require('fs')
 const config = require('config')
 const _ = require('lodash')
-const elasticsearch = require('elasticsearch')
 const esConfig = config.get('elasticsearch')
-const es_client = new elasticsearch.Client({
-    host: (process.env['ES_HOST']||esConfig.host) + ":" + esConfig.port,
-    httpAuth:esConfig.user +":" + esConfig.password,
+const { Client } = require('@elastic/elasticsearch')
+const es_client = new Client({
+    node: 'http://' + (process.env['ES_HOST']||esConfig.host) + ":" + esConfig.port,
+    auth:{
+        username:esConfig.user,
+        password:esConfig.password
+    },
     requestTimeout: esConfig.requestTimeout
 })
 const scirichonSchema = require('scirichon-json-schema')
@@ -15,7 +17,6 @@ const generateMapping = ()=>{
     let templateMapping =
         {
             "mappings": {
-                "doc": {
                     "dynamic_templates": [
                         {
                             "string_as_date": {
@@ -36,7 +37,6 @@ const generateMapping = ()=>{
                             }
                         }
                     ]
-                }
             }
         }
     if(process.env['ES_PINYIN']==1){
@@ -55,7 +55,7 @@ const generateMapping = ()=>{
                 }
             }
         }
-        templateMapping.mappings.doc.dynamic_templates.push({
+        templateMapping.mappings.dynamic_templates.push({
             "string_as_pinyin": {
                 "match_pattern": "regex",
                 "match":   ".*_pinyin$",
@@ -92,7 +92,7 @@ const rebuildIndex = async (schema,defaultMapping)=>{
     }
     await es_client.indices.create({index: index, body: defaultMapping})
     if(schema.search.mapping){
-        await es_client.indices.putMapping({index,type:'doc',body:schema.search.mapping})
+        await es_client.indices.putMapping({index,body:schema.search.mapping})
     }
 }
 

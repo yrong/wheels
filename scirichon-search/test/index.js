@@ -81,7 +81,7 @@ describe("scirichon-cache", () => {
 
         const join_query = {
             "category":"ConfigurationItem",
-            "refBody":
+            "body":
                 {
                     "query": {
                         "bool":{
