@@ -163,7 +163,7 @@ const generateUniqueNameFieldAndCompoundModel = async (params, ctx) => {
 const generateDynamicSeqField = async (params, ctx) => {
   let schema_obj = schema.getAncestorSchema(params.category)
   if (schema_obj && schema_obj.dynamicSeqField) {
-    let result = await cypherInvoker.executeCypher(ctx, cypherBuilder.generateSequence(params.category), params)
+    let result = await cypherInvoker.executeCypher(ctx, cypherBuilder.generateSequence(), params)
     if (result && result.length) {
       params.fields[schema_obj.dynamicSeqField] = String(result[0])
     }
