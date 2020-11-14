@@ -28,11 +28,11 @@ const initNeo4j = async ()=>{
         let uniqueKeys = schemas[category].uniqueKeys
         if(uniqueKeys){
             for(let field of uniqueKeys){
-                await executeCypher(`CREATE CONSTRAINT ON (n:${category}) ASSERT n.${field} IS UNIQUE`)
+                await executeCypher(`CREATE CONSTRAINT IF NOT EXISTS ON (n:${category}) ASSERT n.${field} IS UNIQUE`)
             }
         }
-        await executeCypher(`CREATE CONSTRAINT ON (n:${category}) ASSERT n.unique_name IS UNIQUE`)
-        await executeCypher(`CREATE INDEX ON :${category}(uuid)`)
+        await executeCypher(`CREATE CONSTRAINT IF NOT EXISTS ON (n:${category}) ASSERT n.unique_name IS UNIQUE`)
+        await executeCypher(`CREATE INDEX IF NOT EXISTS For (n:${category}) ON (n.uuid)`)
     }
     console.log("init schema in neo4j success!")
 }
