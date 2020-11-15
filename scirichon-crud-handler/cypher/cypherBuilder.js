@@ -14,7 +14,7 @@ const addNodeCypher = (labels) => `MERGE (n:${labels} {uuid: $uuid})
 
 const generateNodeCypher = (params) => {
   let labels = schema.getParentCategories(params.category)
-  if (params.fields && params.fields.tags) { labels = [...labels, params.fields.tags] }
+  if (params.fields && params.fields.tags) { labels = [...labels, ...params.fields.tags] }
   labels = _.isArray(labels) ? labels.join(':') : params.category
   return addNodeCypher(labels)
 }
