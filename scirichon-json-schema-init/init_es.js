@@ -13,34 +13,34 @@ const es_client = new Client({
 const scirichonSchema = require('scirichon-json-schema')
 const readline = require('readline')
 
-const generateMapping = ()=>{
-    let templateMapping =
+const generateDefaultTpl = ()=>{
+    let template =
         {
             "mappings": {
-                    "dynamic_templates": [
-                        {
-                            "string_as_date": {
-                                "match_pattern": "regex",
-                                "match":   ".*_date$|.*_time$|created|lastUpdated",
-                                "mapping": {
-                                    "type": "date"
-                                }
-                            }
-                        },
-                        {
-                            "string_as_keyword": {
-                                "match_mapping_type": "string",
-                                "unmatch": "*_pinyin",
-                                "mapping": {
-                                    "type": "keyword"
-                                }
+                "dynamic_templates": [
+                    {
+                        "string_as_date": {
+                            "match_pattern": "regex",
+                            "match":   ".*_date$|.*_time$|created|lastUpdated",
+                            "mapping": {
+                                "type": "date"
                             }
                         }
-                    ]
+                    },
+                    {
+                        "string_as_keyword": {
+                            "match_mapping_type": "string",
+                            "unmatch": "*_chinese",
+                            "mapping": {
+                                "type": "keyword"
+                            }
+                        }
+                    }
+                ]
             }
         }
     if(process.env['ES_PINYIN']==1){
-        templateMapping.settings = {
+        template.settings = {
             "analysis" : {
                 "analyzer" : {
                     "pinyin_analyzer" : {
@@ -55,10 +55,10 @@ const generateMapping = ()=>{
                 }
             }
         }
-        templateMapping.mappings.dynamic_templates.push({
-            "string_as_pinyin": {
+        template.mappings.dynamic_templates.push({
+            "chinese_as_pinyin": {
                 "match_pattern": "regex",
-                "match":   ".*_pinyin$",
+                "match":   ".*_pinyin_chinese$",
                 "mapping": {
                     "type": "text",
                     "analyzer": "pinyin_analyzer",
@@ -67,12 +67,25 @@ const generateMapping = ()=>{
             }
         })
     }
-    return templateMapping
+    if(process.env['ES_IK']==1){
+        template.mappings.dynamic_templates.push({
+            "chinese_as_ik": {
+                "match_pattern": "regex",
+                "match":   ".*_ik_chinese$",
+                "mapping": {
+                    "type": "text",
+                    "analyzer": "ik_max_word",
+                    "search_analyzer": "ik_smart"
+                }
+            }
+        })
+    }
+    return template
 }
 
 
 const initElasticSearchSchema = async ()=>{
-    let templateMapping = generateMapping()
+    let templateMapping = generateDefaultTpl()
     let route_schemas = scirichonSchema.getApiRouteSchemas()
     let categories = process.env['ES_CATEGORIES']?process.env['ES_CATEGORIES'].split(','):_.map(route_schemas,(schema)=>schema.id)
     for(let schema of route_schemas){
@@ -96,28 +109,32 @@ const rebuildIndex = async (schema,defaultMapping)=>{
     }
 }
 
-const promptInit = async ()=>{
-    return new Promise((resolve,reject)=>{
-        const rl = readline.createInterface({
-            input: process.stdin,
-            output: process.stdout
-        });
-        console.log('if es is not empty you need to run json-export first!')
-        rl.question('Warning:data in es will be lost! Continue to run?(y/n)', async (answer) => {
-            if(answer==='y'||answer==='Y'||answer==='yes'||answer==='YES'){
-                await initElasticSearchSchema()
-            }
-            rl.close()
-            resolve()
-        });
-    })
+const init = async () => {
+    if (process.env['NODE_ENV'] == 'production') {
+        return new Promise((resolve, reject) => {
+            const rl = readline.createInterface({
+                input: process.stdin,
+                output: process.stdout
+            });
+            console.log('if es is not empty you need to run json-export first!')
+            rl.question('Warning:data in es will be lost! Continue to run?(y/n)', async (answer) => {
+                if (answer === 'y' || answer === 'Y' || answer === 'yes' || answer === 'YES') {
+                    await initElasticSearchSchema()
+                }
+                rl.close()
+                resolve()
+            })
+        })
+    } else {
+        await initElasticSearchSchema()
+    }
 }
 
 
 const initialize = async ()=>{
     const option = {redisOption:config.get('redis'),prefix:process.env['SCHEMA_TYPE']}
     await scirichonSchema.loadSchemas(option)
-    await promptInit()
+    await init()
 }
 
 module.exports = {initialize}

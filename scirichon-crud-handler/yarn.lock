@@ -1990,10 +1990,10 @@ scirichon-json-exp-imp@1.1.0-beta.1:
     scirichon-search "1.1.0-beta.2"
     uuid "^3.3.2"
 
-scirichon-json-schema-init@1.1.0-beta.4:
-  version "1.1.0-beta.4"
-  resolved "https://registry.yarnpkg.com/scirichon-json-schema-init/-/scirichon-json-schema-init-1.1.0-beta.4.tgz#4048a658e1bca8aef1954467b81f77796ec5c839"
-  integrity sha512-PjWcuwgei0eO1DKW5WlSQazx5lewsDxDPzkwD9kZs49y6J3P3TA6owveWfn2Ll+2ZLtzTTi8NOmdwdDNXWAMjg==
+scirichon-json-schema-init@1.1.0-beta.5:
+  version "1.1.0-beta.5"
+  resolved "https://registry.yarnpkg.com/scirichon-json-schema-init/-/scirichon-json-schema-init-1.1.0-beta.5.tgz#3a1b5164f7ad221de9ef8ed9b493bc345ed9ee6c"
+  integrity sha512-HTfQe/8ScdhbexZbPojtMgcbObtacaf8BmAaW36bzoq4l3ZaqeCCgFNW6irKo9cOkGgdKQi1R9yOxkTAPMKdyQ==
   dependencies:
     "@elastic/elasticsearch" "^7.9.0"
     config "^3.1.0"
