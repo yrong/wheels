@@ -168,6 +168,9 @@ const generateAddRelationCypher = (params) => {
 }
 
 module.exports = {
+  generateNodeCypher,
+  generateAddRelationCypher,
+  generateDeleteRelationCypher,
   generateAddCyphers: (params) => {
     let cyphers = [generateNodeCypher(params), ...generateAddRelationCypher(params)]
     return cyphers
