@@ -1,6 +1,6 @@
 {
   "name": "scirichon-crud-handler",
-  "version": "1.2.0-beta.5",
+  "version": "1.2.0-beta.6",
   "bin": {
     "scirichon-crud-api": "run.js"
   },
@@ -9,7 +9,8 @@
     "test": "NODE_NAME=cmdb SCHEMA_TYPE=cmdb NODE_ENV=development mocha",
     "checkStyle": "standard",
     "fixStyle": "standard --fix",
-    "prepublish": "npm run fixStyle&&npm run checkStyle&&npm run init&&npm run test"
+    "prepublish": "npm run fixStyle&&npm run checkStyle&&npm run init&&npm run test",
+    "start": "node_modules/.bin/scirichon-crud-api"
   },
   "standard": {
     "ignore": [
@@ -21,6 +22,7 @@
   "main": "index.js",
   "dependencies": {
     "config": "^3.1.0",
+    "dotenv": "^8.2.0",
     "jsonpath": "^1.0.2",
     "koa-body": "^4.1.0",
     "koa-compose": "^4.1.0",
