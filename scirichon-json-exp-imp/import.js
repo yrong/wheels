@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+require('dotenv').config()
 const jsonfile = require('jsonfile')
 const _ = require('lodash')
 const path = require('path')

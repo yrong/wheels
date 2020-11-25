@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+require('dotenv').config()
 const config = require('config')
 const jsonfile = require('jsonfile')
 const path = require('path')
