@@ -252,8 +252,10 @@ const assignFields = async (params, ctx) => {
 
 const generateCypher = async (params, ctx) => {
   if (ctx.method === 'POST') {
+    params.relationCypher = cypherBuilder.generateAddRelationCypher(params)
     params.cypher = cypherBuilder.generateAddCyphers(params)
   } else if (ctx.method === 'PUT' || ctx.method === 'PATCH') {
+    params.relationCypher = [...cypherBuilder.generateDeleteRelationCypher(params), ...cypherBuilder.generateAddRelationCypher(params)]
     params.cypher = cypherBuilder.generateUpdateCyphers(params)
   } else if (ctx.method === 'DELETE') {
     params.cypher = cypherBuilder.generateDelNodeCypher(params)
@@ -262,10 +264,6 @@ const generateCypher = async (params, ctx) => {
       params.cypher = cypherBuilder.generateQueryNodeCypher(params)
     } else {
       params.cypher = cypherBuilder.generateQueryNodesCypher(params)
-      if (params.tags || params.subcategory) {
-        params.tags = (params.tags || params.subcategory).split(',')
-        params.cypher = cypherBuilder.generateQueryItemByCategoryCypher(params)
-      }
     }
   }
 }

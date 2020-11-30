@@ -44,7 +44,7 @@ const findNodesCypher = (label, condition, sort, order) =>
     ORDER BY ${sort} ${order}
     `
 
-const findPaginatedNodesCypher = (label, condition, sort, order) =>
+const findPaginatedNodesCypher = (label, condition, sort, order,skip,limit) =>
   `MATCH (n:${label})
     ${condition}
     WITH
@@ -55,7 +55,7 @@ const findPaginatedNodesCypher = (label, condition, sort, order) =>
     WITH
     n as n, cnt
     ORDER BY ${sort} ${order}
-    SKIP $skip LIMIT $limit
+    SKIP ${skip} LIMIT ${limit}
     RETURN { count: cnt, results:collect(n) }`
 
 /**
@@ -87,14 +87,6 @@ const generateQueryNodeWithRelationCypher = (params) => {
     OPTIONAL MATCH (n)-[]-(c)
     WITH n as self,collect(c) as items
     RETURN self,items`
-}
-
-const generateQueryItemByCategoryCypher = (params) => {
-  let condition = _.map(params.tags, (tag) => {
-    return `n:${tag}`
-  }).join(' OR ')
-  return `MATCH (n) WHERE ((not exists(n.status) or n.status<>'deleted') and (${condition}))
-    return n`
 }
 
 const generateQueryInheritHierarchyCypher = `MATCH (base:CategoryLabel{category:$category})
@@ -168,6 +160,9 @@ const generateAddRelationCypher = (params) => {
 }
 
 module.exports = {
+  generateNodeCypher,
+  generateAddRelationCypher,
+  generateDeleteRelationCypher,
   generateAddCyphers: (params) => {
     let cyphers = [generateNodeCypher(params), ...generateAddRelationCypher(params)]
     return cyphers
@@ -178,20 +173,31 @@ module.exports = {
   },
   generateDelNodeCypher,
   generateQueryNodesCypher: (params) => {
-    let condition = `where not exists(n.status) or n.status<>'deleted'`; let cypher
-
+    let condition = ''; let cypher
     let label = params.category; let sort = params.sort ? `n.${params.sort}` : `n.lastUpdated`
-
     let order = params.order ? params.order : 'DESC'
+    if (params.user_filter) {
+      condition = `where n.userid='${params.user_filter}'`
+    }
     if (params.status_filter) {
-      params.status_filter = params.status_filter.split(',')
-      condition = 'where '
-      condition += _.map(params.status_filter, (status) => {
-        return `n.status='${status}'`
+      let status_filter
+      if (params.status_filter === 'all') {
+        status_filter = `not exists(n.status) or n.status<>'deleted'`
+      } else {
+        status_filter = _.map(params.status_filter.split(','), (status) => {
+          return `n.status='${status}'`
+        }).join(' or ')
+      }
+      condition = condition ? `${condition} and (${status_filter})` : ` where (${status_filter})`
+    }
+    if (params.tags) {
+      let tag_filter = _.map(params.tags.split(','), (tag) => {
+        return `n:${tag}`
       }).join(' or ')
+      condition = condition ? `${condition} and (${tag_filter})` : ` where (${tag_filter})`
     }
     if (params.pagination) {
-      cypher = findPaginatedNodesCypher(label, condition, sort, order)
+      cypher = findPaginatedNodesCypher(label, condition, sort, order,params.skip,params.limit)
     } else {
       cypher = findNodesCypher(label, condition, sort, order)
     }
@@ -201,7 +207,6 @@ module.exports = {
   generateSequence,
   generateDelNodesByCategoryCypher,
   generateQueryNodeWithRelationCypher,
-  generateQueryItemByCategoryCypher,
   generateQueryInheritHierarchyCypher,
   generateQueryItemWithMembersCypher,
   generateInheritRelCypher
