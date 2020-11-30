@@ -1,0 +1,64 @@
+{
+  "id": "Order",
+  "type": "object",
+  "properties": {
+    "subscriber": {
+      "type": "string",
+      "schema":"User",
+      "ignoreCheckRef": true
+    },
+    "customer": {
+      "type": "string",
+      "schema":"User"
+    },
+    "sale_date":{
+      "type": "number"
+    },
+    "it_service_obj": {
+      "type": "object",
+      "properties" : {
+        "warehouse":{"type":"string","schema":"Warehouse","ignoreCheckRef": true},
+        "brand": {"type": "string", "schema": "Brand"}
+      }
+    },
+    "it_service_array": {
+      "type": "array",
+      "items": { "type": "string", "schema":"ITService","relationship":{"name":"SUPPORT_SERVICE"}},
+      "uniqueItems": true
+    },
+    "entries_array_obj":{
+      "type":"array",
+      "items": {
+        "type": "object",
+        "properties" : {
+          "warehouse":{"type":"string","schema":"Warehouse","ignoreCheckRef": true},
+          "brand": {"type": "string", "schema": "Brand"}
+        }
+      }
+    },
+    "entries_array_obj_obj":{
+      "type":"array",
+      "items": {
+        "type": "object",
+        "properties" : {
+          "test":{
+            "type":"object",
+            "properties" : {
+              "warehouse":{"type":"string","schema":"Warehouse","ignoreCheckRef": true},
+              "brand": {"type": "string", "schema": "Brand"}
+            }
+          }
+        }
+      }
+    },
+    "department":{
+      "type": "string",
+      "schema":"Department"
+    }
+  },
+  "service":"vehicle",
+  "route":"/api/orders",
+  "search":{"index":"order"},
+  "required": ["entries"],
+  "notification":true
+}

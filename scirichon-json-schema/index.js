@@ -145,18 +145,28 @@ const getParentCategories = (category) => {
 
 const traverseSchemaRefProperties = (properties,prefix='',refProperties)=>{
     _.each(properties,(val,key)=>{
-        if(val.schema){
-            refProperties.push({attr:prefix?prefix+'.'+key:key,schema:val.schema,type:val.type,relationship:val.relationship})
-        }else if(val.type==='array'){
-            if(val.items.schema&&val.items.type!=='object'){
-                refProperties.push({attr:prefix?prefix+'.'+key:key,schema:val.items.schema,type:val.type,item_type:val.items.type,relationship:val.items.relationship})
-            }else if(val.items.type==='object'){
-                for(let prop in val.items.properties){
-                    if(val.items.properties[prop].schema){
-                        refProperties.push({attr:key+'..'+prop,schema:val.items.properties[prop].schema,type:val.items.properties[prop].type,item_type:val.items.type,relationship:val.items.properties[prop].relationship})
+        let {schema,type,relationship,items,...other} = val,item_type
+        let attr = prefix?prefix+'.'+key:key
+        if(schema){
+            refProperties.push({attr,schema,type,relationship,...other})
+        }else if(type==='array'){
+            if(items.schema&&items.type=='string'){
+                schema = items.schema
+                relationship = items.relationship
+                item_type = items.type
+                refProperties.push({attr,schema,type,item_type,relationship,...other})
+            }else if(items.type==='object'){
+                for(let prop in items.properties){
+                    val = items.properties[prop]
+                    if(val.schema){
+                        schema = val.schema
+                        item_type = val.type
+                        relationship = val.relationship
+                        refProperties.push({attr:attr+'..'+prop,schema,type,item_type,relationship,...other})
+                    }else if(val.properties){
+                        traverseSchemaRefProperties(val.properties,attr+'..'+prop,refProperties)
                     }
                 }
-
             }
         }else if(val.type==='object'&&val.properties){
             traverseSchemaRefProperties(val.properties,key,refProperties)

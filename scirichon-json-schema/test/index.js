@@ -1,13 +1,14 @@
 const schema = require('../index')
+const jp = require('jsonpath')
 const assert = require('chai').assert
+const expect = require('chai').expect
 
 
 describe("scirichon-json-schema", () => {
 
     const prefix = process.env['SCHEMA_TYPE']||"scirichon-test";
     const redisOption = {
-        host: process.env.REDIS_HOST || "127.0.0.1",
-        auth_pass: process.env.REDIS_AUTH  || "admin"
+        host: process.env.REDIS_HOST || "127.0.0.1"
     };
     const option = {redisOption,prefix}
 
@@ -28,9 +29,17 @@ describe("scirichon-json-schema", () => {
         assert.equal(objectProperties.length,5)
         let referenceProperties = schema.getSchemaRefProperties('PhysicalServer')
         assert.equal(referenceProperties.length,6)
+        let orderRefProperties = schema.getSchemaRefProperties('Order')
+        let order = {
+            entries_array_obj_obj:[{test:{warehouse:'1'}},{test:{warehouse:'2'}}]
+        }
+        let warehouse_ref = orderRefProperties[7].attr
+        warehouse_ref = `$.${warehouse_ref}`
+        let warehouse = jp.query(order, warehouse_ref)
+        expect(warehouse).to.eql(["1","2"])
         let ancestorCategory = schema.getAncestorCategory('PhysicalServer')
         assert.equal(ancestorCategory,'ConfigurationItem')
-        assert.equal(schema.getRouteCategories().length,1)
+        assert.isAtLeast(schema.getRouteCategories().length,1)
         let obj = {
             "name": "AS-2285-BAK",
             "it_service": ["{{service_email_id}}", "{{service_pop3_id}}"],
