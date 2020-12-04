@@ -6,7 +6,7 @@ const assert = require('chai').assert
 const uuid = require('uuid')
 
 
-describe("scirichon-cache", () => {
+describe("scirichon-search", () => {
 
     const prefix = process.env['SCHEMA_TYPE']||"scirichon-test";
     const redisOption = config.get('redis')
@@ -27,7 +27,7 @@ describe("scirichon-cache", () => {
 
     })
 
-    it("add and get", async() => {
+    it("add and get from es", async() => {
         let it_service_name = 'email'
         let it_service = {name:it_service_name}
         it_service.uuid = uuid.v1()

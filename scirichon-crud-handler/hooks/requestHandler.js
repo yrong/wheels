@@ -87,6 +87,9 @@ const checkReferenceAndSetNameField = async (params) => {
   let refs = schema.getSchemaRefProperties(params.category); let key; let path; let key_name; let vals; let val; let category; let ref_obj; let ref_names
   if (refs) {
     for (let ref of refs) {
+      if (ref.ignoreRefCheck) {
+        continue
+      }
       key = ref.attr
       path = `$.${key}`
       vals = jp.query(params.fields, path)
@@ -127,6 +130,9 @@ const checkIfUidReferencedByOthers = (uuid, items) => {
     item = stringFields2Object(item)
     let refProperties = schema.getSchemaRefProperties(item.category)
     for (let refProperty of refProperties) {
+      if (refProperty && refProperty.ignoreRefCheck) {
+        continue
+      }
       let key = refProperty.attr
       let val = jp.query(item, `$.${key}`)[0]
       if (uuid === val || (_.isArray(val) && _.includes(val, uuid))) {

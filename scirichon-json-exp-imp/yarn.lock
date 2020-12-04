@@ -312,16 +312,16 @@ retry-as-promised@^2.2.0:
     bluebird "^3.4.6"
     debug "^2.6.9"
 
-scirichon-cache@1.0.11-beta.8:
-  version "1.0.11-beta.8"
-  resolved "https://registry.npmjs.org/scirichon-cache/-/scirichon-cache-1.0.11-beta.8.tgz#a9381ce0642dec964395c0ed1fc7ac46a27866af"
-  integrity sha512-l76li3VQgVGvDoyOiLpBtfa3ITVpLqXzLy6BgxS4qpt3kqLlnSgU0HCl8ZXVbtSiBPcmPXTHDfN6SuUKn4fGyA==
+scirichon-cache@1.0.11-beta.9:
+  version "1.0.11-beta.9"
+  resolved "https://registry.yarnpkg.com/scirichon-cache/-/scirichon-cache-1.0.11-beta.9.tgz#8603959fc5ef905eea0f993d0b94d18d880d4425"
+  integrity sha512-roZq7PhMidADqlUyHT4G34ZTCO3U/ReHwoE/vfzC32RMGjq9SS5UDVtb5JFqx6KVtc3f38sYzx8EcMPqXlKFkw==
   dependencies:
     config "^3.1.0"
     lodash "^4.17.11"
     node-cache-redis "^2.9.0"
     scirichon-common "1.0.7-beta.6"
-    scirichon-json-schema "1.0.3-beta.4"
+    scirichon-json-schema "1.0.3-beta.5"
 
 scirichon-common@1.0.7-beta.6:
   version "1.0.7-beta.6"
@@ -332,38 +332,39 @@ scirichon-common@1.0.7-beta.6:
     config "^3.1.0"
     lodash "^4.17.11"
 
-scirichon-json-schema@1.0.3-beta.4:
-  version "1.0.3-beta.4"
-  resolved "https://registry.npmjs.org/scirichon-json-schema/-/scirichon-json-schema-1.0.3-beta.4.tgz#7f4cb6d55cf9c646efa93467e80dda6d5c2fbc54"
-  integrity sha512-wl46RSB0zJheThhkKufCC/M6sFG1DXNtJOO1ONMtxDB6MeRwhIfsY+XBVLXNkKfy25L0SK3q2dqWAkKL7yrSAA==
+scirichon-json-schema@1.0.3-beta.5:
+  version "1.0.3-beta.5"
+  resolved "https://registry.yarnpkg.com/scirichon-json-schema/-/scirichon-json-schema-1.0.3-beta.5.tgz#dc3e36a1e5f7a21fddc9abcbbce76007c5b5b0b6"
+  integrity sha512-PfUTNKfPlafdT4EL/qoHklLgR/zAlTO1F5/bV++1TrIZrUcIDAzpWze+mB1OGlUe9ty5qB02iWEVjuHKW/bEFQ==
   dependencies:
     ajv "^6.10.0"
+    jsonpath "^1.0.2"
     lodash "^4.17.11"
     redis "^2.8.0"
     redis-crud-fork "^1.0.2"
 
-scirichon-response-mapper@1.0.7-beta.9:
-  version "1.0.7-beta.9"
-  resolved "https://registry.npmjs.org/scirichon-response-mapper/-/scirichon-response-mapper-1.0.7-beta.9.tgz#43e7d34659d0e395b488b9ff2216f8acc516195b"
-  integrity sha512-5qPDYBg7Mqb1GyHtCaEL9PM13hHLqOrJs91icK3WmhYivDSJzkUFxd16ilxJMENB+Pr9QllGbSbcKcywKQyWHQ==
+scirichon-response-mapper@1.0.7-beta.10:
+  version "1.0.7-beta.10"
+  resolved "https://registry.yarnpkg.com/scirichon-response-mapper/-/scirichon-response-mapper-1.0.7-beta.10.tgz#aaa7acc96dcb03e1ed56b6986786bf09a79e3d20"
+  integrity sha512-unAopidjKslV4mz/KyNHPDSinPSxpqy6rSJAZXY97A92QAcEQzzo/sv1Rjr2ApsuZYpYImhLy/uNXmjw0hvoYg==
   dependencies:
     lodash "^4.17.11"
-    scirichon-cache "1.0.11-beta.8"
+    scirichon-cache "1.0.11-beta.9"
     scirichon-common "1.0.7-beta.6"
-    scirichon-json-schema "1.0.3-beta.4"
+    scirichon-json-schema "1.0.3-beta.5"
 
-scirichon-search@1.1.0-beta.2:
-  version "1.1.0-beta.2"
-  resolved "https://registry.yarnpkg.com/scirichon-search/-/scirichon-search-1.1.0-beta.2.tgz#a57186025d4bd675d6c8a82e44968c5cd5c1f3f5"
-  integrity sha512-ZVXKhBCzw4+ApbI+9VEC/RXi9bzIf/SoUUMi3yaf7BCwxK6+FckxvL7KeWhqRqqd9XlMmxzIEpWivKKbEWzqDg==
+scirichon-search@1.1.0-beta.3:
+  version "1.1.0-beta.3"
+  resolved "https://registry.yarnpkg.com/scirichon-search/-/scirichon-search-1.1.0-beta.3.tgz#aaeb53781d55c4ccd3837909fe6607ced9d8a7a2"
+  integrity sha512-+56mZKuF25YSPRONMc4GErx5VqEb6OzWXD3rNFvqRPa2EiCzQl/+dylFEZOZOGEIL460nc470z0aGRbr4eQ5HA==
   dependencies:
     "@elastic/elasticsearch" "^7.9.0"
     config "^3.1.0"
     lodash "^4.17.11"
-    scirichon-cache "1.0.11-beta.8"
+    scirichon-cache "1.0.11-beta.9"
     scirichon-common "1.0.7-beta.6"
-    scirichon-json-schema "1.0.3-beta.4"
-    scirichon-response-mapper "1.0.7-beta.9"
+    scirichon-json-schema "1.0.3-beta.5"
+    scirichon-response-mapper "1.0.7-beta.10"
 
 secure-json-parse@^2.1.0:
   version "2.1.0"
