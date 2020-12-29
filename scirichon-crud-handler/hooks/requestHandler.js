@@ -235,7 +235,9 @@ const assignFields4Delete = async (params, ctx) => {
         }
       }
     } else {
-      throw new ScirichonError('不存在该节点,删除失败')
+      if (params.force_delete !== 'true') {
+        throw new ScirichonError('不存在该节点,删除失败')
+      }
     }
   } else if (ctx.url.includes('/api/items') && ctx.method === 'DELETE') {
     ctx.deleteAll = true

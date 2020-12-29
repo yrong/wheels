@@ -46,9 +46,9 @@ const batchUpdate = async (ctx, category, uuids, change_obj, removed) => {
 }
 
 const batchPreprocess = async (params, ctx) => {
-  let category = params.data.category; let item; let items = []
+  let { data, procedure, ...other } = params; let { category, uuids } = data; let item; let items = []
   if (ctx.method === 'POST') {
-    let entries = params.data.fields
+    let entries = data.fields
     for (let entry of entries) {
       schema.checkObject(category, entry)
       item = { category, data: { category } }
@@ -56,17 +56,15 @@ const batchPreprocess = async (params, ctx) => {
       item = await hooks.cudItem_preProcess(item, ctx)
       items.push(item)
     }
-    params.data.fields = items
   } else if (ctx.method === 'PUT' || ctx.method === 'DELETE') {
-    let uuids = params.data.uuids
     for (let uuid of uuids) {
-      item = { uuid, category, data: { category } }
-      item.data.fields = params.data.fields
+      item = { uuid, category, data: { category }, ...other }
+      item.data.fields = data.fields
       item = await hooks.cudItem_preProcess(item, ctx)
       items.push(item)
     }
-    params.data.fields = items
   }
+  params.data.fields = items
   return params
 }
 
