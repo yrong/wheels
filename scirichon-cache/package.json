@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "config": "^3.1.0",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.19",
     "node-cache-redis": "^2.9.0",
     "scirichon-common": "1.0.7-beta.6",
     "scirichon-json-schema": "1.0.3-beta.5"
