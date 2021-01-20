@@ -14,7 +14,7 @@
     "@elastic/elasticsearch": "^7.9.0",
     "config": "^3.1.0",
     "dotenv": "^8.2.0",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.19",
     "neo4j-driver": "^4.1.1",
     "parse-neo4j": "^0.6.11",
     "scirichon-json-schema": "1.0.3-beta.5"
