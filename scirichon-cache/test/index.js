@@ -50,5 +50,15 @@ describe("scirichon-cache", () => {
         let result2 = await cache.getItemByCategoryAndID(obj.category,obj.uuid)
         assert.isUndefined(result1.technical_support_info)
         assert.deepEqual(result1,result2)
+
+        let obj2 = {...obj}
+        obj2.uuid = uuid.v1()
+        await cache.batchAddItems([obj,obj2])
+        obj2 = await cache.get(obj2.uuid)
+        assert.isNotNull(obj2)
+
+        await cache.batchDelItems([obj.uuid,obj2.uuid])
+        obj2 = await cache.get(obj2.uuid)
+        assert.isNull(obj2)
     });
 })

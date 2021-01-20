@@ -125,16 +125,9 @@ const batchSearch = async (params, ctx) => {
 const batchCache = async (params, ctx) => {
   if (ctx.method === 'POST' || ctx.method === 'PUT') {
     let items = _.map(params.data.fields, (item) => item.fields)
-    for (let item of items) {
-      await scirichonCache.addItem(item)
-    }
+    await scirichonCache.batchAddItems(items)
   } else if (ctx.method === 'DELETE') {
-    for (let uuid of params.data.uuids) {
-      let old_obj = await scirichonCache.getItemByCategoryAndID(params.data.category, uuid)
-      if (!_.isEmpty(old_obj)) {
-        await scirichonCache.delItem(old_obj)
-      }
-    }
+    await scirichonCache.batchDelItems(params.data.uuids)
   }
 }
 

@@ -69,6 +69,22 @@ const addItem = async (item)=>{
     return item
 }
 
+const batchAddItems = async (items)=>{
+    return new Promise((resolve, reject) => {
+        let batch = client.batch()
+        for(let item of items){
+            batch.set(prefix + item.uuid,JSON.stringify(item))
+        }
+        batch.exec(function(err, replies) {
+            if(err){
+                reject(err)
+            }else{
+                resolve(replies)
+            }
+        });
+    })
+}
+
 const delItem = async (item)=>{
     let schema_obj = scirichon_schema.getAncestorSchema(item.category)
     if(schema_obj.cache&&schema_obj.cache.ignore)
@@ -77,6 +93,22 @@ const delItem = async (item)=>{
         await del(item.uuid)
     if (item.category&&item.unique_name)
         await del(item.category + delimiter + item.unique_name)
+}
+
+const batchDelItems = async (uuids)=>{
+    return new Promise((resolve, reject) => {
+        let batch = client.batch()
+        for(let uuid of uuids){
+            batch.del(prefix+uuid)
+        }
+        batch.exec(function(err, replies) {
+            if(err){
+                reject(err)
+            }else{
+                resolve(replies)
+            }
+        });
+    })
 }
 
 const loadAll = async ()=>{
@@ -135,4 +167,4 @@ const getItemByCategoryAndID = async (category,uuid)=>{
 };
 
 
-module.exports = {loadAll,get,set,del,flushAll,getItemByCategoryAndUniqueName,getItemByCategoryAndID,initialize,addItem,delItem}
+module.exports = {loadAll,get,set,del,flushAll,getItemByCategoryAndUniqueName,getItemByCategoryAndID,initialize,addItem,delItem,batchAddItems,batchDelItems}

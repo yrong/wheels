@@ -223,8 +223,8 @@ const assignFields4CreateOrUpdate = async (params, ctx) => {
 }
 
 const assignFields4Delete = async (params, ctx) => {
+  params.category = params.category || getCategoryByUrl(ctx)
   if (params.uuid) {
-    params.category = params.category || getCategoryByUrl(ctx)
     let result = await cypherInvoker.executeCypher(ctx, cypherBuilder.generateQueryNodeWithRelationCypher(params), params)
     if (result && result[0]) {
       result = result[0]
@@ -235,9 +235,7 @@ const assignFields4Delete = async (params, ctx) => {
         }
       }
     } else {
-      if (params.force_delete !== 'true') {
-        throw new ScirichonError('不存在该节点,删除失败')
-      }
+      throw new ScirichonError('不存在该节点,删除失败')
     }
   } else if (ctx.url.includes('/api/items') && ctx.method === 'DELETE') {
     ctx.deleteAll = true
