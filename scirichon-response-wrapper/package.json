@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "log4js-wrapper-advanced": "^1.0.5",
-    "lodash": "^4.17.11"
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "chai": "^4.2.0",
