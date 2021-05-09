@@ -10,7 +10,7 @@
   "dependencies": {
     "@elastic/elasticsearch": "^7.9.0",
     "config": "^3.1.0",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.21",
     "scirichon-cache": "1.0.11-beta.10",
     "scirichon-common": "1.0.7-beta.6",
     "scirichon-json-schema": "1.0.3-beta.5",
