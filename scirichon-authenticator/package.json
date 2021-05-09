@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "acl-fork": "^0.4.12",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.21",
     "redis": "^2.8.0",
     "scirichon-common": "1.0.7-beta.6"
   },
