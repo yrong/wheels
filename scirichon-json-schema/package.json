@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "lodash": "^4.17.11",
-    "ajv": "^6.10.0",
+    "ajv": "^6.12.3",
     "redis":"^2.8.0",
     "redis-crud-fork":"^1.0.2",
     "jsonpath": "^1.0.2"
