@@ -14,7 +14,7 @@
     "jsonfile": "^2.4.0",
     "jsonpath": "^1.0.2",
     "mkdirp": "^0.5.1",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "uuid": "^3.3.2",
     "scirichon-common": "1.0.7-beta.6",
     "scirichon-json-schema": "1.0.3-beta.5",
